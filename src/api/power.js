@@ -24,9 +24,9 @@ export function updatePowerTeam(data) {
   })
 }
 
-export function getPowerList() {
+export function getPowerTree() {
   return request({
-    url: 'MnPowerListApi',
+    url: 'MnAllPowerTree',
     method: 'post'
   })
 }
@@ -34,6 +34,14 @@ export function getPowerList() {
 export function deletePowerTeam(data) {
   return request({
     url: 'MnDelPower',
+    method: 'post',
+    data
+  })
+}
+
+export function updatePowerList(data) {
+  return request({
+    url: 'MnEditPowerTree',
     method: 'post',
     data
   })

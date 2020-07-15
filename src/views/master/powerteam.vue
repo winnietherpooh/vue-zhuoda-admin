@@ -66,7 +66,7 @@
           <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
             删除
           </el-button>
-          <el-button v-if="row.status!='deleted'" size="mini" type="primer" @click="handleDelete(row,$index)">
+          <el-button size="mini" type="primer" @click="handlePowerTree(row)">
             编辑权限
           </el-button>
         </template>
@@ -99,11 +99,30 @@
         </el-button>
       </div>
     </el-dialog>
+
+    <el-dialog title="收货地址" :visible.sync="dialogFormPowerTree">
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="90px" style="width: 400px; margin-left:50px;">
+        <el-tree
+          ref="tree"
+          :data="powerList"
+          :default-checked-keys="temp.powerMenu"
+          show-checkbox
+          default-expand-all
+          node-key="id"
+          highlight-current
+          :props="defaultProps"
+        />
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormPowerTree = false">取 消</el-button>
+        <el-button type="primary" @click="updatePowerTree()">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { fetchList, createPowerTeam, updatePowerTeam, getPowerList, deletePowerTeam } from '@/api/power'
+import { fetchList, createPowerTeam, updatePowerTeam, getPowerTree, deletePowerTeam, updatePowerList } from '@/api/power'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -145,9 +164,11 @@ export default {
       temp: {
         power_name: '',
         power_explain: '',
-        is_lock: false
+        is_lock: false,
+        powerMenu: []
       },
       dialogFormVisible: false,
+      dialogFormPowerTree: false,
       dialogStatus: '',
       textMap: {
         update: 'Edit',
@@ -159,7 +180,46 @@ export default {
         timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
         title: [{ required: true, message: 'title is required', trigger: 'blur' }]
       },
-      downloadLoading: false
+      downloadLoading: false,
+      data: [{
+        id: 1,
+        label: '一级 1',
+        children: [{
+          id: 4,
+          label: '二级 1-1',
+          children: [{
+            id: 9,
+            label: '三级 1-1-1'
+          }, {
+            id: 10,
+            label: '三级 1-1-2'
+          }]
+        }]
+      }, {
+        id: 2,
+        label: '一级 2',
+        children: [{
+          id: 5,
+          label: '二级 2-1'
+        }, {
+          id: 6,
+          label: '二级 2-2'
+        }]
+      }, {
+        id: 3,
+        label: '一级 3',
+        children: [{
+          id: 7,
+          label: '二级 3-1'
+        }, {
+          id: 8,
+          label: '二级 3-2'
+        }]
+      }],
+      defaultProps: {
+        children: 'children',
+        label: 'label'
+      }
     }
   },
   created() {
@@ -167,6 +227,14 @@ export default {
     this.getPowerListData()
   },
   methods: {
+    handlePowerTree(row) {
+      this.temp = Object.assign({}, row) // copy obj
+      this.temp.timestamp = new Date(this.temp.timestamp)
+      this.dialogFormPowerTree = true
+      this.$nextTick(() => {
+        this.$refs['dataForm'].clearValidate()
+      })
+    },
     tableHeaderColor({ row, column, rowIndex, columnIndex }) {
       if (rowIndex === 0) {
         return 'background-color: #EFF2F4;color: #343434;padding: 8px;'
@@ -185,8 +253,13 @@ export default {
       })
     },
     getPowerListData() {
-      getPowerList().then(response => {
+      getPowerTree().then(response => {
         console.log(response.data)
+        this.powerList = response.data
+      })
+    },
+    getPowerTreeData() {
+      getPowerTree().then(response => {
         this.powerList = response.data
       })
     },
@@ -230,8 +303,17 @@ export default {
       this.temp = {
         power_name: '',
         power_explain: '',
-        is_lock: false
+        is_lock: false,
+        powerMenu: []
       }
+    },
+    handleAddPower() {
+      this.resetTemp()
+      this.dialogStatus = 'addpower'
+      this.dialogFormVisible = true
+      this.$nextTick(() => {
+        this.$refs['dataForm'].clearValidate()
+      })
     },
     handleCreate() {
       this.resetTemp()
@@ -268,6 +350,7 @@ export default {
       })
     },
     updateData() {
+      console.log(this.temp.powerMenu)
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           if (this.temp.is_lock === 0) {
@@ -285,6 +368,28 @@ export default {
             this.$notify({
               title: 'Success',
               message: 'Update Successfully',
+              type: 'success',
+              duration: 2000
+            })
+          })
+        }
+      })
+    },
+    updatePowerTree() {
+      this.$refs['dataForm'].validate((valid) => {
+        if (valid) {
+          console.log(this.$refs.tree.getCheckedKeys())
+          var selectedKey = this.$refs.tree.getCheckedKeys()
+          const tempData = Object.assign({}, this.temp)
+          tempData.selectedKey = selectedKey
+          this.temp.powerMenu = selectedKey
+          updatePowerList(tempData).then(() => {
+            const index = this.list.findIndex(v => v.power_id === this.temp.power_id)
+            this.list.splice(index, 1, this.temp)
+            this.dialogFormPowerTree = false
+            this.$notify({
+              title: '编辑权限',
+              message: '操作成功',
               type: 'success',
               duration: 2000
             })
