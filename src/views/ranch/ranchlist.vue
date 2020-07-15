@@ -168,7 +168,7 @@ export default {
         type: undefined,
         sort: '+id'
       },
-      importanceOptions: [{ label: '正常', key: '0' }, { label: '锁定', key: '1' }],
+      importanceOptions: [{ label: '所有', key: '0' }, { label: '正常', key: '2' }, { label: '锁定', key: '1' }],
       calendarTypeOptions,
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: ['published', 'draft', 'deleted'],
