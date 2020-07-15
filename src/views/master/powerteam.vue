@@ -66,6 +66,9 @@
           <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
             删除
           </el-button>
+          <el-button v-if="row.status!='deleted'" size="mini" type="primer" @click="handleDelete(row,$index)">
+            编辑权限
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -290,10 +293,10 @@ export default {
       })
     },
     handleDelete(row, index) {
-      this.temp.admin_id = row.admin_id
+      this.temp.power_id = row.power_id
       deletePowerTeam(this.temp).then(() => {
         this.$notify({
-          title: '删除管理员',
+          title: '删除权限组',
           message: '操作成功',
           type: 'success',
           duration: 2000
