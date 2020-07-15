@@ -17,13 +17,13 @@ const ranchRouter = {
       component: () => import('@/views/ranch/ranchlist'),
       name: 'ranchlist',
       meta: { title: 'ranchlist', noCache: true }
-    },
-    {
-      path: 'line',
-      component: () => import('@/views/charts/line'),
-      name: 'LineChart',
-      meta: { title: 'lineChart', noCache: true }
     }
+    // {
+    //   path: 'line',
+    //   component: () => import('@/views/charts/line'),
+    //   name: 'LineChart',
+    //   meta: { title: 'lineChart', noCache: true }
+    // }
   ]
 }
 

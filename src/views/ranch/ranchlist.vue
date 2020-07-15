@@ -3,8 +3,8 @@
     <div class="filter-container">
       <div class="box-card" style="background-color:#EFF2F4;padding:15px;height:72px;">
         <el-form :inline="true" class="demo-form-inline">
-          <el-form-item label="管理员账号" class="labelFontColor">
-            <el-input v-model="listQuery.title" placeholder="请输入账号" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+          <el-form-item label="牧场名称" class="labelFontColor">
+            <el-input v-model="listQuery.title" placeholder="请输入牧场名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
           </el-form-item>
           <el-form-item label="状态" class="labelFontColor">
             <el-select v-model="listQuery.importanceOptions" style="width: 140px" class="filter-item" @change="handleFilter">
@@ -31,30 +31,25 @@
       :cell-style="{padding:'8px'}"
       @sort-change="sortChange"
     >
-      <el-table-column label="管理员账号" prop="id" sortable="custom" align="center">
+      <el-table-column label="牧场名称" prop="admin_account" sortable="custom" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.admin_account }}</span>
+          <span>{{ row.ranch_name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="注册时间" align="center">
+      <el-table-column label="注册时间" align="center" prop="register_time" sortable="custom">
         <template slot-scope="{row}">
-          <span>{{ row.register_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{ row.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="最后登录时间" align="center">
+      <el-table-column label="关闭时间" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.last_login_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{ row.close_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="权限组" align="center">
+      <el-table-column label="状态" class-name="status-col" prop="is_lock">
         <template slot-scope="{row}">
-          <span>{{ row.power_name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="状态" class-name="status-col">
-        <template slot-scope="{row}">
-          <el-tag :type="row.is_lock_str | statusFilter">
-            {{ row.is_lock_str }}
+          <el-tag :type="row.is_open_str | statusFilter">
+            {{ row.is_open_str }}
           </el-tag>
         </template>
       </el-table-column>
@@ -73,25 +68,15 @@
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="账号" prop="admin_account">
-          <el-input v-model="temp.admin_account" placeholder="请填写登录账号" />
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="80px" style="width: 400px; margin-left:50px;">
+        <el-form-item label="牧场名称" prop="ranch_name">
+          <el-input v-model="temp.ranch_name" placeholder="请填写牧场名称" />
         </el-form-item>
-        <el-form-item label="权限组" prop="power_team">
-          <el-select v-model="temp.power_id" class="filter-item" placeholder="请选择权限组">
-            <el-option v-for="item in powerList" :key="item.power_id" :label="item.power_name" :value="item.power_id" />
-          </el-select>
-        </el-form-item>
-        <!-- <el-form-item label="创" prop="timestamp">
-          <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date" />
-        </el-form-item> -->
-        <el-form-item label="密码" prop="passwd">
-          <el-input v-model="temp.passwd" placeholder="请填写登录密码,默认为123456" />
-        </el-form-item>
-        <el-form-item label="状态" prop="is_lock">
-          <el-radio-group v-model="temp.is_lock">
-            <el-radio :label="0">正常</el-radio>
-            <el-radio :label="1">锁定</el-radio>
+        <el-form-item label="状态" prop="is_open">
+          <el-radio-group v-model="temp.is_open">
+            <el-radio :label="1">营业中</el-radio>
+            <el-radio :label="2">已关闭</el-radio>
+            <el-radio :label="3">休息中</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
@@ -104,37 +89,14 @@
         </el-button>
       </div>
     </el-dialog>
-
-    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="key" label="Channel" />
-        <el-table-column prop="pv" label="Pv" />
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 
 <script>
-import { fetchList, fetchPv, createMaster, updateMaster, getPowerList, deleteMaster } from '@/api/master'
+import { fetchList, createRanch, updateRanch, deleteRanch } from '@/api/ranch'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-
-const calendarTypeOptions = [
-  { key: 'CN', display_name: 'China' },
-  { key: 'US', display_name: 'USA' },
-  { key: 'JP', display_name: 'Japan' },
-  { key: 'EU', display_name: 'Eurozone' }
-]
-
-// arr to obj, such as { CN : "China", US : "USA" }
-const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
-  acc[cur.key] = cur.display_name
-  return acc
-}, {})
 
 export default {
   name: 'ComplexTable',
@@ -143,13 +105,11 @@ export default {
   filters: {
     statusFilter(status) {
       const statusMap = {
-        '正常': 'success',
-        '禁用': 'danger'
+        '营业中': 'success',
+        '已关闭': 'danger',
+        '休息中': 'warning'
       }
       return statusMap[status]
-    },
-    typeFilter(type) {
-      return calendarTypeKeyValue[type]
     }
   },
   data() {
@@ -166,39 +126,28 @@ export default {
         importance: undefined,
         title: undefined,
         type: undefined,
-        sort: '+id'
+        sort: '+admin_account'
       },
-      importanceOptions: [{ label: '所有', key: '0' }, { label: '正常', key: '2' }, { label: '锁定', key: '1' }],
-      calendarTypeOptions,
-      sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
-      statusOptions: ['published', 'draft', 'deleted'],
-      powerList: [],
-      showReviewer: false,
+      importanceOptions: [{ label: '所有', key: '0' }, { label: '营业中', key: '1' }, { label: '已关闭', key: '2' }, { label: '休息中', key: '3' }],
       temp: {
-        admin_account: '',
-        admin_pwd: '',
-        power_team: 0,
-        is_lock: false
+        ranch_name: '',
+        is_open: false
       },
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
         update: 'Edit',
-        create: '创建管理员'
+        create: '新增牧场'
       },
-      dialogPvVisible: false,
-      pvData: [],
       rules: {
-        type: [{ required: true, message: 'type is required', trigger: 'change' }],
-        timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
-        title: [{ required: true, message: 'title is required', trigger: 'blur' }]
+        ranch_name: [{ required: true, message: '请填写牧场名称', trigger: 'change' }],
+        is_open: [{ required: true, message: '请选择牧场状态', trigger: 'change' }]
       },
       downloadLoading: false
     }
   },
   created() {
     this.getList()
-    this.getPowerListData()
   },
   methods: {
     tableHeaderColor({ row, column, rowIndex, columnIndex }) {
@@ -218,12 +167,6 @@ export default {
         }, 0.5 * 1000)
       })
     },
-    getPowerListData() {
-      getPowerList().then(response => {
-        console.log(response.data)
-        this.powerList = response.data
-      })
-    },
     handleFilter() {
       this.listQuery.page = 1
       this.getList()
@@ -237,24 +180,33 @@ export default {
     },
     sortChange(data) {
       const { prop, order } = data
-      if (prop === 'id') {
+      if (prop === 'admin_account') {
         this.sortByID(order)
+      }
+      if (prop === 'register_time') {
+        this.sortByRegisterTime(order)
       }
     },
     sortByID(order) {
       if (order === 'ascending') {
-        this.listQuery.sort = '+id'
+        this.listQuery.sort = '+admin_account'
       } else {
-        this.listQuery.sort = '-id'
+        this.listQuery.sort = '-admin_account'
+      }
+      this.handleFilter()
+    },
+    sortByRegisterTime(order) {
+      if (order === 'ascending') {
+        this.listQuery.sort = '+register_time'
+      } else {
+        this.listQuery.sort = '-register_time'
       }
       this.handleFilter()
     },
     resetTemp() {
       this.temp = {
-        admin_account: '',
-        admin_pwd: '',
-        power_team: 0,
-        is_lock: false
+        ranch_name: '',
+        is_open: false
       }
     },
     handleCreate() {
@@ -268,13 +220,13 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          createMaster(this.temp).then((response) => {
+          createRanch(this.temp).then((response) => {
             // this.list.unshift(this.temp)
             this.dialogFormVisible = false
             this.getList()
             this.$notify({
-              title: 'Success',
-              message: 'Created Successfully',
+              title: '新增牧场',
+              message: '创建成功',
               type: 'success',
               duration: 2000
             })
@@ -294,16 +246,18 @@ export default {
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          if (this.temp.is_lock === 0) {
-            this.temp.is_lock_str = '正常'
+          if (this.temp.is_open === 1) {
+            this.temp.is_open_str = '营业中'
+          } else if (this.temp.is_open === 2) {
+            this.temp.is_open_str = '已关闭'
           } else {
-            this.temp.is_lock_str = '锁定'
+            this.temp.is_open_str = '休息中'
           }
           const tempData = Object.assign({}, this.temp)
           console.log(this.temp)
           tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateMaster(tempData).then(() => {
-            const index = this.list.findIndex(v => v.admin_id === this.temp.admin_id)
+          updateRanch(tempData).then(() => {
+            const index = this.list.findIndex(v => v.ranch_id === this.temp.ranch_id)
             this.list.splice(index, 1, this.temp)
             this.dialogFormVisible = false
             this.$notify({
@@ -317,36 +271,16 @@ export default {
       })
     },
     handleDelete(row, index) {
-      this.temp.admin_id = row.admin_id
-      deleteMaster(this.temp).then(() => {
+      this.temp.ranch_id = row.ranch_id
+      deleteRanch(this.temp).then(() => {
         this.$notify({
-          title: '删除管理员',
+          title: '删除牧场',
           message: '操作成功',
           type: 'success',
           duration: 2000
         })
       })
       this.list.splice(index, 1)
-    },
-    handleFetchPv(pv) {
-      fetchPv(pv).then(response => {
-        this.pvData = response.data.pvData
-        this.dialogPvVisible = true
-      })
-    },
-    handleDownload() {
-      this.downloadLoading = true
-      import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['timestamp', 'title', 'type', 'importance', 'status']
-        const filterVal = ['timestamp', 'title', 'type', 'importance', 'status']
-        const data = this.formatJson(filterVal)
-        excel.export_json_to_excel({
-          header: tHeader,
-          data,
-          filename: 'table-list'
-        })
-        this.downloadLoading = false
-      })
     },
     formatJson(filterVal) {
       return this.list.map(v => filterVal.map(j => {

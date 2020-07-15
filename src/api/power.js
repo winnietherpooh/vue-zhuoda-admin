@@ -2,23 +2,23 @@ import request from '@/utils/request'
 
 export function fetchList(query) {
   return request({
-    url: 'MnMaster',
+    url: 'MnPowerList',
     method: 'get',
     params: query
   })
 }
 
-export function createMaster(data) {
+export function createPowerTeam(data) {
   return request({
-    url: 'MnAddMaster',
+    url: 'MnAddPower',
     method: 'post',
     data
   })
 }
 
-export function updateMaster(data) {
+export function updatePowerTeam(data) {
   return request({
-    url: 'MnEditMaster',
+    url: 'MnEditPowerTeam',
     method: 'post',
     data
   })
@@ -31,9 +31,9 @@ export function getPowerList() {
   })
 }
 
-export function deleteMaster(data) {
+export function deletePowerTeam(data) {
   return request({
-    url: 'MnDelMaster',
+    url: 'MnDelPower',
     method: 'post',
     data
   })

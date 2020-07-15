@@ -1,6 +1,9 @@
 export default {
   route: {
     dashboard: '首页',
+    master: '管理员管理',
+    masterlist: '管理员列表',
+    powerteam: '权限组管理',
     documentation: '文档',
     guide: '引导页',
     permission: '权限测试页',
@@ -96,6 +99,10 @@ export default {
     delete: '删除',
     confirm: '确定',
     cancel: '取消'
+  },
+  master: {
+    masterlist: '管理员列表',
+    powerteam: '权限组管理'
   },
   guide: {
     description: '引导页对于一些第一次进入项目的人很有用，你可以简单介绍下项目的功能。本 Demo 是基于',
