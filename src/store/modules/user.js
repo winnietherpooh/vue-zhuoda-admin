@@ -7,7 +7,7 @@ const state = {
   name: '',
   avatar: '',
   introduction: '',
-  roles: []
+  menus: []
 }
 
 const mutations = {
@@ -25,6 +25,9 @@ const mutations = {
   },
   SET_ROLES: (state, roles) => {
     state.roles = roles
+  },
+  SET_MENUS: (state, menus) => {
+    state.menus = menus
   }
 }
 
@@ -49,22 +52,35 @@ const actions = {
     return new Promise((resolve, reject) => {
       getInfo(state.token).then(response => {
         const { data } = response
-        console.log(data)
         if (!data) {
           reject('Verification failed, please Login again.')
         }
-
+        const menus =
+        [{
+          path: '/master',
+          component: 'Layout',
+          redirect: 'noRedirect',
+          name: 'master',
+          meta: { title: 'master', icon: 'password' },
+          children: [
+            {
+              path: 'masterlist',
+              name: 'masterlist',
+              component: '/master/masterlist',
+              meta: { title: '日程', icon: 'table' }
+            }
+          ]
+        }]
         const { roles, admin_account, avatar, introduction } = data
-
         // roles must be a non-empty array
         if (!roles || roles.length <= 0) {
           reject('getInfo: roles must be a non-null array!')
         }
-
         commit('SET_ROLES', roles)
         commit('SET_NAME', admin_account)
         commit('SET_AVATAR', avatar)
         commit('SET_INTRODUCTION', introduction)
+        commit('SET_MENUS', menus)
         resolve(data)
       }).catch(error => {
         reject(error)
