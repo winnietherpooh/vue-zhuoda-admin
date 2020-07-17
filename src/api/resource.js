@@ -10,7 +10,7 @@ export function fetchList(query) {
 
 export function createResource(data) {
   return request({
-    url: 'MnAddMaster',
+    url: 'MnAddResource',
     method: 'post',
     data
   })
