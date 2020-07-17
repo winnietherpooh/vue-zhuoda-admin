@@ -1,5 +1,10 @@
 <template>
   <div style="text-align: center;margin-top:50px">
+    <el-alert title="只允许上传 MP4, jpg, png, gif 格式" type="success" />
+    <el-alert title="必须带文件后缀,例如:必须是xxx.jpg, 而不能是 xxx" type="success" />
+    <el-alert title="每次只允许上传一个文件,但可以多次上传" type="success" />
+    <el-alert title="拖入文件,即可完成上传,可在资源列表中查看上传后的文件详情" type="success" />
+    <el-divider content-position="left" />
     <el-upload
       :data="dataObj"
       :multiple="true"

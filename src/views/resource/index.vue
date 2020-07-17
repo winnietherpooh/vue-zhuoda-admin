@@ -14,9 +14,9 @@
           <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
             搜索
           </el-button>
-          <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
+          <!-- <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
             新增
-          </el-button>
+          </el-button> -->
         </el-form>
       </div>
     </div>
@@ -31,17 +31,17 @@
       :cell-style="{padding:'8px'}"
       @sort-change="sortChange"
     >
-      <el-table-column label="资源名称" prop="admin_account" sortable="custom" align="center">
+      <el-table-column label="资源名称" prop="resource_name" sortable="custom" align="center">
         <template slot-scope="{row}">
           <span>{{ row.resource_name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" align="center" prop="register_time" sortable="custom">
+      <el-table-column label="创建时间" align="center" prop="create_time" sortable="custom">
         <template slot-scope="{row}">
           <span>{{ row.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="资源大小" align="center" prop="register_time" sortable="custom">
+      <el-table-column label="资源大小" align="center" prop="resource_size" sortable="custom">
         <template slot-scope="{row}">
           <span>{{ row.resource_size }}</span>
         </template>
@@ -56,7 +56,7 @@
           <span>{{ row.resource_url }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="状态" class-name="status-col" prop="is_lock">
+      <el-table-column label="状态" class-name="status-col" prop="is_delete">
         <template slot-scope="{row}">
           <el-tag :type="row.is_delete_str | statusFilter">
             {{ row.is_delete_str }}
@@ -206,11 +206,7 @@ export default {
       fetchList(this.listQuery).then(response => {
         this.list = response.data.data
         this.total = response.data.total
-        console.log(response.data)
-        // Just to simulate the time of the request
-        setTimeout(() => {
-          this.listLoading = false
-        }, 0.5 * 1000)
+        this.listLoading = false
       })
     },
     handleFilter() {
@@ -226,26 +222,37 @@ export default {
     },
     sortChange(data) {
       const { prop, order } = data
-      if (prop === 'admin_account') {
-        this.sortByID(order)
+      if (prop === 'resource_name') {
+        this.sortByName(order)
       }
-      if (prop === 'register_time') {
-        this.sortByRegisterTime(order)
+      if (prop === 'create_time') {
+        this.sortByCreateTime(order)
+      }
+      if (prop === 'resource_size') {
+        this.sortByResourceSize(order)
       }
     },
-    sortByID(order) {
+    sortByName(order) {
       if (order === 'ascending') {
-        this.listQuery.sort = '+admin_account'
+        this.listQuery.sort = '+resource_name'
       } else {
-        this.listQuery.sort = '-admin_account'
+        this.listQuery.sort = '-resource_name'
       }
       this.handleFilter()
     },
-    sortByRegisterTime(order) {
+    sortByResourceSize(order) {
       if (order === 'ascending') {
-        this.listQuery.sort = '+register_time'
+        this.listQuery.sort = '+resource_size'
       } else {
-        this.listQuery.sort = '-register_time'
+        this.listQuery.sort = '-resource_size'
+      }
+      this.handleFilter()
+    },
+    sortByCreateTime(order) {
+      if (order === 'ascending') {
+        this.listQuery.sort = '+create_time'
+      } else {
+        this.listQuery.sort = '-create_time'
       }
       this.handleFilter()
     },

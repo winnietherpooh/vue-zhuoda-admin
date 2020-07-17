@@ -184,10 +184,7 @@ export default {
         this.list = response.data.data
         this.total = response.data.total
         console.log(response.data)
-        // Just to simulate the time of the request
-        setTimeout(() => {
-          this.listLoading = false
-        }, 0.5 * 1000)
+        this.listLoading = false
       })
     },
     getPowerListData() {
