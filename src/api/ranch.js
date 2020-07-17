@@ -47,3 +47,11 @@ export function deleteRanch(data) {
     data
   })
 }
+
+export function deleteRanchAll(data) {
+  return request({
+    url: 'MnDelAllRanch',
+    method: 'post',
+    data
+  })
+}

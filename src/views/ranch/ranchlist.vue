@@ -23,14 +23,18 @@
 
     <el-table
       :key="tableKey"
+      ref="listTable"
       v-loading="listLoading"
       :data="list"
       border
       fit
       :header-cell-style="tableHeaderColor"
       :cell-style="{padding:'8px'}"
+      @select="selectAll"
+      @select-all="selectAll"
       @sort-change="sortChange"
     >
+      <el-table-column type="selection" width="55" />
       <el-table-column label="牧场名称" prop="admin_account" sortable="custom" align="center">
         <template slot-scope="{row}">
           <span>{{ row.ranch_name }}</span>
@@ -64,7 +68,10 @@
         </template>
       </el-table-column>
     </el-table>
-
+    <div style="margin-top: 20px">
+      <el-button @click="deleteAll()">删除</el-button>
+      <el-button @click="toggleSelection()">取消</el-button>
+    </div>
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
@@ -93,7 +100,7 @@
 </template>
 
 <script>
-import { fetchList, createRanch, updateRanch, deleteRanch } from '@/api/ranch'
+import { fetchList, createRanch, updateRanch, deleteRanch, deleteRanchAll } from '@/api/ranch'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -143,7 +150,8 @@ export default {
         ranch_name: [{ required: true, message: '请填写牧场名称', trigger: 'change' }],
         is_open: [{ required: true, message: '请选择牧场状态', trigger: 'change' }]
       },
-      downloadLoading: false
+      downloadLoading: false,
+      multipleSelection: []
     }
   },
   created() {
@@ -203,7 +211,8 @@ export default {
     resetTemp() {
       this.temp = {
         ranch_name: '',
-        is_open: false
+        is_open: false,
+        ranchIdArray: []
       }
     },
     handleCreate() {
@@ -291,6 +300,33 @@ export default {
     getSortClass: function(key) {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : 'descending'
+    },
+    toggleSelection(rows) {
+      console.log(this.multipleSelection)
+      this.multipleSelection = []
+      this.$refs.listTable.clearSelection()
+    },
+    deleteAll() {
+      this.listLoading = true
+      this.temp.ranchIdArray = this.multipleSelection
+      deleteRanchAll(this.temp).then(() => {
+        this.$notify({
+          title: '删除资源',
+          message: '操作成功',
+          type: 'success',
+          duration: 2000
+        })
+        this.multipleSelection = []
+        this.getList()
+        this.listLoading = false
+      })
+    },
+    selectAll(selection, row) {
+      this.multipleSelection = []
+      selection.map((item) => {
+        console.log(item)
+        this.multipleSelection.push(item.ranch_id)
+      })
     }
   }
 }
