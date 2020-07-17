@@ -23,14 +23,18 @@
 
     <el-table
       :key="tableKey"
+      ref="listTable"
       v-loading="listLoading"
       :data="list"
       border
       fit
       :header-cell-style="tableHeaderColor"
       :cell-style="{padding:'8px'}"
+      @select="selectAll"
+      @select-all="selectAll"
       @sort-change="sortChange"
     >
+      <el-table-column type="selection" width="55" />
       <el-table-column label="权限组名称" prop="admin_account" sortable="custom" align="center">
         <template slot-scope="{row}">
           <span>{{ row.power_name }}</span>
@@ -72,7 +76,10 @@
         </template>
       </el-table-column>
     </el-table>
-
+    <div style="margin-top: 20px">
+      <el-button @click="deleteAll()">删除</el-button>
+      <el-button @click="toggleSelection()">取消</el-button>
+    </div>
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
@@ -122,7 +129,7 @@
 </template>
 
 <script>
-import { fetchList, createPowerTeam, updatePowerTeam, getPowerTree, deletePowerTeam, updatePowerList } from '@/api/power'
+import { fetchList, createPowerTeam, updatePowerTeam, getPowerTree, deletePowerTeam, updatePowerList, deleteAllPowerTeam } from '@/api/power'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -181,45 +188,11 @@ export default {
         title: [{ required: true, message: 'title is required', trigger: 'blur' }]
       },
       downloadLoading: false,
-      data: [{
-        id: 1,
-        label: '一级 1',
-        children: [{
-          id: 4,
-          label: '二级 1-1',
-          children: [{
-            id: 9,
-            label: '三级 1-1-1'
-          }, {
-            id: 10,
-            label: '三级 1-1-2'
-          }]
-        }]
-      }, {
-        id: 2,
-        label: '一级 2',
-        children: [{
-          id: 5,
-          label: '二级 2-1'
-        }, {
-          id: 6,
-          label: '二级 2-2'
-        }]
-      }, {
-        id: 3,
-        label: '一级 3',
-        children: [{
-          id: 7,
-          label: '二级 3-1'
-        }, {
-          id: 8,
-          label: '二级 3-2'
-        }]
-      }],
       defaultProps: {
         children: 'children',
         label: 'label'
-      }
+      },
+      multipleSelection: []
     }
   },
   created() {
@@ -418,6 +391,33 @@ export default {
     getSortClass: function(key) {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : 'descending'
+    },
+    toggleSelection(rows) {
+      console.log(this.multipleSelection)
+      this.multipleSelection = []
+      this.$refs.listTable.clearSelection()
+    },
+    deleteAll() {
+      this.listLoading = true
+      this.temp.IdArray = this.multipleSelection
+      deleteAllPowerTeam(this.temp).then(() => {
+        this.$notify({
+          title: '删除资源',
+          message: '操作成功',
+          type: 'success',
+          duration: 2000
+        })
+        this.multipleSelection = []
+        this.getList()
+        this.listLoading = false
+      })
+    },
+    selectAll(selection, row) {
+      this.multipleSelection = []
+      selection.map((item) => {
+        console.log(item)
+        this.multipleSelection.push(item.power_id)
+      })
     }
   }
 }

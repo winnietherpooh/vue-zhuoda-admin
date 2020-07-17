@@ -46,3 +46,11 @@ export function updatePowerList(data) {
     data
   })
 }
+
+export function deleteAllPowerTeam(data) {
+  return request({
+    url: 'MnDelAllPowerTree',
+    method: 'post',
+    data
+  })
+}
