@@ -23,14 +23,20 @@
 
     <el-table
       :key="tableKey"
+      ref="listTable"
       v-loading="listLoading"
       :data="list"
       border
       fit
       :header-cell-style="tableHeaderColor"
       :cell-style="{padding:'8px'}"
+      :highlight-current-row="true"
+      :select-on-indeterminate="true"
       @sort-change="sortChange"
+      @select="selectAll"
+      @select-all="selectAll"
     >
+      <el-table-column type="selection" label="全选" align="center" width="55" />
       <el-table-column label="资源名称" prop="resource_name" sortable="custom" align="center">
         <template slot-scope="{row}">
           <span>{{ row.resource_name }}</span>
@@ -74,7 +80,10 @@
         </template>
       </el-table-column>
     </el-table>
-
+    <div style="margin-top: 20px">
+      <el-button @click="deleteAll()">删除</el-button>
+      <el-button @click="toggleSelection()">取消</el-button>
+    </div>
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
@@ -121,7 +130,7 @@
 </template>
 
 <script>
-import { fetchList, createResource, updateResource, deleteResource } from '@/api/resource'
+import { fetchList, createResource, updateResource, deleteResource, deleteResourceAll } from '@/api/resource'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -162,7 +171,8 @@ export default {
       showReviewer: false,
       temp: {
         resource_name: '',
-        is_delete: 0
+        is_delete: 0,
+        resourceIdArray: []
       },
       dialogFormVisible: false,
       dialogFormPowerTree: false,
@@ -181,7 +191,8 @@ export default {
       defaultProps: {
         children: 'children',
         label: 'label'
-      }
+      },
+      multipleSelection: []
     }
   },
   created() {
@@ -387,6 +398,32 @@ export default {
     getSortClass: function(key) {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : 'descending'
+    },
+    toggleSelection(rows) {
+      console.log(this.multipleSelection)
+      this.multipleSelection = []
+      this.$refs.listTable.clearSelection()
+    },
+    deleteAll() {
+      this.listLoading = true
+      this.temp.resourceIdArray = this.multipleSelection
+      deleteResourceAll(this.temp).then(() => {
+        this.$notify({
+          title: '删除资源',
+          message: '操作成功',
+          type: 'success',
+          duration: 2000
+        })
+        this.multipleSelection = []
+        this.getList()
+        this.listLoading = false
+      })
+    },
+    selectAll(selection, row) {
+      this.multipleSelection = []
+      selection.map((item) => {
+        this.multipleSelection.push(item.resource_id)
+      })
     }
   }
 }

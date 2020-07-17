@@ -31,3 +31,11 @@ export function deleteResource(data) {
     data
   })
 }
+
+export function deleteResourceAll(data) {
+  return request({
+    url: 'MnDelResourceAll',
+    method: 'post',
+    data
+  })
+}
