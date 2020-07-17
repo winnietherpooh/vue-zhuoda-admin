@@ -38,3 +38,11 @@ export function deleteMaster(data) {
     data
   })
 }
+
+export function deleteMasterAll(data) {
+  return request({
+    url: 'MnDelAllMaster',
+    method: 'post',
+    data
+  })
+}

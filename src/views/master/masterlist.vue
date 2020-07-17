@@ -23,14 +23,18 @@
 
     <el-table
       :key="tableKey"
+      ref="listTable"
       v-loading="listLoading"
       :data="list"
       border
       fit
       :header-cell-style="tableHeaderColor"
       :cell-style="{padding:'8px'}"
+      @select="selectAll"
+      @select-all="selectAll"
       @sort-change="sortChange"
     >
+      <el-table-column type="selection" width="55" />
       <el-table-column label="管理员账号" prop="admin_account" sortable="custom" align="center">
         <template slot-scope="{row}">
           <span>{{ row.admin_account }}</span>
@@ -69,7 +73,10 @@
         </template>
       </el-table-column>
     </el-table>
-
+    <div style="margin-top: 20px">
+      <el-button @click="deleteAll()">删除</el-button>
+      <el-button @click="toggleSelection()">取消</el-button>
+    </div>
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
@@ -108,7 +115,7 @@
 </template>
 
 <script>
-import { fetchList, createMaster, updateMaster, getPowerList, deleteMaster } from '@/api/master'
+import { fetchList, createMaster, updateMaster, getPowerList, deleteMaster, deleteMasterAll } from '@/api/master'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -151,7 +158,8 @@ export default {
         admin_account: '',
         admin_pwd: '',
         power_team: 0,
-        is_lock: false
+        is_lock: false,
+        IdArray: []
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -165,7 +173,8 @@ export default {
         timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
         title: [{ required: true, message: 'title is required', trigger: 'blur' }]
       },
-      downloadLoading: false
+      downloadLoading: false,
+      multipleSelection: []
     }
   },
   created() {
@@ -320,6 +329,33 @@ export default {
     getSortClass: function(key) {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : 'descending'
+    },
+    toggleSelection(rows) {
+      console.log(this.multipleSelection)
+      this.multipleSelection = []
+      this.$refs.listTable.clearSelection()
+    },
+    deleteAll() {
+      this.listLoading = true
+      this.temp.IdArray = this.multipleSelection
+      deleteMasterAll(this.temp).then(() => {
+        this.$notify({
+          title: '删除资源',
+          message: '操作成功',
+          type: 'success',
+          duration: 2000
+        })
+        this.multipleSelection = []
+        this.getList()
+        this.listLoading = false
+      })
+    },
+    selectAll(selection, row) {
+      this.multipleSelection = []
+      selection.map((item) => {
+        console.log(item)
+        this.multipleSelection.push(item.admin_id)
+      })
     }
   }
 }
