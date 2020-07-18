@@ -13,7 +13,7 @@
       :on-error="errorFun"
       :on-success="successFun"
       :before-upload="beforeUpload"
-      action="https://up-z0.qiniup.com"
+      action="https://up-z2.qiniup.com"
       drag
     >
       <i class="el-icon-upload" />
