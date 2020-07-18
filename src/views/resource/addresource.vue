@@ -2,13 +2,12 @@
   <div style="text-align: center;margin-top:50px">
     <el-alert title="只允许上传 MP4, jpg, png, gif 格式" type="success" />
     <el-alert title="必须带文件后缀,例如:必须是xxx.jpg, 而不能是 xxx" type="success" />
-    <el-alert title="每次只允许上传一个文件,但可以多次上传" type="success" />
-    <el-alert title="拖入文件,即可完成上传,可在资源列表中查看上传后的文件详情" type="success" />
+    <el-alert title="支持批量上传,多文件直接拖入即可" type="success" />
+    <el-alert title="拖入文件,即自动完成上传,可在资源列表中查看上传后的文件详情" type="success" />
     <el-divider content-position="left" />
     <el-upload
       :data="dataObj"
       :multiple="true"
-      :limit="1"
       :on-exceed="tooManyFilesError"
       :show-file-list="true"
       :on-error="errorFun"
@@ -46,7 +45,9 @@ export default {
   },
   methods: {
     beforeUpload(file) {
-      console.log(file)
+      // console.log('=======================')
+      // console.log(file)
+      // console.log('=======================')
       const _self = this
       return new Promise((resolve, reject) => {
         getToken().then(response => {
@@ -71,11 +72,9 @@ export default {
             })
           }
           var fileNames = file.name.split('.' + this.data.Suffix)
-          console.log(fileNames)
           this.data.fileName = fileNames[0]
-          const key = md5(file.name + response.data.key) + '.' + this.data.Suffix
+          const key = md5(file.name + new Date()) + '.' + this.data.Suffix
           this.data.downUrl = key
-          console.log(this.data)
           const token = response.data.token
           _self._data.dataObj.token = token
           _self._data.dataObj.key = key
@@ -87,6 +86,15 @@ export default {
       })
     },
     successFun(response, file, fileList) {
+      console.log(response)
+      this.data.fileName = file.name
+      this.data.fileSize = file.size
+      var strArr = file.name.split('.')
+      var arrLen = strArr.length
+      this.data.Suffix = strArr[arrLen - 1]
+      var fileNames = file.name.split('.' + this.data.Suffix)
+      this.data.fileName = fileNames[0]
+      this.data.downUrl = response.key
       createResource(this.data).then((response) => {
         this.$notify({
           title: '上传成功!',
