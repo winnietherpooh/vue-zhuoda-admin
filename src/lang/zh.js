@@ -4,6 +4,7 @@ export default {
     master: '管理员管理',
     masterlist: '管理员列表',
     powerteam: '权限组管理',
+    memberIndex: '用户列表',
     documentation: '文档',
     guide: '引导页',
     permission: '权限测试页',
