@@ -39,3 +39,11 @@ export function deleteMnAll(data) {
     data
   })
 }
+
+export function setMn(data) {
+  return request({
+    url: 'MnSetMilker',
+    method: 'post',
+    data
+  })
+}

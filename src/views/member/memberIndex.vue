@@ -50,12 +50,12 @@
           <span>{{ row.login_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="登录次数" align="center">
+      <el-table-column label="登录次数" align="center" width="100">
         <template slot-scope="{row}">
           <span>{{ row.login_nums }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="状态" class-name="status-col" prop="is_delete">
+      <el-table-column label="状态" class-name="status-col" prop="is_delete" width="100">
         <template slot-scope="{row}">
           <el-tag :type="row.is_delete_str | statusFilter">
             {{ row.is_delete_str }}
@@ -70,6 +70,19 @@
           <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
             删除
           </el-button>
+          <el-dropdown style="margin-left:10px" @command="setMilkerCreate(row,$index)">
+            <el-button type="primary" size="mini">
+              设置<i class="el-icon-arrow-down el-icon--right" />
+            </el-button>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item v-if="row.is_milker=== 1" @click.native="setMilkerCreate(row,$index,1)">取消挤奶员</el-dropdown-item>
+              <el-dropdown-item v-if="row.is_milker=== 0" @click.native="setMilkerCreate(row,$index,1)">设置挤奶员</el-dropdown-item>
+              <el-dropdown-item v-if="row.is_creater=== 1" @click.native="setMilkerCreate(row,$index,2)">取消生产员</el-dropdown-item>
+              <el-dropdown-item v-if="row.is_creater=== 0" @click.native="setMilkerCreate(row,$index,2)">设置生产员</el-dropdown-item>
+              <el-dropdown-item v-if="row.is_dispatching=== 1" @click.native="setMilkerCreate(row,$index,3)">取消配送员</el-dropdown-item>
+              <el-dropdown-item v-if="row.is_dispatching=== 0" @click.native="setMilkerCreate(row,$index,3)">设置配送员</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </template>
       </el-table-column>
     </el-table>
@@ -104,7 +117,7 @@
 </template>
 
 <script>
-import { fetchList, createMn, updateMn, deleteMn, deleteMnAll } from '@/api/member'
+import { fetchList, createMn, updateMn, deleteMn, deleteMnAll, setMn } from '@/api/member'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -161,11 +174,14 @@ export default {
         title: [{ required: true, message: 'title is required', trigger: 'blur' }]
       },
       downloadLoading: false,
-      multipleSelection: []
+      multipleSelection: [],
+      ranchId: 0
     }
   },
   created() {
     this.getList()
+    this.ranchId = this.$route.query.ranchId
+    console.log(this.ranchId)
   },
   methods: {
     tableHeaderColor({ row, column, rowIndex, columnIndex }) {
@@ -344,6 +360,17 @@ export default {
       selection.map((item) => {
         console.log(item)
         this.multipleSelection.push(item.member_id)
+      })
+    },
+    setMilkerCreate(row, index, type) {
+      this.temp.type = type
+      setMn(this.temp).then(() => {
+        this.$notify({
+          title: '删除用户',
+          message: '操作成功',
+          type: 'success',
+          duration: 2000
+        })
       })
     }
   }
