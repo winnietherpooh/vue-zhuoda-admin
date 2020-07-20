@@ -32,9 +32,9 @@ export function setMn(data) {
   })
 }
 
-export function updateRanch(data) {
+export function updateMn(data) {
   return request({
-    url: 'MnEditRanch',
+    url: 'MnEditAllStaffMember',
     method: 'post',
     data
   })

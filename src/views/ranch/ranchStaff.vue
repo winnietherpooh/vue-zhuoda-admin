@@ -93,13 +93,17 @@
     </div>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="昵称" prop="nick_name">
-          <el-input v-model="temp.nick_name" placeholder="请填写昵称" readonly="" />
+        <el-form-item label="牧场名称" prop="ranch_name">
+          <el-input v-model="temp.ranch_name" readonly="" />
         </el-form-item>
-        <el-form-item label="状态" prop="is_delete">
-          <el-radio-group v-model="temp.is_delete">
-            <el-radio :label="0">正常</el-radio>
-            <el-radio :label="1">锁定</el-radio>
+        <el-form-item label="用户昵称" prop="nick_name">
+          <el-input v-model="temp.nick_name" readonly="" />
+        </el-form-item>
+        <el-form-item label="职工状态" prop="user_status">
+          <el-radio-group v-model="temp.user_status">
+            <el-radio :label="1">正常</el-radio>
+            <el-radio :label="2">请假</el-radio>
+            <el-radio :label="3">离职</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
@@ -189,7 +193,7 @@
 </template>
 
 <script>
-import { fetchList, getRanchSelect, getMember, setMn, deleteMn, deleteStaffAll } from '@/api/ranchStaff'
+import { fetchList, getRanchSelect, getMember, setMn, deleteMn, deleteStaffAll, updateMn } from '@/api/ranchStaff'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -554,6 +558,30 @@ export default {
           type: 'info',
           message: '已取消删除'
         })
+      })
+    },
+    updateData() {
+      this.$refs['dataForm'].validate((valid) => {
+        if (valid) {
+          if (this.temp.user_status === 1) {
+            this.temp.user_status_str = '正常'
+          } else if (this.temp.user_status === 2) {
+            this.temp.user_status_str = '请假'
+          } else {
+            this.temp.user_status_str = '离职'
+          }
+          updateMn(this.temp).then(() => {
+            const index = this.list.findIndex(v => v.milker_id === this.temp.milker_id)
+            this.list.splice(index, 1, this.temp)
+            this.dialogFormVisible = false
+            this.$notify({
+              title: '操作成功',
+              message: '编辑员工',
+              type: 'success',
+              duration: 2000
+            })
+          })
+        }
       })
     }
   }
