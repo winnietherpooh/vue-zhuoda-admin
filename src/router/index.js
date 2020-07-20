@@ -11,6 +11,7 @@ import ranchRouter from './modules/ranch'
 import masterRouter from './modules/master'
 import resourceRouter from './modules/resource'
 import memberRouter from './modules/member'
+import goodsRouter from './modules/goods'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -152,6 +153,7 @@ export const asyncRoutes = [
   masterRouter,
   resourceRouter,
   memberRouter,
+  goodsRouter,
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
