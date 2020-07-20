@@ -189,7 +189,7 @@
 </template>
 
 <script>
-import { fetchList, getRanchSelect, getMember, setMn, deleteMn } from '@/api/ranchStaff'
+import { fetchList, getRanchSelect, getMember, setMn, deleteMn, deleteStaffAll } from '@/api/ranchStaff'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -416,7 +416,7 @@ export default {
       this.multipleSelection = []
       selection.map((item) => {
         console.log(item)
-        this.multipleSelection.push(item.member_id)
+        this.multipleSelection.push(item.milker_id)
       })
     },
     selectedRanch(selected) {
@@ -503,13 +503,12 @@ export default {
       })
     },
     handleDelete(row, index) {
-      this.temp.admin_id = row.admin_id
+      this.temp.milker_id = row.milker_id
       this.$confirm('此操作将永久删除该职工, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.temp.ranch_id = row.ranch_id
         deleteMn(this.temp).then(() => {
           this.$notify({
             title: '删除职工',
@@ -519,6 +518,37 @@ export default {
           })
         })
         this.list.splice(index, 1)
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    deleteAll() {
+      this.temp.ranchIdArray = this.multipleSelection
+      if (this.temp.ranchIdArray.length <= 0) {
+        return
+      }
+      console.log(this.temp.ranchIdArray)
+      this.$confirm('此操作将永久删除吗, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.listLoading = true
+        this.temp.ranchIdArray = this.multipleSelection
+        deleteStaffAll(this.temp).then(() => {
+          this.$notify({
+            title: '删除资源',
+            message: '操作成功',
+            type: 'success',
+            duration: 2000
+          })
+          this.multipleSelection = []
+          this.getList()
+          this.listLoading = false
+        })
       }).catch(() => {
         this.$message({
           type: 'info',
