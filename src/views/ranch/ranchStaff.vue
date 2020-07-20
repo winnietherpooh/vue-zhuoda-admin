@@ -88,8 +88,9 @@
       <el-button @click="deleteAll()">删除</el-button>
       <el-button @click="toggleSelection()">取消</el-button>
     </div>
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
-
+    <div>
+      <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
+    </div>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
         <el-form-item label="昵称" prop="nick_name">
@@ -188,7 +189,7 @@
 </template>
 
 <script>
-import { fetchList, getRanchSelect, getMember, setMn } from '@/api/ranchStaff'
+import { fetchList, getRanchSelect, getMember, setMn, deleteMn } from '@/api/ranchStaff'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -498,6 +499,30 @@ export default {
           message: '操作成功',
           type: 'success',
           duration: 2000
+        })
+      })
+    },
+    handleDelete(row, index) {
+      this.temp.admin_id = row.admin_id
+      this.$confirm('此操作将永久删除该职工, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.temp.ranch_id = row.ranch_id
+        deleteMn(this.temp).then(() => {
+          this.$notify({
+            title: '删除职工',
+            message: '操作成功',
+            type: 'success',
+            duration: 2000
+          })
+        })
+        this.list.splice(index, 1)
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
         })
       })
     }

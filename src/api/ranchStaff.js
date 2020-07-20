@@ -31,3 +31,28 @@ export function setMn(data) {
     data
   })
 }
+
+export function updateRanch(data) {
+  return request({
+    url: 'MnEditRanch',
+    method: 'post',
+    data
+  })
+}
+
+export function deleteMn(data) {
+  return request({
+    url: 'MnDelStaffMember',
+    method: 'post',
+    data
+  })
+}
+
+export function deleteRanchAll(data) {
+  return request({
+    url: 'MnDelAllRanch',
+    method: 'post',
+    data
+  })
+}
+

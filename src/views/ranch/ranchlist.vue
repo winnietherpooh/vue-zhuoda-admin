@@ -276,16 +276,27 @@ export default {
       })
     },
     handleDelete(row, index) {
-      this.temp.ranch_id = row.ranch_id
-      deleteRanch(this.temp).then(() => {
-        this.$notify({
-          title: '删除牧场',
-          message: '操作成功',
-          type: 'success',
-          duration: 2000
+      this.$confirm('此操作将永久删除该牧场, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.temp.ranch_id = row.ranch_id
+        deleteRanch(this.temp).then(() => {
+          this.$notify({
+            title: '删除牧场',
+            message: '操作成功',
+            type: 'success',
+            duration: 2000
+          })
+        })
+        this.list.splice(index, 1)
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
         })
       })
-      this.list.splice(index, 1)
     },
     formatJson(filterVal) {
       return this.list.map(v => filterVal.map(j => {
@@ -306,18 +317,34 @@ export default {
       this.$refs.listTable.clearSelection()
     },
     deleteAll() {
-      this.listLoading = true
       this.temp.ranchIdArray = this.multipleSelection
-      deleteRanchAll(this.temp).then(() => {
-        this.$notify({
-          title: '删除资源',
-          message: '操作成功',
-          type: 'success',
-          duration: 2000
+      if (this.temp.ranchIdArray.length <= 0) {
+        return
+      }
+      console.log(this.temp.ranchIdArray)
+      this.$confirm('此操作将永久删除吗, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.listLoading = true
+        this.temp.ranchIdArray = this.multipleSelection
+        deleteRanchAll(this.temp).then(() => {
+          this.$notify({
+            title: '删除资源',
+            message: '操作成功',
+            type: 'success',
+            duration: 2000
+          })
+          this.multipleSelection = []
+          this.getList()
+          this.listLoading = false
         })
-        this.multipleSelection = []
-        this.getList()
-        this.listLoading = false
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
       })
     },
     selectAll(selection, row) {
