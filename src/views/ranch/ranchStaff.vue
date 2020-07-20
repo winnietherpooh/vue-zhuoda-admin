@@ -61,6 +61,11 @@
           <span>{{ row.nick_name }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="真实姓名" prop="real_name" sortable="custom" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.real_name }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="添加时间" align="center" prop="create_time" sortable="custom">
         <template slot-scope="{row}">
           <span>{{ row.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
@@ -98,6 +103,9 @@
         </el-form-item>
         <el-form-item label="用户昵称" prop="nick_name">
           <el-input v-model="temp.nick_name" readonly="" />
+        </el-form-item>
+        <el-form-item label="真实姓名" prop="real_name">
+          <el-input v-model="temp.real_name" />
         </el-form-item>
         <el-form-item label="职工状态" prop="user_status">
           <el-radio-group v-model="temp.user_status">
