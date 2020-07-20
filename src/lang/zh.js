@@ -6,6 +6,7 @@ export default {
     powerteam: '权限组管理',
     member: '用户管理',
     memberIndex: '用户列表',
+    ranchStaff: '员工管理',
     documentation: '文档',
     guide: '引导页',
     permission: '权限测试页',

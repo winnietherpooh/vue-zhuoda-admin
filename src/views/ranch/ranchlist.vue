@@ -20,7 +20,6 @@
         </el-form>
       </div>
     </div>
-
     <el-table
       :key="tableKey"
       ref="listTable"
@@ -37,7 +36,7 @@
       <el-table-column type="selection" width="55" />
       <el-table-column label="牧场名称" prop="admin_account" sortable="custom" align="center">
         <template slot-scope="{row}">
-          <span @click="showDetail(row)">{{ row.ranch_name }}</span>
+          <span>{{ row.ranch_name }}</span>
         </template>
       </el-table-column>
       <el-table-column label="注册时间" align="center" prop="register_time" sortable="custom">
@@ -330,7 +329,7 @@ export default {
     },
     showDetail(row) {
       console.log(this.$router)
-      this.$router.push({ name: 'memberIndex', query: { ranchId: row.ranch_id }})
+      this.$router.push({ name: 'staff', query: { ranchId: row.ranch_id, ranchName: row.ranch_name }})
     }
   }
 }

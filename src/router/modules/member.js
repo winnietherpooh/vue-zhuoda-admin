@@ -13,7 +13,7 @@ const memberRouter = {
   },
   children: [
     {
-      path: 'memberIndex:ranchId',
+      path: 'memberIndex',
       component: () => import('@/views/member/memberIndex'),
       name: 'memberIndex',
       meta: { title: 'memberIndex', noCache: true }
