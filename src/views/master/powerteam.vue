@@ -157,7 +157,7 @@ export default {
       listLoading: true,
       listQuery: {
         page: 1,
-        limit: 20,
+        limit: 10,
         importance: undefined,
         title: undefined,
         type: undefined,
@@ -218,13 +218,11 @@ export default {
       fetchList(this.listQuery).then(response => {
         this.list = response.data.data
         this.total = response.data.total
-        console.log(response.data)
         this.listLoading = false
       })
     },
     getPowerListData() {
       getPowerTree().then(response => {
-        console.log(response.data)
         this.powerList = response.data
       })
     },
@@ -320,7 +318,6 @@ export default {
       })
     },
     updateData() {
-      console.log(this.temp.powerMenu)
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           if (this.temp.is_lock === 0) {
@@ -329,7 +326,6 @@ export default {
             this.temp.is_lock_str = '锁定'
           }
           const tempData = Object.assign({}, this.temp)
-          console.log(this.temp)
           tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
           updatePowerTeam(tempData).then(() => {
             const index = this.list.findIndex(v => v.power_id === this.temp.power_id)
@@ -348,7 +344,6 @@ export default {
     updatePowerTree() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          console.log(this.$refs.tree.getCheckedKeys())
           var selectedKey = this.$refs.tree.getCheckedKeys()
           const tempData = Object.assign({}, this.temp)
           tempData.selectedKey = selectedKey
@@ -393,7 +388,6 @@ export default {
       return sort === `+${key}` ? 'ascending' : 'descending'
     },
     toggleSelection(rows) {
-      console.log(this.multipleSelection)
       this.multipleSelection = []
       this.$refs.listTable.clearSelection()
     },
@@ -415,7 +409,6 @@ export default {
     selectAll(selection, row) {
       this.multipleSelection = []
       selection.map((item) => {
-        console.log(item)
         this.multipleSelection.push(item.power_id)
       })
     }

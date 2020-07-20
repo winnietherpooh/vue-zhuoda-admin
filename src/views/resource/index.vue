@@ -158,7 +158,7 @@ export default {
       listLoading: true,
       listQuery: {
         page: 1,
-        limit: 20,
+        limit: 10,
         importance: undefined,
         title: undefined,
         type: undefined,
@@ -308,7 +308,6 @@ export default {
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
-      console.log(this.temp)
       this.temp.timestamp = new Date(this.temp.timestamp)
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
@@ -317,7 +316,6 @@ export default {
       })
     },
     updateData() {
-      console.log(this.temp.powerMenu)
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           if (this.temp.is_delete === 1) {
@@ -326,7 +324,6 @@ export default {
             this.temp.is_delete_str = '下线'
           }
           const tempData = Object.assign({}, this.temp)
-          console.log(this.temp)
           updateResource(tempData).then(() => {
             const index = this.list.findIndex(v => v.resource_id === this.temp.resource_id)
             this.list.splice(index, 1, this.temp)
@@ -344,7 +341,6 @@ export default {
     updatePowerTree() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          console.log(this.$refs.tree.getCheckedKeys())
           var selectedKey = this.$refs.tree.getCheckedKeys()
           const tempData = Object.assign({}, this.temp)
           tempData.selectedKey = selectedKey
@@ -400,7 +396,6 @@ export default {
       return sort === `+${key}` ? 'ascending' : 'descending'
     },
     toggleSelection(rows) {
-      console.log(this.multipleSelection)
       this.multipleSelection = []
       this.$refs.listTable.clearSelection()
     },
