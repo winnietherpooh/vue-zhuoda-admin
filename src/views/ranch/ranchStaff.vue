@@ -314,7 +314,6 @@ export default {
     this.getRanchSelectList()
     this.ranchId = this.$route.query.ranchId
     this.ranchName = this.$route.query.ranchName
-    console.log(this.ranchId)
   },
   methods: {
     tableHeaderColor({ row, column, rowIndex, columnIndex }) {
@@ -327,7 +326,6 @@ export default {
       fetchList(this.listQuery).then(response => {
         this.list = response.data.data
         this.total = response.data.total
-        console.log(response.data)
         this.listLoading = false
       })
     },
@@ -336,13 +334,11 @@ export default {
       getMember(this.listMemberQuery).then(response => {
         this.memberList = response.data.data
         this.memberTotal = response.data.total
-        console.log(response.data)
         this.listMemberLoading = false
       })
     },
     getRanchSelectList() {
       getRanchSelect().then(response => {
-        console.log(response.data)
         this.ranchSelectList = response.data
       })
     },
@@ -420,14 +416,12 @@ export default {
       return sort === `+${key}` ? 'ascending' : 'descending'
     },
     toggleSelection(rows) {
-      console.log(this.multipleSelection)
       this.multipleSelection = []
       this.$refs.listTable.clearSelection()
     },
     selectAll(selection, row) {
       this.multipleSelection = []
       selection.map((item) => {
-        console.log(item)
         this.multipleSelection.push(item.milker_id)
       })
     },
@@ -452,7 +446,6 @@ export default {
       fetchList(this.listQuery).then(response => {
         this.list = response.data.data
         this.total = response.data.total
-        console.log(response.data)
         this.listLoading = false
       })
     },
@@ -464,7 +457,6 @@ export default {
       getMember(this.listMemberQuery).then(response => {
         this.memberList = response.data.data
         this.memberTotal = response.data.total
-        console.log(response.data)
         this.listMemberLoading = false
       })
     },
@@ -473,8 +465,6 @@ export default {
       this.temp.ranch_id = this.ranchSelected
       this.temp.member_id = row.member_id
       this.temp.type = type
-      console.log(typeof (type))
-      console.log(typeof (value))
       switch (type) {
         case 1:
           if (value === 1) {
@@ -542,7 +532,6 @@ export default {
       if (this.temp.ranchIdArray.length <= 0) {
         return
       }
-      console.log(this.temp.ranchIdArray)
       this.$confirm('此操作将永久删除吗, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
