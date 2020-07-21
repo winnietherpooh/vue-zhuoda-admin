@@ -24,7 +24,7 @@
           <el-carousel :interval="4000" type="card" height="150px">
             <el-carousel-item v-for="(item,i) in postForm.fileList" :key="i">
               <el-image style="width: 200px; height: 150px" :src="item" fit="fill" />
-              <div class="qqq" @click="deleteImg(i)">
+              <div class="closeDiv" @click="deleteImg(i)">
                 <i class="el-icon-circle-close" style="font-size: 30px;color: #9a9a9a;" />
               </div>
             </el-carousel-item>
@@ -361,7 +361,7 @@ export default {
     height: 120px;
     display: block;
   }
-  .qqq{
+  .closeDiv{
     top: 10px;
     right: 75px;
     position: inherit;
