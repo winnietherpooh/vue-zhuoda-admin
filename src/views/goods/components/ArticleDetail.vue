@@ -5,13 +5,13 @@
         <el-form-item label="商品名称">
           <el-input v-model="postForm.goods_name" style="width:300px;" required />
         </el-form-item>
-        <el-form-item label="商品预览图">
+        <el-form-item label="上传轮播图">
           <el-upload
             class="avatar-uploader"
             action="https://up-z2.qiniup.com"
             :data="dataObj"
             :multiple="false"
-            :show-file-list="false"
+            :show-file-list="true"
             :on-error="errorFun"
             :on-success="successFun"
             :before-upload="beforeUpload"
@@ -19,6 +19,13 @@
             <img v-if="goods_img" :src="goods_img" class="avatar" required>
             <i v-else class="el-icon-plus avatar-uploader-icon" />
           </el-upload>
+        </el-form-item>
+        <el-form-item v-if="postForm.fileList.length > 0" label="图片预览" style="width:600px;">
+          <el-carousel :interval="4000" type="card" height="150px">
+            <el-carousel-item v-for="(item,i) in postForm.fileList" :key="i">
+              <el-image style="width: 200px; height: 150px" :src="item" fit="fill" />
+            </el-carousel-item>
+          </el-carousel>
         </el-form-item>
         <el-form-item label="商品状态">
           <el-radio-group v-model="postForm.is_offline" required @change="goodsIsOffLine">
@@ -40,7 +47,7 @@
 <script>
 import Tinymce from '@/components/Tinymce'
 import { validURL } from '@/utils/validate'
-import { fetchList } from '@/api/goods'
+import { fetchList, createMn } from '@/api/goods'
 import { searchUser } from '@/api/remote-search'
 import { getToken } from '@/api/qiniu'
 import md5 from 'js-md5'
@@ -52,9 +59,7 @@ const defaultForm = {
   goods_views_img: '',
   is_offline: 0,
   id: undefined,
-  platforms: ['a-platform'],
-  comment_disabled: false,
-  importance: 0
+  fileList: []
 }
 
 export default {
@@ -174,12 +179,15 @@ export default {
       console.log(this.postForm)
       this.$refs.postForm.validate(valid => {
         if (valid) {
-          this.loading = true
-          this.$notify({
-            title: '成功',
-            message: '发布文章成功',
-            type: 'success',
-            duration: 2000
+          createMn(this.postForm).then((response) => {
+            // this.list.unshift(this.temp)
+            this.loading = false
+            this.$notify({
+              title: 'Success',
+              message: 'Created Successfully',
+              type: 'success',
+              duration: 2000
+            })
           })
           this.postForm.status = 'published'
           this.loading = false
@@ -221,8 +229,9 @@ export default {
       })
     },
     successFun(response, file, fileList) {
-      this.goods_img = 'http://qdcm3dgyu.bkt.clouddn.com/' + response.key
-      this.postForm.goods_views_img = 'http://qdcm3dgyu.bkt.clouddn.com/' + response.key
+      // this.goods_img = 'http://qdcm3dgyu.bkt.clouddn.com/' + response.key
+      // this.postForm.goods_views_img = 'http://qdcm3dgyu.bkt.clouddn.com/' + response.key
+      this.postForm.fileList.push('http://qdcm3dgyu.bkt.clouddn.com/' + response.key)
     },
     beforeUpload(file) {
       const _self = this
@@ -265,6 +274,12 @@ export default {
     goodsIsOffLine(value) {
       console.log(value)
       this.postForm.is_offline = value
+    },
+    handleRemove(file, fileList) {
+      console.log(file, fileList)
+    },
+    handlePreview(file) {
+      console.log(file)
     }
   }
 }

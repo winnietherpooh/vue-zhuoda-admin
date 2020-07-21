@@ -10,7 +10,7 @@ export function fetchList(query) {
 
 export function createMn(data) {
   return request({
-    url: 'MnAddMember',
+    url: 'MnAddGoods',
     method: 'post',
     data
   })
