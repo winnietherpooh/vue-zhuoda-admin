@@ -25,6 +25,13 @@ const goodsRouter = {
       meta: { title: 'addGoods', noCache: true }
     },
     {
+      path: 'editGoods/:id(\\d+)',
+      component: () => import('@/views/goods/editGoods'),
+      name: 'editGoods',
+      hidden: true,
+      meta: { title: 'editGoods', noCache: true, activeMenu: '/goods/goodsList' }
+    },
+    {
       path: 'orderList',
       component: () => import('@/views/goods/orderList'),
       name: 'orderList',

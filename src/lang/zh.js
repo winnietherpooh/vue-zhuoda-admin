@@ -9,6 +9,7 @@ export default {
     ranchStaff: '员工管理',
     goods: '商品管理',
     addGoods: '新增商品',
+    editGoods: '编辑商品',
     orderList: '订单列表',
     goodsList: '商品列表',
     documentation: '文档',
