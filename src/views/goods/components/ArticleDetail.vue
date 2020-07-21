@@ -10,8 +10,8 @@
             class="avatar-uploader"
             action="https://up-z2.qiniup.com"
             :data="dataObj"
-            :multiple="false"
-            :show-file-list="true"
+            :multiple="true"
+            :show-file-list="false"
             :on-error="errorFun"
             :on-success="successFun"
             :before-upload="beforeUpload"
@@ -24,6 +24,9 @@
           <el-carousel :interval="4000" type="card" height="150px">
             <el-carousel-item v-for="(item,i) in postForm.fileList" :key="i">
               <el-image style="width: 200px; height: 150px" :src="item" fit="fill" />
+              <div class="qqq" @click="deleteImg(i)">
+                <i class="el-icon-circle-close" style="font-size: 30px;color: #9a9a9a;" />
+              </div>
             </el-carousel-item>
           </el-carousel>
         </el-form-item>
@@ -280,6 +283,12 @@ export default {
     },
     handlePreview(file) {
       console.log(file)
+    },
+    deleteImg(index) {
+      console.log(index)
+      console.log(this.postForm.fileList)
+      this.postForm.fileList.splice(index, 1)
+      console.log(this.postForm.fileList)
     }
   }
 }
@@ -351,5 +360,14 @@ export default {
     width: 200px;
     height: 120px;
     display: block;
+  }
+  .qqq{
+    top: 10px;
+    right: 75px;
+    position: inherit;
+    width: 30px;
+    height: 30px;
+    background: white;
+    border-radius: 50%;
   }
 </style>
