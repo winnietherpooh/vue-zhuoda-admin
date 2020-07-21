@@ -2,8 +2,35 @@
   <div class="createPost-container">
     <el-form ref="postForm" :model="postForm" :rules="rules" class="form-container">
       <div class="createPost-main-container">
+        <el-form-item label="商品名称">
+          <el-input v-model="postForm.goods_name" style="width:300px;" required />
+        </el-form-item>
+        <el-form-item label="商品预览图">
+          <el-upload
+            class="avatar-uploader"
+            action="https://up-z2.qiniup.com"
+            :data="dataObj"
+            :multiple="false"
+            :show-file-list="false"
+            :on-error="errorFun"
+            :on-success="successFun"
+            :before-upload="beforeUpload"
+          >
+            <img v-if="goods_img" :src="goods_img" class="avatar" required>
+            <i v-else class="el-icon-plus avatar-uploader-icon" />
+          </el-upload>
+        </el-form-item>
+        <el-form-item label="商品状态">
+          <el-radio-group v-model="postForm.is_offline" required @change="goodsIsOffLine">
+            <el-radio label="1" border>上线</el-radio>
+            <el-radio label="2" border>下线</el-radio>
+          </el-radio-group>
+        </el-form-item>
         <el-form-item prop="content" style="margin-bottom: 30px;">
-          <Tinymce ref="editor" v-model="postForm.content" :height="400" />
+          <Tinymce ref="editor" v-model="postForm.content" :height="400" required />
+        </el-form-item>
+        <el-form-item prop="content" style="margin-bottom: 30px;">
+          <el-button type="success" @click="submitForm">发布商品</el-button>
         </el-form-item>
       </div>
     </el-form>
@@ -13,16 +40,17 @@
 <script>
 import Tinymce from '@/components/Tinymce'
 import { validURL } from '@/utils/validate'
+import { fetchList } from '@/api/goods'
 import { searchUser } from '@/api/remote-search'
+import { getToken } from '@/api/qiniu'
+import md5 from 'js-md5'
 
 const defaultForm = {
   status: 'draft',
-  title: '', // 文章题目
+  goods_name: '',
   content: '', // 文章内容
-  content_short: '', // 文章摘要
-  source_uri: '', // 文章外链
-  image_uri: '', // 文章图片
-  display_time: undefined, // 前台展示时间
+  goods_views_img: '',
+  is_offline: 0,
   id: undefined,
   platforms: ['a-platform'],
   comment_disabled: false,
@@ -75,15 +103,21 @@ export default {
         content: [{ validator: validateRequire }],
         source_uri: [{ validator: validateSourceUri, trigger: 'blur' }]
       },
-      tempRoute: {}
+      tempRoute: {},
+      dataObj: { token: '', key: '' },
+      goods_img: '',
+      data: {
+        fileName: '',
+        fileSize: '',
+        downUrl: '',
+        Suffix: ''
+      },
+      Suffix: ['mp4', 'jpg', 'png', 'gif']
     }
   },
   computed: {
     contentShortLength() {
       return this.postForm.content_short.length
-    },
-    lang() {
-      return this.$store.getters.language
     },
     displayTime: {
       // set and get is useful when the data
@@ -110,8 +144,25 @@ export default {
     this.tempRoute = Object.assign({}, this.$route)
   },
   methods: {
+    fetchData(id) {
+      fetchList(id).then(response => {
+        this.postForm = response.data
+
+        // just for test
+        this.postForm.title += `   Article Id:${this.postForm.id}`
+        this.postForm.content_short += `   Article Id:${this.postForm.id}`
+
+        // set tagsview title
+        this.setTagsViewTitle()
+
+        // set page title
+        this.setPageTitle()
+      }).catch(err => {
+        console.log(err)
+      })
+    },
     setTagsViewTitle() {
-      const title = this.lang === 'zh' ? '编辑文章' : 'Edit Article'
+      const title = 'Edit Article'
       const route = Object.assign({}, this.tempRoute, { title: `${title}-${this.postForm.id}` })
       this.$store.dispatch('tagsView/updateVisitedView', route)
     },
@@ -159,18 +210,77 @@ export default {
         if (!response.data.items) return
         this.userListOptions = response.data.items.map(v => v.name)
       })
+    },
+    errorFun(err, file, fileList) {
+      console.log(err.message)
+      this.$notify({
+        title: '上传错误',
+        message: '资源上传',
+        type: 'error',
+        duration: 2000
+      })
+    },
+    successFun(response, file, fileList) {
+      this.goods_img = 'http://qdcm3dgyu.bkt.clouddn.com/' + response.key
+      this.postForm.goods_views_img = 'http://qdcm3dgyu.bkt.clouddn.com/' + response.key
+    },
+    beforeUpload(file) {
+      const _self = this
+      return new Promise((resolve, reject) => {
+        getToken().then(response => {
+          this.data.fileName = file.name
+          this.data.fileSize = file.size
+          var strArr = file.name.split('.')
+          var arrLen = strArr.length
+          this.data.Suffix = strArr[arrLen - 1]
+          var isCanUp = false
+          for (var i = 0; i < this.Suffix.length; i++) {
+            if (this.Suffix[i] === this.data.Suffix) {
+              isCanUp = true
+            }
+          }
+          if (isCanUp === false) {
+            reject(false)
+            this.$notify({
+              title: '不允许上传此格式',
+              message: '资源上传',
+              type: 'error',
+              duration: 2000
+            })
+          }
+          var fileNames = file.name.split('.' + this.data.Suffix)
+          this.data.fileName = fileNames[0]
+          const key = md5(file.name + new Date()) + '.' + this.data.Suffix
+          this.data.downUrl = key
+          const token = response.data.token
+          _self._data.dataObj.token = token
+          _self._data.dataObj.key = key
+          resolve(true)
+        }).catch(err => {
+          console.log(err)
+          reject(false)
+        })
+      })
+    },
+    goodsIsOffLine(value) {
+      console.log(value)
+      this.postForm.is_offline = value
     }
   }
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @import "~@/styles/mixin.scss";
-
+.labelFontColor .el-form-item__label{
+  color: #343434;
+}
 .createPost-container {
   position: relative;
 
   .createPost-main-container {
+    padding: 40px 45px 20px 50px;
+
     .postInfo-container {
       position: relative;
       @include clearfix;
@@ -199,4 +309,32 @@ export default {
     border-bottom: 1px solid #bfcbd9;
   }
 }
+   .avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    width: 200px;
+    height: 120px;
+    flex-direction: column;
+    justify-content: center;
+    display: flex;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 200px;
+    height: 120px;
+    line-height: 120px;
+    text-align: center;
+  }
+  .avatar {
+    width: 200px;
+    height: 120px;
+    display: block;
+  }
 </style>
