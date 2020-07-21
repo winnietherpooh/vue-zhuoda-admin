@@ -1,131 +1,75 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <div class="box-card" style="background-color:#EFF2F4;padding:15px;height:72px;">
-        <el-form :inline="true" class="demo-form-inline">
-          <el-form-item label="商品名称" class="labelFontColor">
-            <el-input v-model="listQuery.title" placeholder="请输入商品名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <div class="box-card">
+        <el-form :model="form" label-width="120px">
+          <el-form-item label="商品名称">
+            <el-input v-model="form.goods_name" style="width:300px;" />
           </el-form-item>
-          <el-form-item label="状态" class="labelFontColor">
-            <el-select v-model="listQuery.importanceOptions" style="width: 140px" class="filter-item" @change="handleFilter">
-              <el-option v-for="item in importanceOptions" :key="item.key" :label="item.label" :value="item.key" />
-            </el-select>
+          <el-form-item label="商品预览图">
+            <el-upload
+              class="avatar-uploader"
+              action="https://up-z2.qiniup.com"
+              :data="dataObj"
+              :multiple="false"
+              :show-file-list="false"
+              :on-error="errorFun"
+              :on-success="successFun"
+              :before-upload="beforeUpload"
+            >
+              <img v-if="goods_img" :src="goods_img" class="avatar">
+              <i v-else class="el-icon-plus avatar-uploader-icon" />
+            </el-upload>
           </el-form-item>
-          <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
-            搜索
-          </el-button>
-          <!-- <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
-            新增
-          </el-button> -->
+          <el-form-item label="商品状态">
+            <el-radio-group v-model="form.is_offline" @change="goodsIsOffLine">
+              <el-radio label="1" border>上线</el-radio>
+              <el-radio label="2" border>下线</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="商品详情">
+            <article-detail :is-edit="false" />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="onSubmit">添加商品</el-button>
+            <el-button>取消</el-button>
+          </el-form-item>
         </el-form>
       </div>
     </div>
-
-    <el-table
-      :key="tableKey"
-      ref="listTable"
-      v-loading="listLoading"
-      :data="list"
-      border
-      fit
-      :header-cell-style="tableHeaderColor"
-      :cell-style="{padding:'8px'}"
-      @select="selectAll"
-      @select-all="selectAll"
-      @sort-change="sortChange"
-    >
-      <el-table-column type="selection" width="55" />
-      <el-table-column label="商品名称" prop="goods_name" sortable="custom" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.goods_name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="发布时间" align="center" prop="create_time" sortable="custom">
-        <template slot-scope="{row}">
-          <span>{{ row.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="图片预览" align="center">
-        <template slot-scope="{row}">
-          <span>点我预览{{ row.create_time }}</span>
-        </template>
-      </el-table-column>
-      <!-- <el-table-column label="登录次数" align="center" width="100">
-        <template slot-scope="{row}">
-          <span>{{ row.login_nums }}</span>
-        </template>
-      </el-table-column> -->
-      <el-table-column label="状态" class-name="status-col" prop="is_delete" width="100">
-        <template slot-scope="{row}">
-          <el-tag :type="row.is_offline_str | statusFilter">
-            {{ row.is_offline_str }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-        <template slot-scope="{row,$index}">
-          <router-link :to="'/goods/editGoods/goodsId/'+row.goods_id">
-            <el-button type="primary" size="mini">
-              编辑
-            </el-button>
-          </router-link>
-          <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
-            删除
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <div style="margin-top: 20px">
-      <el-button @click="deleteAll()">删除</el-button>
-      <el-button @click="toggleSelection()">取消</el-button>
-    </div>
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
-
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="昵称" prop="nick_name">
-          <el-input v-model="temp.nick_name" placeholder="请填写昵称" readonly="" />
-        </el-form-item>
-        <el-form-item label="状态" prop="is_delete">
-          <el-radio-group v-model="temp.is_delete">
-            <el-radio :label="0">正常</el-radio>
-            <el-radio :label="1">锁定</el-radio>
-          </el-radio-group>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          Cancel
-        </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          Confirm
-        </el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
 <script>
-import { fetchList, createMn, updateMn, deleteMn, deleteMnAll } from '@/api/goods'
-import waves from '@/directive/waves' // waves directive
+import { fetchList, createMn, updateMn, deleteMn, deleteMnAll } from '@/api/member'
 import { parseTime } from '@/utils'
-import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-
+import { getToken } from '@/api/qiniu'
+import ArticleDetail from './components/ArticleDetail'
+import md5 from 'js-md5'
 export default {
   name: 'ComplexTable',
-  components: { Pagination },
-  directives: { waves },
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        '正常': 'success',
-        '下架': 'danger'
-      }
-      return statusMap[status]
-    }
-  },
+  components: { ArticleDetail },
   data() {
     return {
+      goods_img: '',
+      dataObj: { token: '', key: '' },
+      form: {
+        goods_name: '',
+        goods_views_img: '',
+        is_offline: 1,
+        date2: '',
+        delivery: false,
+        type: [],
+        resource: '',
+        desc: ''
+      },
+      data: {
+        fileName: '',
+        fileSize: '',
+        downUrl: '',
+        Suffix: ''
+      },
+      Suffix: ['mp4', 'jpg', 'png', 'gif'],
       tableKey: 0,
       list: null,
       total: 0,
@@ -140,7 +84,7 @@ export default {
         type: undefined,
         sort: '+admin_account'
       },
-      importanceOptions: [{ label: '所有', key: '0' }, { label: '正常', key: '1' }, { label: '下架', key: '2' }],
+      importanceOptions: [{ label: '所有', key: '0' }, { label: '正常', key: '2' }, { label: '锁定', key: '1' }],
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: ['published', 'draft', 'deleted'],
       powerList: [],
@@ -170,10 +114,72 @@ export default {
     this.getList()
   },
   methods: {
+    handleAvatarSuccess(res, file) {
+      this.imageUrl = URL.createObjectURL(file.raw)
+    },
+    beforeUpload(file) {
+      const _self = this
+      return new Promise((resolve, reject) => {
+        getToken().then(response => {
+          this.data.fileName = file.name
+          this.data.fileSize = file.size
+          var strArr = file.name.split('.')
+          var arrLen = strArr.length
+          this.data.Suffix = strArr[arrLen - 1]
+          var isCanUp = false
+          for (var i = 0; i < this.Suffix.length; i++) {
+            if (this.Suffix[i] === this.data.Suffix) {
+              isCanUp = true
+            }
+          }
+          if (isCanUp === false) {
+            reject(false)
+            this.$notify({
+              title: '不允许上传此格式',
+              message: '资源上传',
+              type: 'error',
+              duration: 2000
+            })
+          }
+          var fileNames = file.name.split('.' + this.data.Suffix)
+          this.data.fileName = fileNames[0]
+          const key = md5(file.name + new Date()) + '.' + this.data.Suffix
+          this.data.downUrl = key
+          const token = response.data.token
+          _self._data.dataObj.token = token
+          _self._data.dataObj.key = key
+          resolve(true)
+        }).catch(err => {
+          console.log(err)
+          reject(false)
+        })
+      })
+    },
+    errorFun(err, file, fileList) {
+      console.log(err.message)
+      this.$notify({
+        title: '上传错误',
+        message: '资源上传',
+        type: 'error',
+        duration: 2000
+      })
+    },
+    successFun(response, file, fileList) {
+      this.goods_img = 'http://qdcm3dgyu.bkt.clouddn.com/' + response.key
+      this.form.goods_views_img = 'http://qdcm3dgyu.bkt.clouddn.com/' + response.key
+    },
     tableHeaderColor({ row, column, rowIndex, columnIndex }) {
       if (rowIndex === 0) {
         return 'background-color: #EFF2F4;color: #343434;padding: 8px;'
       }
+    },
+    goodsIsOffLine(value) {
+      console.log(value)
+      this.form.is_offline = value
+    },
+    onSubmit() {
+      console.log(this.form)
+      console.log('submit!')
     },
     getList() {
       this.listLoading = true
@@ -354,6 +360,34 @@ export default {
 <style>
   .labelFontColor .el-form-item__label{
     color: #343434;
+  }
+   .avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    width: 200px;
+    height: 120px;
+    flex-direction: column;
+    justify-content: center;
+    display: flex;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 200px;
+    height: 120px;
+    line-height: 120px;
+    text-align: center;
+  }
+  .avatar {
+    width: 200px;
+    height: 120px;
+    display: block;
   }
 </style>
 

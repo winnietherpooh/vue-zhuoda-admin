@@ -50,7 +50,7 @@
 <script>
 import Tinymce from '@/components/Tinymce'
 import { validURL } from '@/utils/validate'
-import { fetchList, createMn } from '@/api/goods'
+import { createMn, getGoodsInfo } from '@/api/goods'
 import { searchUser } from '@/api/remote-search'
 import { getToken } from '@/api/qiniu'
 import md5 from 'js-md5'
@@ -142,7 +142,7 @@ export default {
   },
   created() {
     if (this.isEdit) {
-      const id = this.$route.params && this.$route.params.id
+      const id = this.$route.params && this.$route.params.goodsId
       this.fetchData(id)
     }
 
@@ -153,13 +153,8 @@ export default {
   },
   methods: {
     fetchData(id) {
-      fetchList(id).then(response => {
+      getGoodsInfo(id).then(response => {
         this.postForm = response.data
-
-        // just for test
-        this.postForm.title += `   Article Id:${this.postForm.id}`
-        this.postForm.content_short += `   Article Id:${this.postForm.id}`
-
         // set tagsview title
         this.setTagsViewTitle()
 

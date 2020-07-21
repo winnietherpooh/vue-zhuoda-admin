@@ -47,3 +47,11 @@ export function setMn(data) {
     data
   })
 }
+
+export function getGoodsInfo(goodsId) {
+  return request({
+    url: 'MnGetGoodsInfo',
+    method: 'get',
+    params: { goodsId }
+  })
+}
