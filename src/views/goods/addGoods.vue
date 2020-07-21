@@ -1,12 +1,30 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <div class="box-card" style="background-color:#EFF2F4;padding:15px;height:72px;">
-        <el-form :model="form" label-width="80px">
-          <el-form-item label="活动名称">
-            <el-input v-model="form.name" />
+      <div class="box-card">
+        <el-form :model="form" label-width="120px">
+          <el-form-item label="商品名称">
+            <el-input v-model="form.goods_name" style="width:300px;" />
           </el-form-item>
-          <el-form-item label="活动区域">
+          <el-form-item label="商品预览图">
+            <el-upload
+              class="avatar-uploader"
+              action="https://up-z2.qiniup.com"
+              :data="dataObj"
+              :multiple="true"
+              :show-file-list="true"
+              :on-error="errorFun"
+              :on-success="successFun"
+              :before-upload="beforeUpload"
+            >
+              <img v-if="goods_img" :src="goods_img" class="avatar" style="width:200px; height:120px;text-align:center;">
+              <i v-else class="el-icon-plus avatar-uploader-icon" />
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="单价">
+            <el-input v-model="form.name" style="width:300px;" />
+          </el-form-item>
+          <!-- <el-form-item label="活动区域">
             <el-select v-model="form.region" placeholder="请选择活动区域">
               <el-option label="区域一" value="shanghai" />
               <el-option label="区域二" value="beijing" />
@@ -37,9 +55,9 @@
               <el-radio label="线上品牌商赞助" />
               <el-radio label="线下场地免费" />
             </el-radio-group>
-          </el-form-item>
-          <el-form-item label="活动形式">
-            <el-input v-model="form.desc" type="textarea" />
+          </el-form-item> -->
+          <el-form-item label="商品详情">
+            <article-detail :is-edit="false" />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="onSubmit">立即创建</el-button>
@@ -53,33 +71,33 @@
 
 <script>
 import { fetchList, createMn, updateMn, deleteMn, deleteMnAll } from '@/api/member'
-import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
-
+import { getToken } from '@/api/qiniu'
+import ArticleDetail from './components/ArticleDetail'
+import md5 from 'js-md5'
 export default {
   name: 'ComplexTable',
-  directives: { waves },
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        '正常': 'success',
-        '锁定': 'danger'
-      }
-      return statusMap[status]
-    }
-  },
+  components: { ArticleDetail },
   data() {
     return {
+      goods_img: '',
+      dataObj: { token: '', key: '' },
       form: {
-        name: '',
-        region: '',
-        date1: '',
+        goods_name: '',
+        is_offline: 0,
         date2: '',
         delivery: false,
         type: [],
         resource: '',
         desc: ''
       },
+      data: {
+        fileName: '',
+        fileSize: '',
+        downUrl: '',
+        Suffix: ''
+      },
+      Suffix: ['mp4', 'jpg', 'png', 'gif'],
       tableKey: 0,
       list: null,
       total: 0,
@@ -124,6 +142,59 @@ export default {
     this.getList()
   },
   methods: {
+    handleAvatarSuccess(res, file) {
+      this.imageUrl = URL.createObjectURL(file.raw)
+    },
+    beforeUpload(file) {
+      const _self = this
+      return new Promise((resolve, reject) => {
+        getToken().then(response => {
+          this.data.fileName = file.name
+          this.data.fileSize = file.size
+          var strArr = file.name.split('.')
+          var arrLen = strArr.length
+          this.data.Suffix = strArr[arrLen - 1]
+          var isCanUp = false
+          for (var i = 0; i < this.Suffix.length; i++) {
+            if (this.Suffix[i] === this.data.Suffix) {
+              isCanUp = true
+            }
+          }
+          if (isCanUp === false) {
+            reject(false)
+            this.$notify({
+              title: '不允许上传此格式',
+              message: '资源上传',
+              type: 'error',
+              duration: 2000
+            })
+          }
+          var fileNames = file.name.split('.' + this.data.Suffix)
+          this.data.fileName = fileNames[0]
+          const key = md5(file.name + new Date()) + '.' + this.data.Suffix
+          this.data.downUrl = key
+          const token = response.data.token
+          _self._data.dataObj.token = token
+          _self._data.dataObj.key = key
+          resolve(true)
+        }).catch(err => {
+          console.log(err)
+          reject(false)
+        })
+      })
+    },
+    errorFun(err, file, fileList) {
+      console.log(err.message)
+      this.$notify({
+        title: '上传错误',
+        message: '资源上传',
+        type: 'error',
+        duration: 2000
+      })
+    },
+    successFun(response, file, fileList) {
+      this.goods_img = 'http://qdcm3dgyu.bkt.clouddn.com/' + response.key
+    },
     tableHeaderColor({ row, column, rowIndex, columnIndex }) {
       if (rowIndex === 0) {
         return 'background-color: #EFF2F4;color: #343434;padding: 8px;'
@@ -311,6 +382,34 @@ export default {
 <style>
   .labelFontColor .el-form-item__label{
     color: #343434;
+  }
+   .avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    width: 200px;
+    height: 120px;
+    flex-direction: column;
+    justify-content: center;
+    display: flex;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 200px;
+    height: 120px;
+    line-height: 120px;
+    text-align: center;
+  }
+  .avatar {
+    width: 200px;
+    height: 120px;
+    display: block;
   }
 </style>
 
