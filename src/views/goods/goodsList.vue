@@ -45,6 +45,16 @@
           <span>{{ row.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="虚拟出售数量" align="center" prop="create_time" sortable="custom">
+        <template slot-scope="{row}">
+          <span>{{ row.set_seal_nums + row.real_seal_nums }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="实际出售数量" align="center" prop="create_time" sortable="custom">
+        <template slot-scope="{row}">
+          <span>{{ row.real_seal_nums }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="图片预览" align="center">
         <template slot-scope="{row}">
           <el-button icon="el-icon-picture-outline" circle @click="showGoodsView(row)" />

@@ -1,9 +1,12 @@
 <template>
   <div class="createPost-container">
-    <el-form ref="postForm" :model="postForm" :rules="rules" class="form-container">
+    <el-form ref="postForm" :model="postForm" :rules="rules" class="form-container" label-width="150px">
       <div class="createPost-main-container">
         <el-form-item label="商品名称">
           <el-input v-model="postForm.goods_name" style="width:300px;" required />
+        </el-form-item>
+        <el-form-item label="虚拟销售数量基础">
+          <el-input v-model="postForm.set_seal_nums" style="width:300px;" required />
         </el-form-item>
         <el-form-item label="上传轮播图">
           <el-upload
@@ -61,7 +64,8 @@ const defaultForm = {
   content: '', // 文章内容
   is_offline: 0,
   goods_id: undefined,
-  fileList: []
+  fileList: [],
+  set_seal_nums: 0
 }
 
 export default {
@@ -158,6 +162,7 @@ export default {
         this.postForm.goods_name = response.data.goods_name
         this.postForm.goods_id = response.data.goods_id
         this.postForm.is_offline = Number(response.data.is_offline)
+        this.postForm.set_seal_nums = response.data.set_seal_nums
         this.postForm.status = 'edit'
         console.log(this.postForm)
       }).catch(err => {
