@@ -32,8 +32,8 @@
         </el-form-item>
         <el-form-item label="商品状态">
           <el-radio-group v-model="postForm.is_offline" required @change="goodsIsOffLine">
-            <el-radio label="1" border>上线</el-radio>
-            <el-radio label="2" border>下线</el-radio>
+            <el-radio :label="1" border>上线</el-radio>
+            <el-radio :label="2" border>下线</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item prop="content" style="margin-bottom: 30px;">
@@ -59,9 +59,8 @@ const defaultForm = {
   status: 'draft',
   goods_name: '',
   content: '', // 文章内容
-  goods_views_img: '',
   is_offline: 0,
-  id: undefined,
+  goods_id: undefined,
   fileList: []
 }
 
@@ -154,12 +153,12 @@ export default {
   methods: {
     fetchData(id) {
       getGoodsInfo(id).then(response => {
-        this.postForm = response.data
-        // set tagsview title
-        this.setTagsViewTitle()
-
-        // set page title
-        this.setPageTitle()
+        this.postForm.content = response.data.goods_explain
+        this.postForm.fileList = response.data.goods_views
+        this.postForm.goods_name = response.data.goods_name
+        this.postForm.goods_id = response.data.goods_id
+        this.postForm.is_offline = Number(response.data.is_offline)
+        console.log(this.postForm)
       }).catch(err => {
         console.log(err)
       })
@@ -187,6 +186,7 @@ export default {
               duration: 2000
             })
           })
+          this.postForm = []
           this.postForm.status = 'published'
           this.loading = false
         } else {
@@ -270,7 +270,6 @@ export default {
       })
     },
     goodsIsOffLine(value) {
-      console.log(value)
       this.postForm.is_offline = value
     },
     handleRemove(file, fileList) {
