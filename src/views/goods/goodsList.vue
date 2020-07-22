@@ -79,9 +79,9 @@
               编辑
             </el-button>
           </router-link>
-          <el-button size="mini" type="warning" style="margin-left:10px" @click="addSpecial(row)">
+          <!-- <el-button size="mini" type="warning" style="margin-left:10px" @click="addSpecial(row)">
             添加规格
-          </el-button>
+          </el-button> -->
           <el-button v-if="row.status!='deleted'" size="mini" type="danger" style="margin-left:10px" @click="handleDelete(row,$index)">
             删除
           </el-button>
@@ -111,7 +111,7 @@
       </el-form>
     </el-dialog>
 
-    <el-dialog :visible.sync="addSpecialDialog">
+    <!-- <el-dialog :visible.sync="addSpecialDialog">
       <el-form ref="dataForm" :rules="rules" :model="specialTemp" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
         <el-form-item label="商品名称">
           <el-input v-model="specialTemp.goods_name" style="width:300px;" readonly />
@@ -140,7 +140,7 @@
           确认
         </el-button>
       </div>
-    </el-dialog>
+    </el-dialog> -->
   </div>
 </template>
 
@@ -170,7 +170,7 @@ export default {
       value1: true,
       value2: true,
       listLoading: true,
-      addSpecialDialog: false,
+      // addSpecialDialog: false,
       listQuery: {
         page: 1,
         limit: 10,
@@ -403,12 +403,12 @@ export default {
     closeViewDialog() {
       this.dialogFormVisible = false
       this.imgList = []
-    },
-    addSpecial(row) {
-      // specialTemp
-      this.specialTemp.goods_name = row.goods_name
-      this.addSpecialDialog = true
     }
+    // addSpecial(row) {
+    //   // specialTemp
+    //   this.specialTemp.goods_name = row.goods_name
+    //   this.addSpecialDialog = true
+    // }
   }
 }
 </script>
