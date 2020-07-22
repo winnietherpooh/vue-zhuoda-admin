@@ -56,7 +56,7 @@ import { getToken } from '@/api/qiniu'
 import md5 from 'js-md5'
 
 const defaultForm = {
-  status: 'draft',
+  status: 'create',
   goods_name: '',
   content: '', // 文章内容
   is_offline: 0,
@@ -158,6 +158,7 @@ export default {
         this.postForm.goods_name = response.data.goods_name
         this.postForm.goods_id = response.data.goods_id
         this.postForm.is_offline = Number(response.data.is_offline)
+        this.postForm.status = 'edit'
         console.log(this.postForm)
       }).catch(err => {
         console.log(err)
@@ -179,16 +180,27 @@ export default {
           createMn(this.postForm).then((response) => {
             // this.list.unshift(this.temp)
             this.loading = false
-            this.$notify({
-              title: 'Success',
-              message: 'Created Successfully',
-              type: 'success',
-              duration: 2000
-            })
+            if (this.postForm.status !== 'edit') {
+              this.postForm = {}
+              this.$notify({
+                title: '新增成功',
+                message: '新增商品',
+                type: 'success',
+                duration: 2000
+              })
+              this.postForm.fileList = []
+              this.postForm.content = ''
+              this.postForm.is_offline = 1
+              this.postForm.goods_name = ''
+            } else {
+              this.$notify({
+                title: '编辑成功',
+                message: '编辑商品',
+                type: 'success',
+                duration: 2000
+              })
+            }
           })
-          this.postForm = []
-          this.postForm.status = 'published'
-          this.loading = false
         } else {
           console.log('error submit!!')
           return false
@@ -209,7 +221,7 @@ export default {
         showClose: true,
         duration: 1000
       })
-      this.postForm.status = 'draft'
+      this.postForm.status = 'create'
     },
     getRemoteUserList(query) {
       searchUser(query).then(response => {
