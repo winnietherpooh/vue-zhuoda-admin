@@ -48,9 +48,9 @@ export function deleteMn(data) {
   })
 }
 
-export function deleteStaffAll(data) {
+export function deleteSpecialAll(data) {
   return request({
-    url: 'MnDelAllStaffMember',
+    url: 'MnDelAllGoodsSpecial',
     method: 'post',
     data
   })

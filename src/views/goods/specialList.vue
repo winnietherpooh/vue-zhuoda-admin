@@ -163,7 +163,7 @@
 </template>
 
 <script>
-import { fetchList, getRanchSelect, getGoodsList, addMn, deleteMn, deleteStaffAll, updateMn } from '@/api/goodSpecial'
+import { fetchList, getRanchSelect, getGoodsList, addMn, deleteMn, deleteSpecialAll, updateMn } from '@/api/goodSpecial'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -377,7 +377,7 @@ export default {
     selectAll(selection, row) {
       this.multipleSelection = []
       selection.map((item) => {
-        this.multipleSelection.push(item.milker_id)
+        this.multipleSelection.push(item.special_id)
       })
     },
     selectedRanch(selected) {
@@ -439,8 +439,9 @@ export default {
       })
     },
     deleteAll() {
-      this.temp.ranchIdArray = this.multipleSelection
-      if (this.temp.ranchIdArray.length <= 0) {
+      console.log(this.multipleSelection)
+      this.temp.IdArray = this.multipleSelection
+      if (this.temp.IdArray.length <= 0) {
         return
       }
       this.$confirm('此操作将永久删除吗, 是否继续?', '提示', {
@@ -450,7 +451,7 @@ export default {
       }).then(() => {
         this.listLoading = true
         this.temp.ranchIdArray = this.multipleSelection
-        deleteStaffAll(this.temp).then(() => {
+        deleteSpecialAll(this.temp).then(() => {
           this.$notify({
             title: '删除资源',
             message: '操作成功',
