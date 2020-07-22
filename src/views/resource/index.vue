@@ -42,27 +42,34 @@
           <span>{{ row.resource_name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" align="center" prop="create_time" sortable="custom">
+      <el-table-column label="创建时间" align="center" prop="create_time" sortable="custom" width="200px">
         <template slot-scope="{row}">
           <span>{{ row.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="资源大小" align="center" prop="resource_size" sortable="custom">
+      <el-table-column label="资源大小" align="center" prop="resource_size" sortable="custom" width="150px">
         <template slot-scope="{row}">
           <span>{{ row.resource_size }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="资源后缀" align="center">
+      <el-table-column label="资源后缀" align="center" width="100px">
         <template slot-scope="{row}">
           <span>{{ row.resource_suffix }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="地址" align="center">
+      <el-table-column label="地址   【点击复制】" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.resource_url }}</span>
+          <el-popover trigger="hover" placement="top">
+            <div>
+              <img :src="row.tempView">
+            </div>
+            <div slot="reference" class="name-wrapper">
+              <el-tag v-clipboard:copy="row.resource_url" v-clipboard:success="clipboardSuccess" size="medium">{{ row.resource_url }}</el-tag>
+            </div>
+          </el-popover>
         </template>
       </el-table-column>
-      <el-table-column label="状态" class-name="status-col" prop="is_delete">
+      <el-table-column label="状态" class-name="status-col" prop="is_delete" width="100px">
         <template slot-scope="{row}">
           <el-tag :type="row.is_delete_str | statusFilter">
             {{ row.is_delete_str }}
@@ -134,11 +141,12 @@ import { fetchList, createResource, updateResource, deleteResource, deleteResour
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-
+// import clip from '@/utils/clipboard' // use clipboard directly
+import clipboard from '@/directive/clipboard/index.js' // use clipboard by v-directive
 export default {
   name: 'ComplexTable',
   components: { Pagination },
-  directives: { waves },
+  directives: { waves, clipboard },
   filters: {
     statusFilter(status) {
       const statusMap = {
@@ -418,6 +426,13 @@ export default {
       this.multipleSelection = []
       selection.map((item) => {
         this.multipleSelection.push(item.resource_id)
+      })
+    },
+    clipboardSuccess() {
+      this.$message({
+        message: '复制成功',
+        type: 'success',
+        duration: 1500
       })
     }
   }
