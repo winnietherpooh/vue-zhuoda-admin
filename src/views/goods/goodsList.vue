@@ -47,7 +47,7 @@
       </el-table-column>
       <el-table-column label="图片预览" align="center">
         <template slot-scope="{row}">
-          <span @click="showGoodsView(row)">点我预览</span>
+          <el-button icon="el-icon-picture-outline" circle @click="showGoodsView(row)" />
         </template>
       </el-table-column>
       <!-- <el-table-column label="登录次数" align="center" width="100">
