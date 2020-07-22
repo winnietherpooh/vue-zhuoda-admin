@@ -69,7 +69,7 @@
               编辑
             </el-button>
           </router-link>
-          <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
+          <el-button v-if="row.status!='deleted'" size="mini" type="danger" style="margin-left:10px" @click="handleDelete(row,$index)">
             删除
           </el-button>
         </template>
