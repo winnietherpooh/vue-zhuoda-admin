@@ -35,6 +35,13 @@
       @sort-change="sortChange"
     >
       <el-table-column type="selection" width="55" />
+      <el-table-column label="用户头像" align="center" width="100">
+        <template slot-scope="{row}">
+          <el-avatar :size="60" @error="errorHandler">
+            <img :src="row.avatar">
+          </el-avatar>
+        </template>
+      </el-table-column>
       <el-table-column label="用户昵称" prop="nick_name" sortable="custom" align="center">
         <template slot-scope="{row}">
           <span>{{ row.nick_name }}</span>
@@ -345,6 +352,9 @@ export default {
         console.log(item)
         this.multipleSelection.push(item.member_id)
       })
+    },
+    errorHandler() {
+      return true
     }
   }
 }
