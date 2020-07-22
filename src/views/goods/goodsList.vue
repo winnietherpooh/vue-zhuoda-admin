@@ -47,7 +47,7 @@
       </el-table-column>
       <el-table-column label="图片预览" align="center">
         <template slot-scope="{row}">
-          <span>点我预览{{ row.create_time }}</span>
+          <span @click="showGoodsView(row)">点我预览</span>
         </template>
       </el-table-column>
       <!-- <el-table-column label="登录次数" align="center" width="100">
@@ -81,26 +81,21 @@
     </div>
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="昵称" prop="nick_name">
-          <el-input v-model="temp.nick_name" placeholder="请填写昵称" readonly="" />
+    <el-dialog :visible.sync="dialogFormVisible" width="400px">
+      <el-form>
+        <el-form-item>
+          <el-carousel indicator-position="outside" height="375px">
+            <el-carousel-item v-for="item in imgList" :key="item">
+              <el-image :src="item" fit="fill" />
+            </el-carousel-item>
+          </el-carousel>
         </el-form-item>
-        <el-form-item label="状态" prop="is_delete">
-          <el-radio-group v-model="temp.is_delete">
-            <el-radio :label="0">正常</el-radio>
-            <el-radio :label="1">锁定</el-radio>
-          </el-radio-group>
+        <el-form-item align="center">
+          <el-button type="primary" @click="closeViewDialog">
+            关闭
+          </el-button>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          Cancel
-        </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          Confirm
-        </el-button>
-      </div>
     </el-dialog>
   </div>
 </template>
@@ -163,7 +158,8 @@ export default {
         title: [{ required: true, message: 'title is required', trigger: 'blur' }]
       },
       downloadLoading: false,
-      multipleSelection: []
+      multipleSelection: [],
+      imgList: []
     }
   },
   created() {
@@ -347,6 +343,15 @@ export default {
         console.log(item)
         this.multipleSelection.push(item.member_id)
       })
+    },
+    showGoodsView(row) {
+      this.dialogFormVisible = true
+      this.imgList = row.goods_views
+      console.log(row)
+    },
+    closeViewDialog() {
+      this.dialogFormVisible = false
+      this.imgList = []
     }
   }
 }
