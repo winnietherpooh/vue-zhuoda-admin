@@ -4,7 +4,7 @@
       <div class="box-card" style="background-color:#EFF2F4;padding:15px;height:72px;">
         <el-form :inline="true" class="demo-form-inline">
           <el-form-item label="商品名称" class="labelFontColor">
-            <el-input v-model="listQuery.title" placeholder="请输入商品名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+            <el-input v-model="listQuery.goodsName" placeholder="请输入商品名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
           </el-form-item>
           <el-form-item label="规格名称" class="labelFontColor">
             <el-input v-model="listQuery.specialName" placeholder="请输入规格名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
@@ -239,7 +239,8 @@ export default {
         title: undefined,
         specialName: undefined,
         type: undefined,
-        sort: '+admin_account'
+        sort: '+admin_account',
+        goodsName: undefined
       },
       importanceOptions: [{ label: '所有', key: '0' }, { label: '正常', key: '1' }, { label: '下架', key: '2' }],
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
