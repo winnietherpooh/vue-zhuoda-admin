@@ -65,7 +65,7 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <router-link :to="'/goods/editGoods/'+row.goods_id">
-            <el-button type="primary" size="mini">
+            <el-button type="success" size="mini">
               编辑
             </el-button>
           </router-link>
