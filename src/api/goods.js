@@ -55,3 +55,12 @@ export function getGoodsInfo(goodsId) {
     params: { goodsId }
   })
 }
+
+export function getGoodsSpecialList(query) {
+  return request({
+    url: 'MnGetGoodsSpecialList',
+    method: 'get',
+    params: query
+  })
+}
+

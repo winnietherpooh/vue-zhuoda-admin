@@ -69,6 +69,9 @@
               编辑
             </el-button>
           </router-link>
+          <el-button size="mini" type="warning" style="margin-left:10px" @click="addSpecial(row)">
+            添加规格
+          </el-button>
           <el-button v-if="row.status!='deleted'" size="mini" type="danger" style="margin-left:10px" @click="handleDelete(row,$index)">
             删除
           </el-button>
@@ -97,6 +100,37 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+
+    <el-dialog :visible.sync="addSpecialDialog">
+      <el-form ref="dataForm" :rules="rules" :model="specialTemp" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
+        <el-form-item label="商品名称">
+          <el-input v-model="specialTemp.goods_name" style="width:300px;" readonly />
+        </el-form-item>
+        <el-form-item label="规格名称">
+          <el-input v-model="specialTemp.special_name" style="width:300px;" readonly />
+        </el-form-item>
+        <el-form-item label="商品单价">
+          <el-input v-model="specialTemp.goods_price" style="width:300px;" readonly />
+        </el-form-item>
+        <el-form-item label="最大购买数量">
+          <el-input v-model="specialTemp.max_buy" style="width:300px;" readonly />
+        </el-form-item>
+        <el-form-item label="商品状态">
+          <el-radio-group v-model="specialTemp.is_offLine">
+            <el-radio :label="1" border>正常</el-radio>
+            <el-radio :label="2" border>下架</el-radio>
+          </el-radio-group>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">
+          取消
+        </el-button>
+        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
+          确认
+        </el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -105,7 +139,6 @@ import { fetchList, createMn, updateMn, deleteMn, deleteMnAll } from '@/api/good
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-
 export default {
   name: 'ComplexTable',
   components: { Pagination },
@@ -127,6 +160,7 @@ export default {
       value1: true,
       value2: true,
       listLoading: true,
+      addSpecialDialog: false,
       listQuery: {
         page: 1,
         limit: 10,
@@ -144,6 +178,13 @@ export default {
         nick_name: '',
         is_delete: 0,
         IdArray: []
+      },
+      specialTemp: {
+        goods_name: '',
+        special_name: '',
+        goods_price: '',
+        max_buy: '',
+        is_offLine: 1
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -352,6 +393,11 @@ export default {
     closeViewDialog() {
       this.dialogFormVisible = false
       this.imgList = []
+    },
+    addSpecial(row) {
+      // specialTemp
+      this.specialTemp.goods_name = row.goods_name
+      this.addSpecialDialog = true
     }
   }
 }
