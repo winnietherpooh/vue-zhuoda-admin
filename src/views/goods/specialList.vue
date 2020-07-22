@@ -353,7 +353,7 @@ export default {
     },
     handleUpdate(row) {
       this.resetTemp()
-      this.specialTemp = Object.assign({}, row) // copy obj
+      this.specialTemp = Object.assign({}, row) // 拿实际列的值
       this.dialogStatus = 'update'
       this.addSpecialDialog = true
     },
