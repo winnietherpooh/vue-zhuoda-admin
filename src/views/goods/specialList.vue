@@ -70,7 +70,7 @@
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
-          <el-button type="success" size="mini" @click="handleUpdate(row,$index)">
+          <el-button type="success" size="mini" @click="handleUpdate(row)">
             编辑
           </el-button>
           <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
@@ -151,7 +151,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
+        <el-button @click="addSpecialDialog = false">
           取消
         </el-button>
         <el-button type="primary" @click="dialogStatus==='create'?createSpecialData():updateSpecialData()">
@@ -251,21 +251,9 @@ export default {
         is_delete: 0,
         IdArray: []
       },
-      memberTemp: {
-        is_creater_str: '否',
-        is_creater: 0,
-        is_dispatching_str: '否',
-        is_dispatching: 0,
-        is_milker_str: '否',
-        is_milker: 0
-      },
       dialogFormVisible: false,
       showMemberSelected: false,
       dialogStatus: '',
-      textMap: {
-        update: '编辑用户',
-        create: '创建用户'
-      },
       pvData: [],
       rules: {
         special_name: [{ required: true, message: '规格名称必须填写', trigger: 'change' }],
@@ -285,8 +273,6 @@ export default {
     this.getList()
     this.getRanchSelectList()
     this.getMemberList()
-    this.ranchId = this.$route.query.ranchId
-    this.ranchName = this.$route.query.ranchName
   },
   methods: {
     tableHeaderColor({ row, column, rowIndex, columnIndex }) {
@@ -365,8 +351,9 @@ export default {
       this.dialogStatus = 'create'
       this.addSpecialDialog = true
     },
-    handleUpdate(row, index) {
-      this.specialTemp = row
+    handleUpdate(row) {
+      this.resetTemp()
+      this.specialTemp = Object.assign({}, row) // copy obj
       this.dialogStatus = 'update'
       this.addSpecialDialog = true
     },
@@ -530,6 +517,13 @@ export default {
           })
         }
       })
+    },
+    selectOffline(value) {
+      if (value === 1) {
+        this.specialTemp.is_offline_str = '正常'
+      } else {
+        this.specialTemp.is_offline_str = '下架'
+      }
     }
   }
 }
