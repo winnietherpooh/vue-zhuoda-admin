@@ -138,16 +138,37 @@
           <el-input v-model="specialTemp.special_name" style="width:300px;" />
         </el-form-item>
         <el-form-item label="商品单价">
-          <el-input v-model="specialTemp.goods_price" oninput="value=value.replace(/[^\d.]/g,'')" maxlength="10" type="number" style="width:300px;" />
+          <el-popover
+            placement="top-start"
+            width="450"
+            trigger="hover"
+            content="商品单价,单位: 元  。"
+          >
+            <el-input slot="reference" v-model="specialTemp.goods_price" oninput="value=value.replace(/[^\d.]/g,'')" maxlength="10" type="number" style="width:300px;" />
+          </el-popover>
         </el-form-item>
         <el-form-item label="最大购买数量">
-          <el-input v-model="specialTemp.max_buy" maxlength="10" type="number" style="width:300px;" />
+          <el-popover
+            placement="top-start"
+            width="450"
+            trigger="hover"
+            content="用户可购买的最大数量,如果不限制,则填写 0  。"
+          >
+            <el-input slot="reference" v-model="specialTemp.max_buy" maxlength="10" type="number" style="width:300px;" />
+          </el-popover>
         </el-form-item>
         <el-form-item label="商品状态">
-          <el-radio-group v-model="specialTemp.is_offline">
-            <el-radio :label="1" border>正常</el-radio>
-            <el-radio :label="2" border>下架</el-radio>
-          </el-radio-group>
+          <el-popover
+            placement="top-start"
+            width="450"
+            trigger="hover"
+            content="选择【正常】,则会显示在商品规格列表中,选择【下架】,则不会显示 。"
+          >
+            <el-radio-group slot="reference" v-model="specialTemp.is_offline">
+              <el-radio :label="1" border>正常</el-radio>
+              <el-radio :label="2" border>下架</el-radio>
+            </el-radio-group>
+          </el-popover>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
