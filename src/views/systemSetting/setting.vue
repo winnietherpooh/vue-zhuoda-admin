@@ -1,6 +1,8 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
+      <el-alert title="此页面内容禁止随意修改,若修改错误,将导致小程序无法正常运行!!!" type="error" effect="dark" />
+      <el-divider />
       <el-form :inline="true" class="demo-form-inline">
         <el-form-item v-for="(item,i) in dataList" :key="i" :label="item.conf_title" class="labelFontColor">
           <el-tooltip class="item" effect="dark" content="请勿随意修改,修改后可能导致小程序无法使用" placement="top-start">
