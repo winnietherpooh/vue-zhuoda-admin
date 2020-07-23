@@ -6,22 +6,36 @@
           <el-input v-model="postForm.goods_name" style="width:300px;" required />
         </el-form-item>
         <el-form-item label="虚拟销售数量基础">
-          <el-input v-model="postForm.set_seal_nums" style="width:300px;" required />
+          <el-popover
+            placement="top-start"
+            width="450"
+            trigger="hover"
+            content="商品显示的销售数量 = 虚拟销售数量 + 实际销售数量,默认为 0 。"
+          >
+            <el-input slot="reference" v-model="postForm.goods_name" style="width:300px;" required />
+          </el-popover>
         </el-form-item>
         <el-form-item label="上传轮播图">
-          <el-upload
-            class="avatar-uploader"
-            action="https://up-z2.qiniup.com"
-            :data="dataObj"
-            :multiple="true"
-            :show-file-list="false"
-            :on-error="errorFun"
-            :on-success="successFun"
-            :before-upload="beforeUpload"
+          <el-popover
+            placement="top-start"
+            trigger="hover"
+            content="商品轮播图必须上传,且第一张图为商品列表中预览图 。"
           >
-            <img v-if="goods_img" :src="goods_img" class="avatar" required>
-            <i v-else class="el-icon-plus avatar-uploader-icon" />
-          </el-upload>
+            <el-upload
+              slot="reference"
+              class="avatar-uploader"
+              action="https://up-z2.qiniup.com"
+              :data="dataObj"
+              :multiple="true"
+              :show-file-list="false"
+              :on-error="errorFun"
+              :on-success="successFun"
+              :before-upload="beforeUpload"
+            >
+              <img v-if="goods_img" :src="goods_img" class="avatar" required>
+              <i v-else class="el-icon-plus avatar-uploader-icon" />
+            </el-upload>
+          </el-popover>
         </el-form-item>
         <el-form-item v-if="postForm.fileList.length > 0" label="图片预览" style="width:600px;">
           <el-carousel :interval="4000" type="card" height="150px">
@@ -34,10 +48,17 @@
           </el-carousel>
         </el-form-item>
         <el-form-item label="商品状态">
-          <el-radio-group v-model="postForm.is_offline" required @change="goodsIsOffLine">
-            <el-radio :label="1" border>上线</el-radio>
-            <el-radio :label="2" border>下线</el-radio>
-          </el-radio-group>
+          <el-popover
+            placement="top-start"
+            width="450"
+            trigger="hover"
+            content="选择【上线】,则会显示在商品列表,选择【下架】,则不会显示 。"
+          >
+            <el-radio-group slot="reference" v-model="postForm.is_offline" required @change="goodsIsOffLine">
+              <el-radio :label="1" border>上线</el-radio>
+              <el-radio :label="2" border>下架</el-radio>
+            </el-radio-group>
+          </el-popover>
         </el-form-item>
         <el-form-item prop="content" style="margin-bottom: 30px;">
           <Tinymce ref="editor" v-model="postForm.content" :height="400" required />
@@ -383,5 +404,9 @@ export default {
     height: 30px;
     background: white;
     border-radius: 50%;
+  }
+  .tipsColor{
+    background-color: lightgreen;
+    color: black;
   }
 </style>
