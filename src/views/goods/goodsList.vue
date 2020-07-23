@@ -98,8 +98,8 @@
       <el-form>
         <el-form-item>
           <el-carousel indicator-position="outside" height="375px">
-            <el-carousel-item v-for="item in imgList" :key="item">
-              <el-image :src="item" fit="fill" />
+            <el-carousel-item v-for="(item,i) in imgList" :key="i">
+              <el-image :src="IMGCND.IMGCND + item" fit="fill" />
             </el-carousel-item>
           </el-carousel>
         </el-form-item>

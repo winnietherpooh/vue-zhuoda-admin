@@ -26,7 +26,7 @@
         <el-form-item v-if="postForm.fileList.length > 0" label="图片预览" style="width:600px;">
           <el-carousel :interval="4000" type="card" height="150px">
             <el-carousel-item v-for="(item,i) in postForm.fileList" :key="i">
-              <el-image style="width: 200px; height: 150px" :src="item" fit="fill" />
+              <el-image style="width: 200px; height: 150px" :src="IMGCND.IMGCND + item" fit="fill" />
               <div class="closeDiv" @click="deleteImg(i)">
                 <i class="el-icon-circle-close" style="font-size: 30px;color: #9a9a9a;" />
               </div>
@@ -65,7 +65,8 @@ const defaultForm = {
   is_offline: 0,
   goods_id: undefined,
   fileList: [],
-  set_seal_nums: 0
+  set_seal_nums: 0,
+  postFormUrl: []
 }
 
 export default {
@@ -164,6 +165,7 @@ export default {
         this.postForm.is_offline = Number(response.data.is_offline)
         this.postForm.set_seal_nums = response.data.set_seal_nums
         this.postForm.status = 'edit'
+        this.postForm.postFormUrl = response.data.goods_views
         console.log(this.postForm)
       }).catch(err => {
         console.log(err)
@@ -246,7 +248,8 @@ export default {
     successFun(response, file, fileList) {
       // this.goods_img = 'http://qdcm3dgyu.bkt.clouddn.com/' + response.key
       // this.postForm.goods_views_img = 'http://qdcm3dgyu.bkt.clouddn.com/' + response.key
-      this.postForm.fileList.push(this.IMGCND.IMGCND + response.key)
+      this.postForm.fileList.push(response.key)
+      this.postForm.postFormUrl.push(response.key)
     },
     beforeUpload(file) {
       const _self = this
