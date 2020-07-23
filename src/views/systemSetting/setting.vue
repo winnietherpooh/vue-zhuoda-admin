@@ -3,7 +3,9 @@
     <div class="filter-container">
       <el-form :inline="true" class="demo-form-inline">
         <el-form-item v-for="(item,i) in dataList" :key="i" :label="item.conf_title" class="labelFontColor">
-          <el-input v-model="item.conf_value" placeholder="请输入标题" style="width: 400px;" class="filter-item" @keyup.enter.native="handleFilter" />
+          <el-tooltip class="item" effect="dark" content="请勿随意修改,修改后可能导致小程序无法使用" placement="top-start">
+            <el-input v-model="item.conf_value" placeholder="请输入标题" style="width: 400px;" class="filter-item" @keyup.enter.native="handleFilter" />
+          </el-tooltip>
         </el-form-item>
         <div style="margin-top: 30px">
           <el-button class="filter-item" style="text-align:center" type="primary" icon="el-icon-edit" @click="handleUpdate">
