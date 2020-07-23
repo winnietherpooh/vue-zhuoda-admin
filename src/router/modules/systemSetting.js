@@ -17,13 +17,13 @@ const systemSettingRouter = {
       component: () => import('@/views/systemSetting/bannerList'),
       name: 'bannerList',
       meta: { title: 'bannerList', noCache: true }
+    },
+    {
+      path: 'setting',
+      component: () => import('@/views/systemSetting/setting'),
+      name: 'setting',
+      meta: { title: 'setting', noCache: true }
     }
-    // {
-    //   path: 'line',
-    //   component: () => import('@/views/charts/line'),
-    //   name: 'LineChart',
-    //   meta: { title: 'lineChart', noCache: true }
-    // }
   ]
 }
 
