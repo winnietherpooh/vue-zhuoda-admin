@@ -112,16 +112,30 @@
           </el-upload>
         </el-form-item>
         <el-form-item label="状态" prop="is_show">
-          <el-radio-group v-model="temp.is_show">
-            <el-radio :label="1">显示</el-radio>
-            <el-radio :label="2">隐藏</el-radio>
-          </el-radio-group>
+          <el-popover
+            placement="top-start"
+            width="450"
+            trigger="hover"
+            content="选择【显示】,则会显示在首页轮播图中,选择【隐藏】,则不会显示 。"
+          >
+            <el-radio-group slot="reference" v-model="temp.is_show">
+              <el-radio :label="1">显示</el-radio>
+              <el-radio :label="2">隐藏</el-radio>
+            </el-radio-group>
+          </el-popover>
         </el-form-item>
         <el-form-item label="跳转类型" prop="go_type">
-          <el-radio-group v-model="temp.go_type" @change="showGoTo">
-            <el-radio :label="1">商品</el-radio>
-            <el-radio :label="2">跳转地址</el-radio>
-          </el-radio-group>
+          <el-popover
+            placement="top-start"
+            width="450"
+            trigger="hover"
+            content="选择【商品ID】,请在下面输入框填写要跳转的商品ID,选择【跳转地址】,请填写具体的跳转地址 。"
+          >
+            <el-radio-group slot="reference" v-model="temp.go_type" @change="showGoTo">
+              <el-radio :label="1">商品ID</el-radio>
+              <el-radio :label="2">跳转地址</el-radio>
+            </el-radio-group>
+          </el-popover>
         </el-form-item>
         <el-form-item v-if="temp.go_type === 2" label="跳转地址" prop="go_type">
           <el-input v-model="temp.go_url" placeholder="请填写跳转的URL" />
