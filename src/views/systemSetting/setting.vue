@@ -115,13 +115,24 @@ export default {
       }
     },
     handleUpdate() {
-      this.data.postData = this.dataList
-      updateMn(this.data).then(() => {
-        this.$notify({
-          title: 'Success',
-          message: 'Update Successfully',
-          type: 'success',
-          duration: 2000
+      this.$confirm('请确认你真的需要修改,且修改正确!', '你正在修改危险配置', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.data.postData = this.dataList
+        updateMn(this.data).then(() => {
+          this.$notify({
+            title: 'Success',
+            message: 'Update Successfully',
+            type: 'success',
+            duration: 2000
+          })
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消'
         })
       })
     },
