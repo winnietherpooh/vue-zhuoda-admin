@@ -9,7 +9,7 @@ const masterRouter = {
   name: 'master',
   meta: {
     title: 'master',
-    icon: 'password'
+    icon: 'el-icon-s-custom'
   },
   children: [
     {

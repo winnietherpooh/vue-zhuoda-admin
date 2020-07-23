@@ -246,7 +246,7 @@ export default {
     successFun(response, file, fileList) {
       // this.goods_img = 'http://qdcm3dgyu.bkt.clouddn.com/' + response.key
       // this.postForm.goods_views_img = 'http://qdcm3dgyu.bkt.clouddn.com/' + response.key
-      this.postForm.fileList.push('http://qdcm3dgyu.bkt.clouddn.com/' + response.key)
+      this.postForm.fileList.push(this.IMGCND.IMGCND + response.key)
     },
     beforeUpload(file) {
       const _self = this

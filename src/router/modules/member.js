@@ -9,7 +9,7 @@ const memberRouter = {
   name: 'member',
   meta: {
     title: 'member',
-    icon: 'chart'
+    icon: 'el-icon-user-solid'
   },
   children: [
     {

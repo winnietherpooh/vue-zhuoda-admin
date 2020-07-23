@@ -9,7 +9,7 @@ const goodsRouter = {
   name: 'goods',
   meta: {
     title: 'goods',
-    icon: 'chart'
+    icon: 'el-icon-s-goods'
   },
   children: [
     {

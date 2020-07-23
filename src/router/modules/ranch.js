@@ -9,7 +9,7 @@ const ranchRouter = {
   name: 'ranch',
   meta: {
     title: 'ranch',
-    icon: 'chart'
+    icon: 'el-icon-menu'
   },
   children: [
     {

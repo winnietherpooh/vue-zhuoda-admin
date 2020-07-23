@@ -13,6 +13,8 @@ export default {
     editGoods: '编辑商品',
     orderList: '订单列表',
     goodsList: '商品列表',
+    systemSetting: '系统管理',
+    bannerList: '轮播图管理',
     documentation: '文档',
     guide: '引导页',
     permission: '权限测试页',
