@@ -2,10 +2,11 @@ import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
+import APICDN from '@/config'
 
 // create an axios instance
 const service = axios.create({
-  baseURL: 'https://zhuoda.2blb.com:8767/', // url = base url + request url
+  baseURL: APICDN.APICDN, // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
   timeout: 5000 // request timeout
 })

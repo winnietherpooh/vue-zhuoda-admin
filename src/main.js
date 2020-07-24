@@ -18,6 +18,7 @@ import './icons' // icon
 import './permission' // permission control
 import './utils/error-log' // error log
 import IMGCND from '@/config'
+import APICDN from '@/config'
 import * as filters from './filters' // global filters
 
 /**
@@ -45,6 +46,7 @@ Object.keys(filters).forEach(key => {
 
 Vue.config.productionTip = false
 Vue.prototype.IMGCND = IMGCND
+Vue.prototype.APICDN = APICDN
 new Vue({
   el: '#app',
   router,

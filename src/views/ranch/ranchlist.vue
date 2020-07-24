@@ -39,6 +39,13 @@
           <span>{{ row.ranch_name }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="牧场形象" align="center">
+        <template slot-scope="{row}">
+          <el-avatar :size="60" @error="errorHandler">
+            <img :src="IMGCND.IMGCND + row.ranch_img">
+          </el-avatar>
+        </template>
+      </el-table-column>
       <el-table-column label="注册时间" align="center" prop="register_time" sortable="custom">
         <template slot-scope="{row}">
           <span>{{ row.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
@@ -47,6 +54,11 @@
       <el-table-column label="关闭时间" align="center">
         <template slot-scope="{row}">
           <span>{{ row.close_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="牧场介绍" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.ranch_introduction }}</span>
         </template>
       </el-table-column>
       <el-table-column label="状态" class-name="status-col" prop="is_lock">
@@ -73,10 +85,27 @@
     </div>
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="80px" style="width: 400px; margin-left:50px;">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="900px">
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="80px" style="width: 440px; margin-left:50px;">
         <el-form-item label="牧场名称" prop="ranch_name">
           <el-input v-model="temp.ranch_name" placeholder="请填写牧场名称" />
+        </el-form-item>
+        <el-form-item label="牧场名称" prop="ranch_name">
+          <el-upload
+            class="center-uploader"
+            :data="dataObj"
+            :multiple="false"
+            :on-exceed="tooManyFilesError"
+            :show-file-list="false"
+            :on-error="errorFun"
+            :on-success="successFun"
+            :before-upload="beforeUpload"
+            action="https://up-z2.qiniup.com"
+            drag
+          >
+            <img v-if="imageUrl" :src="imageUrl" width="360px" height="180px">
+            <i v-else class="el-icon-plus avatar-uploader-icon" />
+          </el-upload>
         </el-form-item>
         <el-form-item label="状态" prop="is_open">
           <el-radio-group v-model="temp.is_open">
@@ -84,6 +113,9 @@
             <el-radio :label="2">已关闭</el-radio>
             <el-radio :label="3">休息中</el-radio>
           </el-radio-group>
+        </el-form-item>
+        <el-form-item label="状态" prop="is_open">
+          <el-input v-model="temp.ranch_introduction" type="textarea" :rows="5" placeholder="请输入内容" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -102,7 +134,10 @@
 import { fetchList, createRanch, updateRanch, deleteRanch, deleteRanchAll } from '@/api/ranch'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
+import { getToken } from '@/api/qiniu'
+import md5 from 'js-md5'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import { createResource } from '@/api/resource'
 
 export default {
   name: 'ComplexTable',
@@ -120,6 +155,8 @@ export default {
   },
   data() {
     return {
+      dataObj: { token: '', key: '' },
+      imageUrl: '',
       tableKey: 0,
       list: null,
       total: 0,
@@ -137,7 +174,9 @@ export default {
       importanceOptions: [{ label: '所有', key: '0' }, { label: '营业中', key: '1' }, { label: '已关闭', key: '2' }, { label: '休息中', key: '3' }],
       temp: {
         ranch_name: '',
-        is_open: false
+        is_open: false,
+        ranch_introduction: '',
+        ranch_img: ''
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -150,7 +189,14 @@ export default {
         is_open: [{ required: true, message: '请选择牧场状态', trigger: 'change' }]
       },
       downloadLoading: false,
-      multipleSelection: []
+      multipleSelection: [],
+      data: {
+        fileName: '',
+        fileSize: '',
+        downUrl: '',
+        Suffix: ''
+      },
+      Suffix: ['jpg', 'png', 'gif']
     }
   },
   created() {
@@ -211,11 +257,14 @@ export default {
       this.temp = {
         ranch_name: '',
         is_open: false,
-        ranchIdArray: []
+        ranchIdArray: [],
+        ranch_introduction: '',
+        ranch_img: ''
       }
     },
     handleCreate() {
       this.resetTemp()
+      this.imageUrl = ''
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
       this.$nextTick(() => {
@@ -244,6 +293,7 @@ export default {
       this.temp.timestamp = new Date(this.temp.timestamp)
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
+      this.imageUrl = ''
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
@@ -357,6 +407,84 @@ export default {
     showDetail(row) {
       console.log(this.$router)
       this.$router.push({ name: 'staff', query: { ranchId: row.ranch_id, ranchName: row.ranch_name }})
+    },
+    beforeUpload(file) {
+      const _self = this
+      return new Promise((resolve, reject) => {
+        getToken().then(response => {
+          this.data.fileName = file.name
+          this.data.fileSize = file.size
+          var strArr = file.name.split('.')
+          var arrLen = strArr.length
+          this.data.Suffix = strArr[arrLen - 1]
+          var isCanUp = false
+          for (var i = 0; i < this.Suffix.length; i++) {
+            if (this.Suffix[i] === this.data.Suffix) {
+              isCanUp = true
+            }
+          }
+          if (isCanUp === false) {
+            reject(false)
+            this.$notify({
+              title: '不允许上传此格式',
+              message: '资源上传',
+              type: 'error',
+              duration: 2000
+            })
+          }
+          var fileNames = file.name.split('.' + this.data.Suffix)
+          this.data.fileName = fileNames[0]
+          const key = md5(file.name + new Date()) + '.' + this.data.Suffix
+          this.data.downUrl = key
+          const token = response.data.token
+          _self._data.dataObj.token = token
+          _self._data.dataObj.key = key
+          resolve(true)
+        }).catch(err => {
+          console.log(err)
+          reject(false)
+        })
+      })
+    },
+    successFun(response, file, fileList) {
+      this.data.fileName = file.name
+      this.data.fileSize = file.size
+      var strArr = file.name.split('.')
+      var arrLen = strArr.length
+      this.data.Suffix = strArr[arrLen - 1]
+      var fileNames = file.name.split('.' + this.data.Suffix)
+      this.data.fileName = fileNames[0]
+      this.data.downUrl = response.key
+      this.temp.ranch_img = response.key
+      this.imageUrl = this.IMGCND.IMGCND + '' + response.key
+      createResource(this.data).then((response) => {
+        this.$notify({
+          title: '上传成功!',
+          message: '资源上传',
+          type: 'success',
+          duration: 2000
+        })
+      })
+    },
+    errorFun(err, file, fileList) {
+      console.log(err.message)
+      this.$notify({
+        title: '上传错误',
+        message: '资源上传',
+        type: 'error',
+        duration: 2000
+      })
+    },
+    tooManyFilesError(files, fileList) {
+      this.$notify({
+        title: '请一个一个上传',
+        message: '资源上传',
+        type: 'error',
+        duration: 2000
+      })
+    },
+    errorHandler() {
+      return true
     }
   }
 }
@@ -364,6 +492,14 @@ export default {
 <style>
   .labelFontColor .el-form-item__label{
     color: #343434;
+  }
+  .center-uploader{
+    width: 360px;
+    height: 180px;
+    text-align: center;
+    line-height: 180px;
+    font-size: 26px;
+    color: #8c939d;
   }
 </style>
 
