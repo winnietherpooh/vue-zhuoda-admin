@@ -61,7 +61,7 @@
         <template slot-scope="{row}">
           <el-popover trigger="hover" placement="top">
             <div>
-              <img :src="row.tempView">
+              <img :src="row.tempView" width="300px">
             </div>
             <div slot="reference" class="name-wrapper">
               <el-tag v-clipboard:copy="row.resource_url" v-clipboard:success="clipboardSuccess" size="medium">{{ row.resource_url }}</el-tag>

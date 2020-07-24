@@ -1,5 +1,5 @@
 <script>
-const IMGCND = 'http://qdcm3dgyu.bkt.clouddn.com/'
+const IMGCND = 'https://zhuoda-cdn.2blb.com/'
 export default
 {
   IMGCND
