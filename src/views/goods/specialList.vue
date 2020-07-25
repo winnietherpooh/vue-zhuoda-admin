@@ -43,7 +43,9 @@
       <el-table-column type="selection" width="55" />
       <el-table-column label="商品名称" prop="goods_name" sortable="custom" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.goods_name }}</span>
+          <el-tooltip class="item" effect="dark" content="点击可复制轮播图跳转商品+规格地址" placement="top-start">
+            <span v-clipboard:copy="row.goods_name" v-clipboard:success="clipboardSuccess">{{ row.goods_name }}</span>
+          </el-tooltip>
         </template>
       </el-table-column>
       <el-table-column label="规格名称" prop="special_name" sortable="custom" align="center">
@@ -188,11 +190,12 @@ import { fetchList, getRanchSelect, getGoodsList, addMn, deleteMn, deleteSpecial
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import clipboard from '@/directive/clipboard/index.js' // use clipboard by v-directive
 
 export default {
   name: 'ComplexTable',
   components: { Pagination },
-  directives: { waves },
+  directives: { waves, clipboard },
   filters: {
     statusFilter(status) {
       const statusMap = {
@@ -547,6 +550,13 @@ export default {
       } else {
         this.specialTemp.is_offline_str = '下架'
       }
+    },
+    clipboardSuccess() {
+      this.$message({
+        message: '复制成功',
+        type: 'success',
+        duration: 1500
+      })
     }
   }
 }
