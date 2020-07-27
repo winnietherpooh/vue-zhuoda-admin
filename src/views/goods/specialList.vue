@@ -63,6 +63,21 @@
           <span>{{ row.max_buy }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="口味" sortable="custom" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.taste }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="包装" sortable="custom" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.packaging }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="有效期" sortable="custom" align="center">
+        <template slot-scope="{row}">
+          <span>常温下 {{ row.max_time }} 天</span>
+        </template>
+      </el-table-column>
       <el-table-column label="规格状态" class-name="status-col" prop="is_delete" width="100">
         <template slot-scope="{row}">
           <el-tag :type="row.is_offline_str | specialFilter">
@@ -138,6 +153,21 @@
         </el-form-item>
         <el-form-item label="规格名称">
           <el-input v-model="specialTemp.special_name" style="width:300px;" />
+        </el-form-item>
+        <el-form-item label="有效期">
+          <el-popover
+            placement="top-start"
+            trigger="hover"
+            content="有效期为 3 天,则填写 3。"
+          >
+            <el-input slot="reference" v-model="specialTemp.max_time" maxlength="10" type="number" style="width:300px;" />
+          </el-popover>
+        </el-form-item>
+        <el-form-item label="包装">
+          <el-input v-model="specialTemp.taste" style="width:300px;" />
+        </el-form-item>
+        <el-form-item label="口味">
+          <el-input v-model="specialTemp.packaging" style="width:300px;" />
         </el-form-item>
         <el-form-item label="商品单价">
           <el-popover
@@ -250,7 +280,10 @@ export default {
         special_name: '',
         goods_price: '',
         max_buy: '',
-        is_offline: 1
+        is_offline: 1,
+        max_time: 0,
+        taste: '',
+        packaging: ''
       },
       listMemberLoading: true,
       value1: true,
