@@ -224,7 +224,7 @@ export default {
   methods: {
     fetchData(id) {
       getGoodsInfo(id).then(response => {
-        this.postForm = response.data
+        // this.postForm = response.data
         this.postForm.content = response.data.goods_explain
         this.postForm.fileList = response.data.goods_views
         this.postForm.goods_name = response.data.goods_name
@@ -233,6 +233,12 @@ export default {
         this.postForm.set_seal_nums = response.data.set_seal_nums
         this.postForm.status = 'edit'
         this.postForm.postFormUrl = response.data.goods_views
+        this.postForm.widget_word_color = response.data.widget_word_color
+        this.postForm.widget_word = response.data.widget_word
+        this.postForm.keywords_str = response.data.keywords_str
+        this.postForm.keywords_color = response.data.keywords_color
+        this.postForm.delivery = response.data.delivery
+        this.postForm.create_address = response.data.create_address
         console.log(this.postForm)
       }).catch(err => {
         console.log(err)
@@ -313,10 +319,11 @@ export default {
       })
     },
     successFun(response, file, fileList) {
-      // this.goods_img = 'http://qdcm3dgyu.bkt.clouddn.com/' + response.key
-      // this.postForm.goods_views_img = 'http://qdcm3dgyu.bkt.clouddn.com/' + response.key
+      console.log(response.key)
+      console.log(this.postForm.fileList)
       this.postForm.fileList.push(response.key)
-      this.postForm.postFormUrl.push(response.key)
+      // this.postForm.postFormUrl.push(response.key)  这个注释了，但是不知道有没有影响 0727 22：09
+      console.log(this.postForm.fileList)
     },
     beforeUpload(file) {
       const _self = this
