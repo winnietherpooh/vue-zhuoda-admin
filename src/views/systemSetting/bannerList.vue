@@ -51,7 +51,7 @@
           <span>{{ row.title }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="图片地址" prop="nick_name" sortable="custom" align="center" width="120px">
+      <el-table-column label="图片地址" align="center" width="120px">
         <template slot-scope="{row}">
           <el-image :src="IMGCND.IMGCND + row.image_url" fit="fill">
             <div slot="placeholder" class="image-slot">
@@ -60,7 +60,7 @@
           </el-image>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" align="center" prop="create_time" sortable="custom">
+      <el-table-column label="创建时间" align="center">
         <template slot-scope="{row}">
           <span>{{ row.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
@@ -243,7 +243,7 @@ export default {
       showReviewer: false,
       temp: {
         title: '',
-        is_show: 0,
+        is_show: 1,
         image_url: '',
         go_type: 1,
         go_url: '',
@@ -329,7 +329,7 @@ export default {
     resetTemp() {
       this.temp = {
         title: '',
-        is_show: 0,
+        is_show: 1,
         image_url: '',
         go_type: 1,
         go_url: ''
