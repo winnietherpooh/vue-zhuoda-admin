@@ -5,6 +5,12 @@
         <el-form-item label="商品名称">
           <el-input v-model="postForm.goods_name" style="width:300px;" required />
         </el-form-item>
+        <el-form-item label="配送频率">
+          <el-input v-model="postForm.delivery" style="width:300px;" required />
+        </el-form-item>
+        <el-form-item label="发货地址">
+          <el-input v-model="postForm.create_address" style="width:300px;" required />
+        </el-form-item>
         <el-form-item label="虚拟销售数量基础">
           <el-popover
             placement="top-start"
@@ -12,8 +18,40 @@
             trigger="hover"
             content="商品显示的销售数量 = 虚拟销售数量 + 实际销售数量,默认为 0 。"
           >
-            <el-input slot="reference" v-model="postForm.goods_name" style="width:300px;" required />
+            <el-input slot="reference" v-model="postForm.set_seal_nums" style="width:300px;" required />
           </el-popover>
+        </el-form-item>
+        <el-form-item label="商品推销词">
+          <el-popover
+            placement="top-start"
+            width="450"
+            trigger="hover"
+            content="显示在商品详情中价格上方的关键词,类似:新品促销"
+          >
+            <el-input slot="reference" v-model="postForm.widget_word" style="width:300px;" required />
+          </el-popover>
+        </el-form-item>
+        <el-form-item label="商品推销词颜色">
+          <el-col :span="9">
+            <el-input v-model="postForm.widget_word_color" style="width:300px;" required />
+          </el-col>
+          <el-col :span="2"><el-color-picker v-model="postForm.widget_word_color" /></el-col>
+        </el-form-item>
+        <el-form-item label="商品标签">
+          <el-popover
+            placement="top-start"
+            width="450"
+            trigger="hover"
+            content="显示在商品列表中的商品标签,如:热"
+          >
+            <el-input slot="reference" v-model="postForm.keywords_str" style="width:300px;" required />
+          </el-popover>
+        </el-form-item>
+        <el-form-item label="标签颜色">
+          <el-col :span="9">
+            <el-input v-model="postForm.keywords_color" style="width:300px;" required />
+          </el-col>
+          <el-col :span="2"><el-color-picker v-model="postForm.keywords_color" /></el-col>
         </el-form-item>
         <el-form-item label="上传轮播图">
           <el-popover
@@ -87,7 +125,13 @@ const defaultForm = {
   goods_id: undefined,
   fileList: [],
   set_seal_nums: 0,
-  postFormUrl: []
+  postFormUrl: [],
+  widget_word_color: '',
+  widget_word: '',
+  keywords_str: '',
+  keywords_color: '',
+  delivery: '',
+  create_address: ''
 }
 
 export default {
@@ -127,6 +171,7 @@ export default {
       }
     }
     return {
+      color: '#409EFF',
       postForm: Object.assign({}, defaultForm),
       loading: false,
       userListOptions: [],
@@ -179,6 +224,7 @@ export default {
   methods: {
     fetchData(id) {
       getGoodsInfo(id).then(response => {
+        this.postForm = response.data
         this.postForm.content = response.data.goods_explain
         this.postForm.fileList = response.data.goods_views
         this.postForm.goods_name = response.data.goods_name
