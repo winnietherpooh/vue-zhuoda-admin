@@ -132,7 +132,7 @@
             action="https://up-z2.qiniup.com"
             drag
           >
-            <img v-if="imageUrl" :src="IMGCND.IMGCND + imageUrl" width="360px" height="180px">
+            <img v-if="imageUrl" :src="IMGCND.IMGCND + imageUrl" style="max-width:360px; max-height:180px">
             <i v-else class="el-icon-plus avatar-uploader-icon" />
           </el-upload>
         </el-form-item>
@@ -573,8 +573,10 @@ export default {
     color: #343434;
   }
   .center-uploader{
-    width: 360px;
-    height: 180px;
+    /* width: 360px;
+    height: 180px; */
+    max-width: 360px;
+    max-height: 180px;
     text-align: center;
     line-height: 180px;
     font-size: 26px;
