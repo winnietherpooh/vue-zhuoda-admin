@@ -11,6 +11,11 @@
               <el-option v-for="item in importanceOptions" :key="item.key" :label="item.label" :value="item.key" />
             </el-select>
           </el-form-item>
+          <el-form-item label="类型" class="labelFontColor">
+            <el-select v-model="listQuery.importanceOptionsType" style="width: 140px" class="filter-item" @change="handleFilter">
+              <el-option v-for="item in importanceOptionsType" :key="item.key" :label="item.label" :value="item.key" />
+            </el-select>
+          </el-form-item>
           <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
             搜索
           </el-button>
@@ -34,6 +39,13 @@
       @sort-change="sortChange"
     >
       <el-table-column type="selection" width="55" />
+      <el-table-column label="类型" class-name="status-col" prop="is_delete" width="150">
+        <template slot-scope="{row}">
+          <el-tag :type="row.banner_type_str | typeFilter">
+            {{ row.banner_type_str }}
+          </el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="标题" align="center" width="100">
         <template slot-scope="{row}">
           <span>{{ row.title }}</span>
@@ -41,7 +53,7 @@
       </el-table-column>
       <el-table-column label="图片地址" prop="nick_name" sortable="custom" align="center" width="120px">
         <template slot-scope="{row}">
-          <el-image :src="row.image_url" fit="fill">
+          <el-image :src="IMGCND.IMGCND + row.image_url" fit="fill">
             <div slot="placeholder" class="image-slot">
               加载中<span class="dot">...</span>
             </div>
@@ -94,6 +106,19 @@
         <el-form-item label="轮播图标题" prop="nick_name">
           <el-input v-model="temp.title" placeholder="请填写轮播图标题" />
         </el-form-item>
+        <el-form-item label="类型" prop="banner_type">
+          <el-popover
+            placement="top-start"
+            width="450"
+            trigger="hover"
+            content="选择【首页轮播图】,则会显示在首页轮播图中,选择【商品轮播图】,则显示在商品轮播图中 。"
+          >
+            <el-radio-group slot="reference" v-model="temp.banner_type">
+              <el-radio :label="1">首页轮播图</el-radio>
+              <el-radio :label="2">商品轮播图</el-radio>
+            </el-radio-group>
+          </el-popover>
+        </el-form-item>
         <el-form-item label="轮播图" prop="nick_name">
           <el-upload
             class="center-uploader"
@@ -107,7 +132,7 @@
             action="https://up-z2.qiniup.com"
             drag
           >
-            <img v-if="imageUrl" :src="imageUrl" width="360px" height="180px">
+            <img v-if="imageUrl" :src="IMGCND.IMGCND + imageUrl" width="360px" height="180px">
             <i v-else class="el-icon-plus avatar-uploader-icon" />
           </el-upload>
         </el-form-item>
@@ -183,6 +208,13 @@ export default {
         '隐藏': 'danger'
       }
       return statusMap[status]
+    },
+    typeFilter(status) {
+      const statusMap = {
+        '首页轮播图': 'success',
+        '商品轮播图': 'danger'
+      }
+      return statusMap[status]
     }
   },
   data() {
@@ -204,6 +236,7 @@ export default {
         sort: '+admin_account'
       },
       importanceOptions: [{ label: '所有', key: '0' }, { label: '显示', key: '1' }, { label: '隐藏', key: '2' }],
+      importanceOptionsType: [{ label: '所有', key: '0' }, { label: '首页轮播图', key: '1' }, { label: '奶站轮播图', key: '2' }],
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: ['published', 'draft', 'deleted'],
       powerList: [],
@@ -213,7 +246,8 @@ export default {
         is_show: 0,
         image_url: '',
         go_type: 1,
-        go_url: ''
+        go_url: '',
+        banner_type: 1
       },
       dialogFormVisible: false,
       data: {
@@ -349,10 +383,14 @@ export default {
           } else {
             this.temp.go_type_str = '跳转地址'
           }
+          if (this.temp.banner_type === 1) {
+            this.temp.banner_type_str = '首页轮播图'
+          } else {
+            this.temp.banner_type_str = '商品轮播图'
+          }
           const tempData = Object.assign({}, this.temp)
           updateMn(tempData).then(() => {
             const index = this.list.findIndex(v => v.banner_id === this.temp.banner_id)
-            this.temp.image_url = this.IMGCND.IMGCND + this.temp.image_url
             this.list.splice(index, 1, this.temp)
             this.dialogFormVisible = false
             this.$notify({
@@ -495,7 +533,7 @@ export default {
       this.data.fileName = fileNames[0]
       this.data.downUrl = response.key
       this.temp.image_url = response.key
-      this.imageUrl = this.IMGCND.IMGCND + '' + response.key
+      this.imageUrl = response.key
       createResource(this.data).then((response) => {
         this.$notify({
           title: '上传成功!',
