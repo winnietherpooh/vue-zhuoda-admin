@@ -41,39 +41,49 @@
       @sort-change="sortChange"
     >
       <el-table-column type="selection" width="55" />
-      <el-table-column label="商品名称" prop="goods_name" sortable="custom" align="center">
+      <el-table-column label="商品名称" prop="goods_name" align="center">
         <template slot-scope="{row}">
           <el-tooltip class="item" effect="dark" content="点击可复制轮播图跳转商品+规格地址" placement="top-start">
             <span v-clipboard:copy="row.goods_name" v-clipboard:success="clipboardSuccess">{{ row.goods_name }}</span>
           </el-tooltip>
         </template>
       </el-table-column>
-      <el-table-column label="规格名称" prop="special_name" sortable="custom" align="center">
+      <el-table-column label="规格名称" prop="special_name" align="center">
         <template slot-scope="{row}">
           <span>{{ row.special_name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="商品价格" prop="goods_price" sortable="custom" align="center">
+      <el-table-column label="商品价格" prop="goods_price" align="center">
         <template slot-scope="{row}">
           <span>{{ row.goods_price }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="最大购买数量" prop="max_buy" sortable="custom" align="center">
+      <el-table-column label="最大购买数量" prop="max_buy" align="center">
         <template slot-scope="{row}">
           <span>{{ row.max_buy }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="口味" sortable="custom" align="center">
+      <el-table-column label="虚拟销售数量" prop="max_buy" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.set_seal_nums }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="实际出售数量" prop="max_buy" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.real_seal_nums }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="口味" align="center">
         <template slot-scope="{row}">
           <span>{{ row.taste }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="包装" sortable="custom" align="center">
+      <el-table-column label="包装" align="center">
         <template slot-scope="{row}">
           <span>{{ row.packaging }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="有效期" sortable="custom" align="center">
+      <el-table-column label="有效期" align="center">
         <template slot-scope="{row}">
           <span>常温下 {{ row.max_time }} 天</span>
         </template>
@@ -153,6 +163,16 @@
         </el-form-item>
         <el-form-item label="规格名称">
           <el-input v-model="specialTemp.special_name" style="width:300px;" />
+        </el-form-item>
+        <el-form-item label="虚拟销售数量">
+          <el-popover
+            placement="top-start"
+            width="450"
+            trigger="hover"
+            content="商品显示的销售数量 = 虚拟销售数量 + 实际销售数量,默认为 0 。"
+          >
+            <el-input slot="reference" v-model="specialTemp.set_seal_nums" style="width:300px;" required />
+          </el-popover>
         </el-form-item>
         <el-form-item label="有效期">
           <el-popover
@@ -283,7 +303,8 @@ export default {
         is_offline: 1,
         max_time: 0,
         taste: '',
-        packaging: ''
+        packaging: '',
+        set_seal_nums: 0
       },
       listMemberLoading: true,
       value1: true,
@@ -401,7 +422,8 @@ export default {
         special_name: '',
         goods_price: '',
         max_buy: '',
-        is_offline: 1
+        is_offline: 1,
+        set_seal_nums: 0
       }
     },
     handleCreate() {
