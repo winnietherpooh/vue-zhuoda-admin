@@ -64,3 +64,19 @@ export function getGoodsSpecialList(query) {
   })
 }
 
+export function getCityData(query) {
+  return request({
+    url: 'MnGetAllCityList',
+    method: 'get',
+    params: query
+  })
+}
+
+export function setCityPostAgeData(query) {
+  return request({
+    url: 'MnSetCityPostAge',
+    method: 'get',
+    params: query
+  })
+}
+

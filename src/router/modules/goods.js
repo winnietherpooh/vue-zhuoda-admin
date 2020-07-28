@@ -42,6 +42,12 @@ const goodsRouter = {
       component: () => import('@/views/goods/specialList'),
       name: 'specialList',
       meta: { title: 'specialList', noCache: true }
+    },
+    {
+      path: 'goodsFreight',
+      component: () => import('@/views/goods/goodsFreight'),
+      name: 'goodsFreight',
+      meta: { title: 'goodsFreight', noCache: true }
     }
   ]
 }
