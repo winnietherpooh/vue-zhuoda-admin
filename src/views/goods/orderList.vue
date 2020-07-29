@@ -35,31 +35,56 @@
       @sort-change="sortChange"
     >
       <el-table-column type="selection" width="55" />
-      <el-table-column label="用户昵称" prop="nick_name" sortable="custom" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.nick_name }}</span>
+      <el-table-column type="expand" label="收货人详情" width="150">
+        <template slot-scope="props">
+          <el-form label-position="left" class="demo-table-expand">
+            <el-form-item label="收货人">
+              <span>{{ props.row.member_name }}</span>
+            </el-form-item>
+            <el-form-item label="收货人电话">
+              <span>{{ props.row.member_mobile }}</span>
+            </el-form-item>
+            <el-form-item label="收货人地址">
+              <span>{{ props.row.member_address }}</span>
+            </el-form-item>
+          </el-form>
         </template>
       </el-table-column>
-      <el-table-column label="注册时间" align="center" prop="create_time" sortable="custom">
+      <el-table-column label="订单号" prop="nick_name" sortable="custom" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.order_no }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="创建时间" align="center" prop="create_time" sortable="custom">
         <template slot-scope="{row}">
           <span>{{ row.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="最后登录时间" align="center">
+      <el-table-column label="购买用户" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.login_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{ row.nick_name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="登录次数" align="center" width="100">
+      <el-table-column label="订单金额" align="center" width="100">
         <template slot-scope="{row}">
-          <span>{{ row.login_nums }}</span>
+          <span>{{ row.order_price }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="支付金额" align="center" width="100">
+        <template slot-scope="{row}">
+          <span>{{ row.pay_price }}</span>
         </template>
       </el-table-column>
       <el-table-column label="状态" class-name="status-col" prop="is_delete" width="100">
         <template slot-scope="{row}">
-          <el-tag :type="row.is_delete_str | statusFilter">
-            {{ row.is_delete_str }}
+          <el-tag :type="row.order_status_str | statusFilter">
+            {{ row.order_status_str }}
           </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="查看商品" align="center" prop="create_time" sortable="custom">
+        <template slot-scope="{row}">
+          <span @click="showshopinfo(row.order_id)">查看商品</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -100,11 +125,67 @@
         </el-button>
       </div>
     </el-dialog>
+    <el-dialog title="查看商品" :visible.sync="showMemberSelected" width="1000px">
+      <el-table
+        :key="tableKey"
+        ref="listTable"
+        v-loading="listMemberLoading"
+        :data="orderGoodsListInfo"
+        border
+        fit
+        :header-cell-style="tableHeaderColor"
+        :cell-style="{padding:'8px'}"
+        @sort-change="sortChange"
+      >
+        <el-table-column label="商品名称" prop="goods_name" sortable="custom" align="center">
+          <template slot-scope="{row}">
+            <span>{{ row.goods_name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="商品图片" prop="goods_name" sortable="custom" align="center">
+          <template slot-scope="{row}">
+            <el-avatar :size="60" @error="errorHandler">
+              <img :src="IMGCND.IMGCND + row.goods_image">
+            </el-avatar>
+          </template>
+        </el-table-column>
+        <el-table-column label="规格名称" prop="goods_name" sortable="custom" align="center">
+          <template slot-scope="{row}">
+            <span>{{ row.goodSpecial_name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="单价" prop="goods_name" sortable="custom" align="center">
+          <template slot-scope="{row}">
+            <span>{{ row.goods_price }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="购买数量" prop="goods_name" sortable="custom" align="center">
+          <template slot-scope="{row}">
+            <span>{{ row.goods_num }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="评价" class-name="status-col" prop="is_delete" width="100">
+          <template slot-scope="{row}">
+            <el-tag v-if="row.is_evakuate === 2" :type="row.is_evakuate_str | evenlateFilter">
+              {{ row.is_evakuate_str }}
+            </el-tag>
+            <el-button v-if="row.is_evakuate === 1" size="mini" @click="showEvakuate(row.orderinfo_id)">查看评价</el-button>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+          <template slot-scope="{row}">
+            <el-button @click="addSpecial(row)">
+              新增
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { fetchList, createMn, updateMn, deleteMn, deleteMnAll } from '@/api/member'
+import { fetchList, getOrderInfo, updateMn, deleteMn, deleteMnAll } from '@/api/order'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -116,8 +197,18 @@ export default {
   filters: {
     statusFilter(status) {
       const statusMap = {
-        '正常': 'success',
-        '锁定': 'danger'
+        '待支付': 'success',
+        '代发货': 'danger',
+        '待收货': 'danger',
+        '已收货': 'danger',
+        '已完成': 'danger'
+      }
+      return statusMap[status]
+    },
+    evenlateFilter(status) {
+      const statusMap = {
+        '未评价': 'success',
+        '已评价': 'danger'
       }
       return statusMap[status]
     }
@@ -130,6 +221,9 @@ export default {
       value1: true,
       value2: true,
       listLoading: true,
+      memberList: null,
+      listMemberLoading: false,
+      showMemberSelected: false,
       listQuery: {
         page: 1,
         limit: 10,
@@ -144,9 +238,7 @@ export default {
       powerList: [],
       showReviewer: false,
       temp: {
-        nick_name: '',
-        is_delete: 0,
-        IdArray: []
+        orderId: 0
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -161,7 +253,8 @@ export default {
         title: [{ required: true, message: 'title is required', trigger: 'blur' }]
       },
       downloadLoading: false,
-      multipleSelection: []
+      multipleSelection: [],
+      orderGoodsListInfo: []
     }
   },
   created() {
@@ -220,10 +313,7 @@ export default {
     },
     resetTemp() {
       this.temp = {
-        admin_account: '',
-        admin_pwd: '',
-        power_team: 0,
-        is_lock: false
+        orderId: 0
       }
     },
     handleCreate() {
@@ -234,23 +324,23 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    createData() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          createMn(this.temp).then((response) => {
-            // this.list.unshift(this.temp)
-            this.dialogFormVisible = false
-            this.getList()
-            this.$notify({
-              title: 'Success',
-              message: 'Created Successfully',
-              type: 'success',
-              duration: 2000
-            })
-          })
-        }
-      })
-    },
+    // createData() {
+    //   this.$refs['dataForm'].validate((valid) => {
+    //     if (valid) {
+    //       createMn(this.temp).then((response) => {
+    //         // this.list.unshift(this.temp)
+    //         this.dialogFormVisible = false
+    //         this.getList()
+    //         this.$notify({
+    //           title: 'Success',
+    //           message: 'Created Successfully',
+    //           type: 'success',
+    //           duration: 2000
+    //         })
+    //       })
+    //     }
+    //   })
+    // },
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
       this.dialogStatus = 'update'
@@ -345,6 +435,22 @@ export default {
         console.log(item)
         this.multipleSelection.push(item.member_id)
       })
+    },
+    showshopinfo(info) {
+      this.listMemberLoading = true
+      this.showMemberSelected = true
+      this.temp.orderId = info
+      getOrderInfo(this.temp).then(response => {
+        this.orderGoodsListInfo = response.data
+        console.log(response.data)
+        this.listMemberLoading = false
+      })
+    },
+    errorHandler() {
+      return true
+    },
+    showEvakuate(infoId) {
+      console.log(infoId)
     }
   }
 }
