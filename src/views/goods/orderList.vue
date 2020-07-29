@@ -106,22 +106,22 @@
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="昵称" prop="nick_name">
-          <el-input v-model="temp.nick_name" placeholder="请填写昵称" readonly="" />
-        </el-form-item>
-        <el-form-item label="状态" prop="is_delete">
-          <el-radio-group v-model="temp.is_delete">
-            <el-radio :label="0">正常</el-radio>
-            <el-radio :label="1">锁定</el-radio>
-          </el-radio-group>
+        <el-form-item>
+          <template>
+            <div>
+              <el-divider content-position="left">评价时间：{{ temp.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</el-divider>
+              <span>{{ temp.content }}</span>
+              <el-divider v-if="temp.repeat_time > 0" content-position="left">牧场回复：{{ temp.repeat_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</el-divider>
+              <el-divider v-if="temp.repeat_time == null" content-position="left"> 牧场未回复 </el-divider>
+              <el-input v-if="temp.repeat_time == null" v-model="temp.ranch_content" type="textarea" :rows="5" placeholder="请输入内容" />
+              <el-button v-if="temp.repeat_time == null" style="margin-top:20px;" @click="addSpecial(row)">回复买家</el-button>
+            </div>
+          </template>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
-          Cancel
-        </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          Confirm
+          关闭
         </el-button>
       </div>
     </el-dialog>
@@ -164,12 +164,12 @@
             <span>{{ row.goods_num }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="评价" class-name="status-col" prop="is_delete" width="100">
+        <el-table-column label="评价" class-name="status-col" prop="is_delete" width="150">
           <template slot-scope="{row}">
             <el-tag v-if="row.is_evakuate === 2" :type="row.is_evakuate_str | evenlateFilter">
               {{ row.is_evakuate_str }}
             </el-tag>
-            <el-button v-if="row.is_evakuate === 1" size="mini" @click="showEvakuate(row.orderinfo_id)">查看评价</el-button>
+            <el-button v-if="row.is_evakuate === 1" size="mini" @click="showEvakuate(row)">查看评价</el-button>
           </template>
         </el-table-column>
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -254,7 +254,13 @@ export default {
       },
       downloadLoading: false,
       multipleSelection: [],
-      orderGoodsListInfo: []
+      orderGoodsListInfo: [],
+      evaluteData: {
+        create_time: '',
+        content: '',
+        ranch_content: '',
+        repeat_time: ''
+      }
     }
   },
   created() {
@@ -449,8 +455,10 @@ export default {
     errorHandler() {
       return true
     },
-    showEvakuate(infoId) {
-      console.log(infoId)
+    showEvakuate(row) {
+      console.log(row)
+      this.dialogFormVisible = true
+      this.evaluteData = row
     }
   }
 }
