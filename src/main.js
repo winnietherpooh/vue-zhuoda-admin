@@ -20,7 +20,9 @@ import './utils/error-log' // error log
 import IMGCND from '@/config'
 import APICDN from '@/config'
 import * as filters from './filters' // global filters
-
+import VideoPlayer from 'vue-video-player'
+require('video.js/dist/video-js.css')
+require('vue-video-player/src/custom-theme.css')
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
@@ -47,6 +49,8 @@ Object.keys(filters).forEach(key => {
 Vue.config.productionTip = false
 Vue.prototype.IMGCND = IMGCND
 Vue.prototype.APICDN = APICDN
+// Vue.prototype.VideoPlayer = VideoPlayer
+Vue.use(VideoPlayer)
 new Vue({
   el: '#app',
   router,

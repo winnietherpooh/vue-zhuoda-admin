@@ -88,13 +88,13 @@
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-        <template slot-scope="{row,$index}">
-          <el-button type="success" size="mini" @click="handleUpdate(row)">
-            编辑
-          </el-button>
-          <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
-            删除
-          </el-button>
+        <template slot-scope="{row}">
+          <el-dropdown v-if="row.order_status !== 1" split-button type="primary">
+            订单操作
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item v-if="row.order_status === 2">设置发货</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </template>
       </el-table-column>
     </el-table>
@@ -104,17 +104,35 @@
     </div>
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
+    <el-dialog title="买家评价" :visible.sync="dialogFormVisible" width="1000px">
+      <el-form ref="dataForm" :model="evaluteData" label-position="left" style="margin-left:50px;">
         <el-form-item>
           <template>
+            <el-row :gutter="20">
+              <el-col style="margin-top:20px;">
+                <el-tag type="success">评价时间：{{ evaluteData.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</el-tag>
+              </el-col>
+              <el-col style="margin-top:20px;">
+                <el-input v-if="evaluteData.content != ''" v-model="evaluteData.content" type="textarea" :rows="5" readonly />
+              </el-col>
+              <el-col v-if="evaluteData.image_list.length > 0" style="margin-top:20px;">
+                <div class="demo-image" style="display:block">
+                  <div v-for="(item,i) in evaluteData.image_list" :key="i" class="block">
+                    <el-image style="width: 100px; height: 100px" :src="item" :preview-src-list="evaluteData.image_list" fit="fill" />
+                  </div>
+                </div>
+              </el-col>
+              <el-col v-if="evaluteData.media_list.length > 0">
+                <div v-for="(item,i) in playerOptions.sources" :key="i" style="margin-top:20px;">
+                  <video-player ref="videoPlayer + item" :playsinline="true" :options="playerOptions" class="video-player vjs-custom-skin" style="width:500px;" />
+                </div>
+              </el-col>
+            </el-row>
             <div>
-              <el-divider content-position="left">评价时间：{{ temp.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</el-divider>
-              <span>{{ temp.content }}</span>
-              <el-divider v-if="temp.repeat_time > 0" content-position="left">牧场回复：{{ temp.repeat_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</el-divider>
-              <el-divider v-if="temp.repeat_time == null" content-position="left"> 牧场未回复 </el-divider>
-              <el-input v-if="temp.repeat_time == null" v-model="temp.ranch_content" type="textarea" :rows="5" placeholder="请输入内容" />
-              <el-button v-if="temp.repeat_time == null" style="margin-top:20px;" @click="addSpecial(row)">回复买家</el-button>
+              <el-divider v-if="evaluteData.repeat_time != 0" content-position="left">牧场回复：{{ evaluteData.repeat_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</el-divider>
+              <el-divider v-if="evaluteData.repeat_time == 0" content-position="left"> 牧场未回复 </el-divider>
+              <el-input v-model="evaluteData.ranch_content" type="textarea" :rows="5" placeholder="请输入内容" />
+              <el-button style="margin-top:20px;" @click="repeatBuyer()">回复买家</el-button>
             </div>
           </template>
         </el-form-item>
@@ -185,7 +203,7 @@
 </template>
 
 <script>
-import { fetchList, getOrderInfo, updateMn, deleteMn, deleteMnAll } from '@/api/order'
+import { fetchList, getOrderInfo, repeatBuyerContent } from '@/api/order'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -259,8 +277,45 @@ export default {
         create_time: '',
         content: '',
         ranch_content: '',
-        repeat_time: ''
-      }
+        repeat_time: '',
+        image_list: [],
+        media_list: [],
+        evaluate_id: 0
+      },
+      playerOptions: {
+        // 播放速度
+        playbackRates: [0.7, 1.0, 1.5, 2.0],
+        // 如果true,浏览器准备好时开始回放。
+        autoplay: false,
+        // 默认情况下将会消除任何音频。
+        muted: false,
+        //  导致视频一结束就重新开始。
+        loop: false,
+        // 建议浏览器在<video>加载元素后是否应该开始下载视频数据。auto浏览器选择最佳行为,立即开始加载视频（如果浏览器支持）
+        preload: 'auto',
+        language: 'zh-CN',
+        // 将播放器置于流畅模式，并在计算播放器的动态大小时使用该值。值应该代表一个比例 - 用冒号分隔的两个数字（例如"16:9"或"4:3"）
+        aspectRatio: '16:9',
+        // 当true时，Video.js player将拥有流体大小。换句话说，它将按比例缩放以适应其容器。
+        fluid: true,
+        sources: [{
+          type: '',
+          src: ''
+        }],
+        // 你的封面地址
+        // poster: "../../static/images/test.jpg",
+        // width: document.documentElement.clientWidth, //播放器宽度
+        // 允许覆盖Video.js无法播放媒体源时显示的默认信息。
+        notSupportedMessage: '此视频暂无法播放，请稍后再试',
+        controlBar: {
+          timeDivider: true,
+          durationDisplay: true,
+          remainingTimeDisplay: false,
+          // 全屏按钮
+          fullscreenToggle: true
+        }
+      },
+      imageData: []
     }
   },
   created() {
@@ -355,53 +410,6 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    updateData() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          if (this.temp.is_delete === 0) {
-            this.temp.is_delete_str = '正常'
-          } else {
-            this.temp.is_delete_str = '锁定'
-          }
-          const tempData = Object.assign({}, this.temp)
-          updateMn(tempData).then(() => {
-            const index = this.list.findIndex(v => v.member_id === this.temp.member_id)
-            this.list.splice(index, 1, this.temp)
-            this.dialogFormVisible = false
-            this.$notify({
-              title: 'Success',
-              message: 'Update Successfully',
-              type: 'success',
-              duration: 2000
-            })
-          })
-        }
-      })
-    },
-    handleDelete(row, index) {
-      this.temp.admin_id = row.admin_id
-      this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.temp.resource_id = row.resource_id
-        deleteMn(this.temp).then(() => {
-          this.$notify({
-            title: '删除用户',
-            message: '操作成功',
-            type: 'success',
-            duration: 2000
-          })
-        })
-        this.list.splice(index, 1)
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        })
-      })
-    },
     formatJson(filterVal) {
       return this.list.map(v => filterVal.map(j => {
         if (j === 'timestamp') {
@@ -419,21 +427,6 @@ export default {
       console.log(this.multipleSelection)
       this.multipleSelection = []
       this.$refs.listTable.clearSelection()
-    },
-    deleteAll() {
-      this.listLoading = true
-      this.temp.IdArray = this.multipleSelection
-      deleteMnAll(this.temp).then(() => {
-        this.$notify({
-          title: '删除资源',
-          message: '操作成功',
-          type: 'success',
-          duration: 2000
-        })
-        this.multipleSelection = []
-        this.getList()
-        this.listLoading = false
-      })
     },
     selectAll(selection, row) {
       this.multipleSelection = []
@@ -459,6 +452,19 @@ export default {
       console.log(row)
       this.dialogFormVisible = true
       this.evaluteData = row
+      console.log(row.media_list)
+      this.playerOptions.sources = row.media_list
+    },
+    repeatBuyer() {
+      repeatBuyerContent(this.evaluteData).then((response) => {
+        this.postForm = {}
+        this.$notify({
+          title: '回复成功',
+          message: '回复买家',
+          type: 'success',
+          duration: 2000
+        })
+      })
     }
   }
 }
@@ -467,5 +473,58 @@ export default {
   .labelFontColor .el-form-item__label{
     color: #343434;
   }
+  .el-row {
+    margin-bottom: 20px;
+  }
+  .el-col {
+    border-radius: 4px;
+  }
+  .bg-purple-dark {
+    background: #99a9bf;
+  }
+  .bg-purple {
+    background: #d3dce6;
+  }
+  .bg-purple-light {
+    background: #e5e9f2;
+  }
+  .grid-content {
+    border-radius: 4px;
+    min-height: 36px;
+  }
+  .row-bg {
+    padding: 10px 0;
+    background-color: #f9fafc;
+  }
+  .block {
+    padding: 15px;
+    text-align: center;
+    border: 1px solid #eff2f6;
+    display: inline-block;
+    width: 15%;
+  }
+  .el-dropdown {
+    vertical-align: top;
+  }
+  .el-dropdown + .el-dropdown {
+    margin-left: 15px;
+  }
+  .el-icon-arrow-down {
+    font-size: 12px;
+  }
+  /* .row-center {
+    width: 100%;
+    height: 100%;
+    border: 1px solid black;
+    max-width: 200px;
+  }
+  .row-center img {
+    position: absolute;
+    width: 80%;
+    height: 80%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    left: 50%;
+  } */
 </style>
 

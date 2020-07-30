@@ -16,9 +16,9 @@ export function getOrderInfo(orderId) {
   })
 }
 
-export function createMn(data) {
+export function repeatBuyerContent(data) {
   return request({
-    url: 'MnAddMember',
+    url: 'MnRepeatBuyer',
     method: 'post',
     data
   })
