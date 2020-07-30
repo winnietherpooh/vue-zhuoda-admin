@@ -190,13 +190,13 @@
             <el-button v-if="row.is_evakuate === 1" size="mini" @click="showEvakuate(row)">查看评价</el-button>
           </template>
         </el-table-column>
-        <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+        <!-- <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
           <template slot-scope="{row}">
             <el-button @click="addSpecial(row)">
               新增
             </el-button>
           </template>
-        </el-table-column>
+        </el-table-column> -->
       </el-table>
     </el-dialog>
   </div>
