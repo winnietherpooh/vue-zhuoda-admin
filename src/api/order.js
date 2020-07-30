@@ -24,9 +24,9 @@ export function repeatBuyerContent(data) {
   })
 }
 
-export function updateMn(data) {
+export function setOrderStatus(data) {
   return request({
-    url: 'MnEditMember',
+    url: 'MnSetOrderStatus',
     method: 'post',
     data
   })

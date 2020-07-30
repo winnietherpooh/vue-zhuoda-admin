@@ -87,12 +87,12 @@
           <span @click="showshopinfo(row.order_id)">查看商品</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-        <template slot-scope="{row}">
+      <el-table-column label="操作" align="center">
+        <template slot-scope="{row}" style="width:200px;">
           <el-dropdown v-if="row.order_status !== 1" split-button type="primary">
             订单操作
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item v-if="row.order_status === 2">设置发货</el-dropdown-item>
+              <el-dropdown-item v-if="row.order_status === 2" @click.native="sendGoodsBackage(row,1)">设置发货</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </template>
@@ -203,7 +203,7 @@
 </template>
 
 <script>
-import { fetchList, getOrderInfo, repeatBuyerContent } from '@/api/order'
+import { fetchList, getOrderInfo, repeatBuyerContent, setOrderStatus } from '@/api/order'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -315,7 +315,13 @@ export default {
           fullscreenToggle: true
         }
       },
-      imageData: []
+      imageData: [],
+      dataTemp: {
+        order_id: 0,
+        order_status: 0,
+        setStatus: 0,
+        order_status_str: ''
+      }
     }
   },
   created() {
@@ -463,6 +469,32 @@ export default {
           message: '回复买家',
           type: 'success',
           duration: 2000
+        })
+      })
+    },
+    sendGoodsBackage(row, value) {
+      this.dataTemp = row
+      this.dataTemp.setStatus = value
+      this.$confirm('确认商品已经配送中了吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        setOrderStatus(this.dataTemp).then(() => {
+          this.$notify({
+            title: '设置订单状态',
+            message: '操作成功',
+            type: 'success',
+            duration: 2000
+          })
+        })
+        if (value === 1) {
+          this.dataTemp.order_status_str = '待收货'
+        }
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消'
         })
       })
     }
