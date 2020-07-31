@@ -34,7 +34,7 @@ export function deleteMn(data) {
 
 export function deleteMnAll(data) {
   return request({
-    url: 'MnDelAllMember',
+    url: 'MnDelGoodsList',
     method: 'post',
     data
   })

@@ -395,7 +395,7 @@ export default {
       this.multipleSelection = []
       selection.map((item) => {
         console.log(item)
-        this.multipleSelection.push(item.member_id)
+        this.multipleSelection.push(item.goods_id)
       })
     },
     showGoodsView(row) {

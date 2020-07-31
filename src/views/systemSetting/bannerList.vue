@@ -115,7 +115,7 @@
           >
             <el-radio-group slot="reference" v-model="temp.banner_type">
               <el-radio :label="1">首页轮播图</el-radio>
-              <el-radio :label="2">商品轮播图</el-radio>
+              <el-radio :label="2">奶站轮播图</el-radio>
             </el-radio-group>
           </el-popover>
         </el-form-item>
@@ -154,19 +154,19 @@
             placement="top-start"
             width="450"
             trigger="hover"
-            content="选择【商品ID】,请在下面输入框填写要跳转的商品ID,选择【跳转地址】,请填写具体的跳转地址 。"
+            content="选择【规格ID】,请在下面输入框填写要跳转的规格ID,选择【跳转地址】,请填写具体的跳转地址 。"
           >
             <el-radio-group slot="reference" v-model="temp.go_type" @change="showGoTo">
-              <el-radio :label="1">商品ID</el-radio>
-              <el-radio :label="2">跳转地址</el-radio>
+              <el-radio :label="1">规格ID</el-radio>
+              <el-radio v-if="temp.banner_type == 1" :label="2">跳转地址</el-radio>
             </el-radio-group>
           </el-popover>
         </el-form-item>
         <el-form-item v-if="temp.go_type === 2" label="跳转地址" prop="go_type">
           <el-input v-model="temp.go_url" placeholder="请填写跳转的URL" />
         </el-form-item>
-        <el-form-item v-if="temp.go_type === 1" label="商品ID" prop="go_type">
-          <el-input v-model="temp.go_url" placeholder="请填写跳转的商品ID" />
+        <el-form-item v-if="temp.go_type === 1" label="规格ID" prop="go_type">
+          <el-input v-model="temp.go_url" placeholder="请填写跳转的规格ID" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -197,7 +197,7 @@ export default {
   filters: {
     goTypeFilter(status) {
       const statusMap = {
-        '商品ID': 'success',
+        '规格ID': 'success',
         '跳转地址': 'danger'
       }
       return statusMap[status]
@@ -212,7 +212,7 @@ export default {
     typeFilter(status) {
       const statusMap = {
         '首页轮播图': 'success',
-        '商品轮播图': 'danger'
+        '奶站轮播图': 'danger'
       }
       return statusMap[status]
     }
