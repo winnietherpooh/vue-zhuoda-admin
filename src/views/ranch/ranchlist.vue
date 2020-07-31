@@ -14,9 +14,11 @@
           <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
             搜索
           </el-button>
-          <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
-            新增
-          </el-button>
+          <router-link :to="'/ranch/addRanch'">
+            <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit">
+              新增
+            </el-button>
+          </router-link>
         </el-form>
       </div>
     </div>
@@ -70,9 +72,11 @@
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
-          <el-button type="success" size="mini" @click="handleUpdate(row)">
-            编辑
-          </el-button>
+          <router-link :to="'/ranch/editRanch/' + row.ranch_id">
+            <el-button type="success" size="mini">
+              编辑
+            </el-button>
+          </router-link>
           <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
             删除
           </el-button>
@@ -84,49 +88,6 @@
       <el-button @click="toggleSelection()">取消</el-button>
     </div>
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
-
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="800px">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="80px" style="margin-left:50px;">
-        <el-form-item label="牧场名称" prop="ranch_name" style="width:440px;">
-          <el-input v-model="temp.ranch_name" placeholder="请填写牧场名称" />
-        </el-form-item>
-        <el-form-item label="牧场名称" prop="ranch_name">
-          <el-upload
-            class="center-uploader"
-            :data="dataObj"
-            :multiple="false"
-            :on-exceed="tooManyFilesError"
-            :show-file-list="false"
-            :on-error="errorFun"
-            :on-success="successFun"
-            :before-upload="beforeUpload"
-            action="https://up-z2.qiniup.com"
-            drag
-          >
-            <img v-if="imageUrl" :src="IMGCND.IMGCND + imageUrl" width="360px" height="180px">
-            <i v-else class="el-icon-plus avatar-uploader-icon" />
-          </el-upload>
-        </el-form-item>
-        <el-form-item label="状态" prop="is_open">
-          <el-radio-group v-model="temp.is_open">
-            <el-radio :label="1">营业中</el-radio>
-            <el-radio :label="2">已关闭</el-radio>
-            <el-radio :label="3">休息中</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item prop="content" style="margin-bottom: 30px;">
-          <Tinymce ref="editor" v-model="postForm.ranch_introduction" :height="200" required :width="600" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          Cancel
-        </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          Confirm
-        </el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
@@ -138,27 +99,10 @@ import { getToken } from '@/api/qiniu'
 import md5 from 'js-md5'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { createResource } from '@/api/resource'
-import Tinymce from '@/components/Tinymce'
 
-const defaultForm = {
-  status: 'create',
-  goods_name: '',
-  ranch_introduction: '', // 文章内容
-  is_offline: 0,
-  goods_id: undefined,
-  fileList: [],
-  set_seal_nums: 0,
-  postFormUrl: [],
-  widget_word_color: '',
-  widget_word: '',
-  keywords_str: '',
-  keywords_color: '',
-  delivery: '',
-  create_address: ''
-}
 export default {
   name: 'ComplexTable',
-  components: { Pagination, Tinymce },
+  components: { Pagination },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -172,7 +116,6 @@ export default {
   },
   data() {
     return {
-      postForm: Object.assign({}, defaultForm),
       dataObj: { token: '', key: '' },
       imageUrl: '',
       tableKey: 0,
@@ -284,6 +227,7 @@ export default {
       this.resetTemp()
       this.imageUrl = ''
       this.dialogStatus = 'create'
+      this.postForm.status = 'create'
       this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
@@ -310,6 +254,7 @@ export default {
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
       this.dialogStatus = 'update'
+      this.postForm.status = 'update'
       this.dialogFormVisible = true
       this.postForm.ranch_introduction = row.ranch_introduction
       this.imageUrl = row.ranch_img

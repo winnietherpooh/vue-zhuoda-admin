@@ -23,6 +23,19 @@ const ranchRouter = {
       component: () => import('@/views/ranch/ranchStaff'),
       name: 'ranchStaff',
       meta: { title: 'ranchStaff', noCache: true }
+    },
+    {
+      path: 'addRanch',
+      component: () => import('@/views/ranch/addRanch'),
+      name: 'addRanch',
+      meta: { title: 'addRanch', noCache: true, activeMenu: '/ranch/ranchlist' }
+    },
+    {
+      path: 'editRanch/:goodsId(\\d+)',
+      component: () => import('@/views/ranch/editRanch'),
+      name: 'editRanch',
+      hidden: true,
+      meta: { title: 'editRanch', noCache: true, activeMenu: '/ranch/ranchlist' }
     }
   ]
 }

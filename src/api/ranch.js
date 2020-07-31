@@ -8,19 +8,19 @@ export function fetchList(query) {
   })
 }
 
-export function fetchArticle(id) {
+export function getRanchInfo(ranchId) {
   return request({
-    url: '/vue-element-admin/article/detail',
+    url: 'MnGetRanchInfo',
     method: 'get',
-    params: { id }
+    params: { ranchId }
   })
 }
 
-export function fetchPv(pv) {
+export function createMn(data) {
   return request({
-    url: '/vue-element-admin/article/pv',
-    method: 'get',
-    params: { pv }
+    url: 'MnEditRanch',
+    method: 'post',
+    data
   })
 }
 
