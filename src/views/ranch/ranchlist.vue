@@ -56,11 +56,11 @@
           <span>{{ row.close_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="牧场介绍" align="center">
+      <!-- <el-table-column label="牧场介绍" align="center">
         <template slot-scope="{row}">
           <span>{{ row.ranch_introduction }}</span>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column label="状态" class-name="status-col" prop="is_lock">
         <template slot-scope="{row}">
           <el-tag :type="row.is_open_str | statusFilter">
@@ -85,9 +85,9 @@
     </div>
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="900px">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="80px" style="width: 440px; margin-left:50px;">
-        <el-form-item label="牧场名称" prop="ranch_name">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="800px">
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="80px" style="margin-left:50px;">
+        <el-form-item label="牧场名称" prop="ranch_name" style="width:440px;">
           <el-input v-model="temp.ranch_name" placeholder="请填写牧场名称" />
         </el-form-item>
         <el-form-item label="牧场名称" prop="ranch_name">
@@ -103,7 +103,7 @@
             action="https://up-z2.qiniup.com"
             drag
           >
-            <img v-if="imageUrl" :src="imageUrl" width="360px" height="180px">
+            <img v-if="imageUrl" :src="IMGCND.IMGCND + imageUrl" width="360px" height="180px">
             <i v-else class="el-icon-plus avatar-uploader-icon" />
           </el-upload>
         </el-form-item>
@@ -114,8 +114,8 @@
             <el-radio :label="3">休息中</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="状态" prop="is_open">
-          <el-input v-model="temp.ranch_introduction" type="textarea" :rows="5" placeholder="请输入内容" />
+        <el-form-item prop="content" style="margin-bottom: 30px;">
+          <Tinymce ref="editor" v-model="postForm.ranch_introduction" :height="200" required :width="600" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -138,10 +138,27 @@ import { getToken } from '@/api/qiniu'
 import md5 from 'js-md5'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { createResource } from '@/api/resource'
+import Tinymce from '@/components/Tinymce'
 
+const defaultForm = {
+  status: 'create',
+  goods_name: '',
+  ranch_introduction: '', // 文章内容
+  is_offline: 0,
+  goods_id: undefined,
+  fileList: [],
+  set_seal_nums: 0,
+  postFormUrl: [],
+  widget_word_color: '',
+  widget_word: '',
+  keywords_str: '',
+  keywords_color: '',
+  delivery: '',
+  create_address: ''
+}
 export default {
   name: 'ComplexTable',
-  components: { Pagination },
+  components: { Pagination, Tinymce },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -155,6 +172,7 @@ export default {
   },
   data() {
     return {
+      postForm: Object.assign({}, defaultForm),
       dataObj: { token: '', key: '' },
       imageUrl: '',
       tableKey: 0,
@@ -274,6 +292,7 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
+          this.temp.ranch_introduction = this.postForm.ranch_introduction
           createRanch(this.temp).then((response) => {
             // this.list.unshift(this.temp)
             this.dialogFormVisible = false
@@ -290,10 +309,10 @@ export default {
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
-      this.temp.timestamp = new Date(this.temp.timestamp)
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
-      this.imageUrl = ''
+      this.postForm.ranch_introduction = row.ranch_introduction
+      this.imageUrl = row.ranch_img
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
