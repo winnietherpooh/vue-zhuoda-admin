@@ -28,6 +28,7 @@ const ranchRouter = {
       path: 'addRanch',
       component: () => import('@/views/ranch/addRanch'),
       name: 'addRanch',
+      hidden: true,
       meta: { title: 'addRanch', noCache: true, activeMenu: '/ranch/ranchlist' }
     },
     {
