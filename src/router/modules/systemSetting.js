@@ -19,6 +19,12 @@ const systemSettingRouter = {
       meta: { title: 'bannerList', noCache: true }
     },
     {
+      path: 'indexVideo',
+      component: () => import('@/views/systemSetting/indexVideo'),
+      name: 'indexVideo',
+      meta: { title: 'indexVideo', noCache: true }
+    },
+    {
       path: 'setting',
       component: () => import('@/views/systemSetting/setting'),
       name: 'setting',

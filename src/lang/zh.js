@@ -16,6 +16,7 @@ export default {
     goodsList: '商品列表',
     systemSetting: '系统管理',
     bannerList: '轮播图管理',
+    indexVideo: '首页视频管理',
     setting: '系统配置',
     documentation: '文档',
     guide: '引导页',
