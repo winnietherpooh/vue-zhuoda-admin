@@ -95,6 +95,11 @@
           </el-tag>
         </template>
       </el-table-column>
+      <el-table-column label="查看评论" align="center">
+        <template slot-scope="{row}">
+          <span>好评率: {{ row.goods_score }} %</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-button type="success" size="mini" @click="handleUpdate(row)">
@@ -304,7 +309,8 @@ export default {
         max_time: 0,
         taste: '',
         packaging: '',
-        set_seal_nums: 0
+        set_seal_nums: 0,
+        evaluate_nums: 0
       },
       listMemberLoading: true,
       value1: true,
