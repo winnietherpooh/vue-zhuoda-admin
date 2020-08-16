@@ -1,10 +1,26 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <div class="box-card" style="background-color:#EFF2F4;padding:15px;height:72px;">
-        <el-form :inline="true" class="demo-form-inline">
+      <div class="box-card" style="background-color:#EFF2F4;padding:15px;min-height:72px;">
+        <el-form :inline="true">
           <el-form-item label="商品名称" class="labelFontColor">
-            <el-input v-model="listQuery.title" placeholder="请输入商品名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+            <el-input v-model="listQuery.goodsName" placeholder="请输入商品名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+          </el-form-item>
+          <el-form-item label="规格名称" class="labelFontColor">
+            <el-input v-model="listQuery.goodsSpecial" placeholder="请输入规格名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+          </el-form-item>
+          <el-form-item label="用户昵称" class="labelFontColor">
+            <el-input v-model="listQuery.memberName" placeholder="请输入用户昵称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+          </el-form-item>
+          <el-form-item label="分数条件" class="labelFontColor">
+            <el-select v-model="listQuery.queryType" style="width: 140px" class="filter-item" @change="handleFilter">
+              <el-option v-for="item in scoreType" :key="item.key" :label="item.label" :value="item.key" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="评论分数" class="labelFontColor">
+            <el-select v-model="listQuery.score" style="width: 140px" class="filter-item" @change="handleFilter">
+              <el-option v-for="item in scoreValue" :key="item.key" :label="item.label" :value="item.key" />
+            </el-select>
           </el-form-item>
           <el-form-item label="状态" class="labelFontColor">
             <el-select v-model="listQuery.importanceOptions" style="width: 140px" class="filter-item" @change="handleFilter">
@@ -47,17 +63,17 @@
           <span>{{ row.special_name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="购买时间" align="center" prop="create_time" sortable="custom">
+      <el-table-column label="购买时间" align="center" prop="create_time" sortable="custom" width="150">
         <template slot-scope="{row}">
           <span>{{ row.pay_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="评论分数" align="center" prop="create_time" sortable="custom">
+      <el-table-column label="评论分数" align="center" prop="create_time" sortable="custom" width="165">
         <template slot-scope="{row}">
           <el-rate v-model="row.score" disabled show-score text-color="#ff9900" />
         </template>
       </el-table-column>
-      <el-table-column label="评论时间" align="center" prop="create_time" sortable="custom">
+      <el-table-column label="评论时间" align="center" prop="create_time" sortable="custom" width="150">
         <template slot-scope="{row}">
           <span>{{ row.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
@@ -81,12 +97,12 @@
           <span v-if="row.media_list.length < 1">无视频评论</span>
         </template>
       </el-table-column>
-      <el-table-column label="查看评论" align="center">
+      <el-table-column label="查看评论" align="center" width="100">
         <template slot-scope="{row}">
           <el-button icon="el-icon-s-comment" circle @click="showEInfo(row)" />
         </template>
       </el-table-column>
-      <el-table-column label="商家回复时间" class-name="status-col" prop="is_delete">
+      <el-table-column label="商家回复时间" class-name="status-col" prop="is_delete" width="150">
         <template slot-scope="{row}">
           <el-tag :type="row.is_offline_str | statusFilter">
             <span>{{ row.repeat_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
@@ -98,7 +114,7 @@
           <span>{{ row.ranch_content }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="200">
         <template slot-scope="{row,$index}">
           <router-link :to="'/goods/editGoods/'+row.goods_id">
             <el-button type="success" size="mini">
@@ -220,12 +236,17 @@ export default {
       listQuery: {
         page: 1,
         limit: 10,
-        importance: undefined,
-        title: undefined,
-        type: undefined,
+        importance: '',
+        goodsName: '',
+        goodsSpecial: '',
+        memberName: '',
+        queryType: '0',
+        score: '0',
         sort: '+admin_account'
       },
-      importanceOptions: [{ label: '所有', key: '0' }, { label: '正常', key: '1' }, { label: '下架', key: '2' }],
+      importanceOptions: [{ label: '所有', key: '0' }, { label: '有图', key: '1' }, { label: '无图', key: '2' }],
+      scoreType: [{ label: '所有', key: '0' }, { label: '等于', key: '1' }, { label: '大于等于', key: '2' }, { label: '小于', key: '3' }],
+      scoreValue: [{ label: '所有', key: '0' }, { label: '1', key: '1' }, { label: '2', key: '2' }, { label: '3', key: '3' }, { label: '4', key: '4' }, { label: '5', key: '5' }],
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: ['published', 'draft', 'deleted'],
       powerList: [],
