@@ -1,8 +1,8 @@
 /*
  * @Author: your name
  * @Date: 2020-08-14 15:12:13
- * @LastEditTime: 2020-08-16 11:49:37
- * @LastEditors: your name
+ * @LastEditTime: 2020-08-16 22:24:15
+ * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \admin\src\api\goods.js
  */
@@ -96,3 +96,18 @@ export function getEList(query) {
   })
 }
 
+export function deleteMnE(data) {
+  return request({
+    url: 'MnDeleteEvaluate',
+    method: 'post',
+    data
+  })
+}
+
+export function deleteMnAllE(data) {
+  return request({
+    url: 'MnDeleteEvaluateAll',
+    method: 'post',
+    data
+  })
+}

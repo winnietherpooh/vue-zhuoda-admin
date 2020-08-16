@@ -116,17 +116,27 @@
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="200">
         <template slot-scope="{row,$index}">
-          <router-link :to="'/goods/editGoods/'+row.goods_id">
+          <!-- <router-link :to="'/goods/editGoods/'+row.goods_id">
             <el-button type="success" size="mini">
               编辑
             </el-button>
-          </router-link>
+          </router-link> -->
+          <el-dropdown>
+            <el-button type="primary">更多菜单<i class="el-icon-arrow-down el-icon--right" />
+            </el-button>
+            <el-dropdown-menu slot="dropdown">
+              <!-- <el-dropdown-item>编辑</el-dropdown-item> -->
+              <el-dropdown-item @click.native="handleDelete(row,$index)">删除</el-dropdown-item>
+              <el-dropdown-item>设置推荐</el-dropdown-item>
+              <el-dropdown-item>取消推荐</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
           <!-- <el-button size="mini" type="warning" style="margin-left:10px" @click="addSpecial(row)">
             添加规格
           </el-button> -->
-          <el-button v-if="row.status!='deleted'" size="mini" type="danger" style="margin-left:10px" @click="handleDelete(row,$index)">
+          <!-- <el-button v-if="row.status!='deleted'" size="mini" type="danger" style="margin-left:10px" @click="handleDelete(row,$index)">
             删除
-          </el-button>
+          </el-button> -->
         </template>
       </el-table-column>
     </el-table>
@@ -199,7 +209,7 @@
 </template>
 
 <script>
-import { getEList, createMn, updateMn, deleteMn, deleteMnAll } from '@/api/goods'
+import { getEList, createMn, updateMn, deleteMnE, deleteMnAllE } from '@/api/goods'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -254,7 +264,8 @@ export default {
       temp: {
         nick_name: '',
         is_delete: 0,
-        IdArray: []
+        IdArray: [],
+        evaluate_id: 0
       },
       specialTemp: {
         goods_name: '',
@@ -439,16 +450,17 @@ export default {
       })
     },
     handleDelete(row, index) {
-      this.temp.admin_id = row.admin_id
-      this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+      console.log(row)
+      this.temp.evaluate_id = row.evaluate_id
+      this.$confirm('此操作将永久删除该评论, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.temp.resource_id = row.resource_id
-        deleteMn(this.temp).then(() => {
+        this.temp.evaluate_id = row.evaluate_id
+        deleteMnE(this.temp).then(() => {
           this.$notify({
-            title: '删除用户',
+            title: '删除评论',
             message: '操作成功',
             type: 'success',
             duration: 2000
@@ -481,25 +493,36 @@ export default {
       this.$refs.listTable.clearSelection()
     },
     deleteAll() {
-      this.listLoading = true
-      this.temp.IdArray = this.multipleSelection
-      deleteMnAll(this.temp).then(() => {
-        this.$notify({
-          title: '删除资源',
-          message: '操作成功',
-          type: 'success',
-          duration: 2000
+      this.$confirm('此操作将永久删除该评论, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.listLoading = true
+        this.temp.IdArray = this.multipleSelection
+        deleteMnAllE(this.temp).then(() => {
+          this.$notify({
+            title: '删除评论',
+            message: '操作成功',
+            type: 'success',
+            duration: 2000
+          })
+          this.multipleSelection = []
+          this.getList()
+          this.listLoading = false
         })
-        this.multipleSelection = []
-        this.getList()
-        this.listLoading = false
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
       })
     },
     selectAll(selection, row) {
       this.multipleSelection = []
       selection.map((item) => {
         console.log(item)
-        this.multipleSelection.push(item.goods_id)
+        this.multipleSelection.push(item.evaluate_id)
       })
     },
     showGoodsView(row) {
