@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2020-08-14 15:12:13
+ * @LastEditTime: 2020-08-16 11:39:14
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \admin\src\router\modules\goods.js
+ */
 /** When your routing table is too long, you can split it into small modules**/
 
 import Layout from '@/layout'
@@ -48,6 +56,12 @@ const goodsRouter = {
       component: () => import('@/views/goods/goodsFreight'),
       name: 'goodsFreight',
       meta: { title: 'goodsFreight', noCache: true }
+    },
+    {
+      path: 'goodsEvaluate',
+      component: () => import('@/views/goods/goodsEvaluate'),
+      name: 'goodsEvaluate',
+      meta: { title: 'goodsEvaluate', noCache: true }
     }
   ]
 }

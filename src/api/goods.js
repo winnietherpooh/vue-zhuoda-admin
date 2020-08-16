@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2020-08-14 15:12:13
+ * @LastEditTime: 2020-08-16 11:49:37
+ * @LastEditors: your name
+ * @Description: In User Settings Edit
+ * @FilePath: \admin\src\api\goods.js
+ */
 import request from '@/utils/request'
 
 export function fetchList(query) {
@@ -75,6 +83,14 @@ export function getCityData(query) {
 export function setCityPostAgeData(query) {
   return request({
     url: 'MnSetCityPostAge',
+    method: 'get',
+    params: query
+  })
+}
+
+export function getEList(query) {
+  return request({
+    url: 'MnGetGoodsEvaluateList',
     method: 'get',
     params: query
   })
