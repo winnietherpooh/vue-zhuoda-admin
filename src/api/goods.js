@@ -111,3 +111,11 @@ export function deleteMnAllE(data) {
     data
   })
 }
+
+export function hiddenMn(data) {
+  return request({
+    url: 'MnHiddenEvaluate',
+    method: 'post',
+    data
+  })
+}

@@ -114,6 +114,20 @@
           <span>{{ row.ranch_content }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="展示" class-name="status-col" prop="is_delete">
+        <template slot-scope="{row}">
+          <el-tag :type="row.is_show_str | isShowStatusFilter">
+            {{ row.is_show_str }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="推荐" class-name="status-col" prop="is_delete">
+        <template slot-scope="{row}">
+          <el-tag :type="row.is_show_goods_str | isShowIndexStatusFilter">
+            {{ row.is_show_goods_str }}
+          </el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="200">
         <template slot-scope="{row,$index}">
           <!-- <router-link :to="'/goods/editGoods/'+row.goods_id">
@@ -127,8 +141,11 @@
             <el-dropdown-menu slot="dropdown">
               <!-- <el-dropdown-item>编辑</el-dropdown-item> -->
               <el-dropdown-item @click.native="handleDelete(row,$index)">删除</el-dropdown-item>
-              <el-dropdown-item>设置推荐</el-dropdown-item>
-              <el-dropdown-item>取消推荐</el-dropdown-item>
+              <el-dropdown-item v-if="row.is_show === 1" @click.native="handleHidden(row,$index,2,1)">隐藏</el-dropdown-item>
+              <el-dropdown-item v-if="row.is_show === 2" @click.native="handleHidden(row,$index,1,1)">显示</el-dropdown-item>
+              <el-dropdown-item v-if="row.is_show_goods === 2" @click.native="handleHidden(row,$index,1,2)">设置推荐</el-dropdown-item>
+              <el-dropdown-item v-if="row.is_show_goods === 1" @click.native="handleHidden(row,$index,2,2)">取消推荐</el-dropdown-item>
+              <el-dropdown-item @click.native="replyContent(row)">回复</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
           <!-- <el-button size="mini" type="warning" style="margin-left:10px" @click="addSpecial(row)">
@@ -209,7 +226,7 @@
 </template>
 
 <script>
-import { getEList, createMn, updateMn, deleteMnE, deleteMnAllE } from '@/api/goods'
+import { getEList, createMn, updateMn, deleteMnE, deleteMnAllE, hiddenMn } from '@/api/goods'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -227,6 +244,20 @@ export default {
       return statusMap[status]
     },
     videoStatusFilter(status) {
+      const statusMap = {
+        '是': 'success',
+        '否': 'danger'
+      }
+      return statusMap[status]
+    },
+    isShowStatusFilter(status) {
+      const statusMap = {
+        '是': 'success',
+        '否': 'danger'
+      }
+      return statusMap[status]
+    },
+    isShowIndexStatusFilter(status) {
       const statusMap = {
         '是': 'success',
         '否': 'danger'
@@ -265,7 +296,22 @@ export default {
         nick_name: '',
         is_delete: 0,
         IdArray: [],
-        evaluate_id: 0
+        evaluate_id: 0,
+        order_id: 0,
+        goods_id: 0,
+        special_id: 0,
+        member_id: 0,
+        score: 0,
+        content: 0,
+        image_list: [],
+        media_list: [],
+        had_video: 0,
+        create_time: 0,
+        ranch_content: '',
+        repeat_time: 0,
+        is_show: 0,
+        is_show_goods: 0,
+        show_goods_time: 0
       },
       specialTemp: {
         goods_name: '',
@@ -387,10 +433,25 @@ export default {
     },
     resetTemp() {
       this.temp = {
-        admin_account: '',
-        admin_pwd: '',
-        power_team: 0,
-        is_lock: false
+        nick_name: '',
+        is_delete: 0,
+        IdArray: [],
+        evaluate_id: 0,
+        order_id: 0,
+        goods_id: 0,
+        special_id: 0,
+        member_id: 0,
+        score: 0,
+        content: 0,
+        image_list: [],
+        media_list: [],
+        had_video: 0,
+        create_time: 0,
+        ranch_content: '',
+        repeat_time: 0,
+        is_show: 0,
+        is_show_goods: 0,
+        show_goods_time: 0
       }
     },
     handleCreate() {
@@ -546,6 +607,38 @@ export default {
         message: '复制成功',
         type: 'success',
         duration: 1500
+      })
+    },
+    handleHidden(row, index, value, type) {
+      this.temp = Object.assign({}, row)
+      if (type === 1) {
+        this.temp.is_show = value
+      } else {
+        this.temp.is_show_goods = value
+      }
+      this.temp.type = type
+      console.log(this.temp)
+      hiddenMn(this.temp).then(() => {
+        this.list.splice(index, 1, this.temp)
+        this.$notify({
+          title: '设置评论',
+          message: '操作成功',
+          type: 'success',
+          duration: 2000
+        })
+        if (type === 1) {
+          if (this.temp.is_show === 1) {
+            this.temp.is_show_str = '是'
+          } else {
+            this.temp.is_show_str = '否'
+          }
+        } else {
+          if (this.temp.is_show_goods === 1) {
+            this.temp.is_show_goods_str = '是'
+          } else {
+            this.temp.is_show_goods_str = '否'
+          }
+        }
       })
     }
     // addSpecial(row) {
