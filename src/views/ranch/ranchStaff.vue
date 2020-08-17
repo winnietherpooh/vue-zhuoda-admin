@@ -170,6 +170,13 @@
             </el-tag>
           </template>
         </el-table-column>
+        <el-table-column label="录入员" class-name="status-col" prop="is_delete" width="100">
+          <template slot-scope="{row}">
+            <el-tag :type="row.is_inputer_str | memberFilter">
+              {{ row.is_inputer_str }}
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column label="用户状态" class-name="status-col" prop="is_delete" width="100">
           <template slot-scope="{row}">
             <el-tag :type="row.is_delete_str | statusFilter">
@@ -190,6 +197,8 @@
                 <el-dropdown-item v-if="row.is_creater=== 0" @click.native="setMilkerCreate(row,$index,2,1)">设置生产员</el-dropdown-item>
                 <el-dropdown-item v-if="row.is_dispatching=== 1" @click.native="setMilkerCreate(row,$index,3,0)">取消配送员</el-dropdown-item>
                 <el-dropdown-item v-if="row.is_dispatching=== 0" @click.native="setMilkerCreate(row,$index,3,1)">设置配送员</el-dropdown-item>
+                <el-dropdown-item v-if="row.is_inputer=== 0" @click.native="setMilkerCreate(row,$index,4,1)">设置录入员</el-dropdown-item>
+                <el-dropdown-item v-if="row.is_inputer=== 1" @click.native="setMilkerCreate(row,$index,4,1)">取消录入员</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </template>
@@ -493,11 +502,20 @@ export default {
             this.temp.is_dispatching_str = '否'
           }
           break
+        case 4:
+          if (value === 1) {
+            this.temp.is_inputer = 1
+            this.temp.is_inputer_str = '是'
+          } else {
+            this.temp.is_inputer = 0
+            this.temp.is_inputer_str = '否'
+          }
+          break
       }
       setMn(this.temp).then(() => {
         this.memberList.splice(index, 1, this.temp)
         this.$notify({
-          title: '删除用户',
+          title: '设置员工',
           message: '操作成功',
           type: 'success',
           duration: 2000
