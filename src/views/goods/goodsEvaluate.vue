@@ -109,11 +109,11 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="商家回复内容" class-name="status-col" prop="is_delete">
+      <!-- <el-table-column label="商家回复内容" class-name="status-col" prop="is_delete">
         <template slot-scope="{row}">
           <span>{{ row.ranch_content }}</span>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column label="展示" class-name="status-col" prop="is_delete">
         <template slot-scope="{row}">
           <el-tag :type="row.is_show_str | isShowStatusFilter">
@@ -145,7 +145,6 @@
               <el-dropdown-item v-if="row.is_show === 2" @click.native="handleHidden(row,$index,1,1)">显示</el-dropdown-item>
               <el-dropdown-item v-if="row.is_show_goods === 2" @click.native="handleHidden(row,$index,1,2)">设置推荐</el-dropdown-item>
               <el-dropdown-item v-if="row.is_show_goods === 1" @click.native="handleHidden(row,$index,2,2)">取消推荐</el-dropdown-item>
-              <el-dropdown-item @click.native="replyContent(row)">回复</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
           <!-- <el-button size="mini" type="warning" style="margin-left:10px" @click="addSpecial(row)">
@@ -184,9 +183,16 @@
           <el-col>用户评论:</el-col>
           <el-col>{{ eInfo.content }}</el-col>
         </el-form-item>
+        <el-form-item>
+          <el-col>牧场回复:</el-col>
+          <el-col><el-input v-model="eInfo.ranch_content" type="textarea" rows="5" /></el-col>
+        </el-form-item>
         <el-form-item align="center">
-          <el-button type="primary" @click="closeView2Dialog">
+          <el-button @click="closeView2Dialog">
             关闭
+          </el-button>
+          <el-button type="primary" @click="replyContentTxt(eInfo)">
+            保存
           </el-button>
         </el-form-item>
       </el-form>
@@ -226,7 +232,7 @@
 </template>
 
 <script>
-import { getEList, createMn, updateMn, deleteMnE, deleteMnAllE, hiddenMn } from '@/api/goods'
+import { getEList, createMn, updateMn, deleteMnE, deleteMnAllE, hiddenMn, replayE } from '@/api/goods'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -640,6 +646,21 @@ export default {
           }
         }
       })
+    },
+    replyContentTxt(row) {
+      this.temp = row
+      console.log(this.temp)
+      const index = this.list.findIndex(v => v.evaluate_id === this.temp.evaluate_id)
+      replayE(this.temp).then(() => {
+        this.list.splice(index, 1, this.temp)
+        this.$notify({
+          title: '回复评论',
+          message: '操作成功',
+          type: 'success',
+          duration: 2000
+        })
+      })
+      this.dialogForm2Visible = false
     }
     // addSpecial(row) {
     //   // specialTemp

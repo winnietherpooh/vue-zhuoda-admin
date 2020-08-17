@@ -119,3 +119,11 @@ export function hiddenMn(data) {
     data
   })
 }
+
+export function replayE(data) {
+  return request({
+    url: 'MnReplyEvaluate',
+    method: 'post',
+    data
+  })
+}
