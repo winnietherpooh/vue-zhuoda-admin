@@ -75,10 +75,36 @@
           <span>{{ row.pay_price }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="运费" align="center" width="100">
+        <template slot-scope="{row}">
+          <span>{{ row.postage }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="交易类型" class-name="status-col" prop="is_delete" width="100">
+        <template slot-scope="{row}">
+          <el-tag :type="row.is_cod_str | statusBuyFilter">
+            {{ row.is_cod_str }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="类型" class-name="status-col" prop="is_delete" width="100">
+        <template slot-scope="{row}">
+          <el-tag :type="row.order_type_str | statusTypeFilter">
+            {{ row.order_type_str }}
+          </el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="状态" class-name="status-col" prop="is_delete" width="100">
         <template slot-scope="{row}">
           <el-tag :type="row.order_status_str | statusFilter">
             {{ row.order_status_str }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="售后" class-name="status-col" prop="is_delete" width="100">
+        <template slot-scope="{row}">
+          <el-tag :type="row.order_status_sub_str | statusAfterSaleFilter">
+            {{ row.order_status_sub_str }}
           </el-tag>
         </template>
       </el-table-column>
@@ -215,11 +241,34 @@ export default {
   filters: {
     statusFilter(status) {
       const statusMap = {
-        '待支付': 'success',
-        '代发货': 'danger',
+        '待支付': '',
+        '代发货': 'info',
         '待收货': 'danger',
-        '已收货': 'danger',
-        '已完成': 'danger'
+        '已收货': 'warning',
+        '已完成': 'success'
+      }
+      return statusMap[status]
+    },
+    statusTypeFilter(status) {
+      const statusMap = {
+        '交易成功': 'success',
+        '交易失败': 'danger',
+        '等待交易': 'info'
+      }
+      return statusMap[status]
+    },
+    statusBuyFilter(status) {
+      const statusMap = {
+        '货到付款': 'success',
+        '先付后货': 'danger'
+      }
+      return statusMap[status]
+    },
+    statusAfterSaleFilter(status) {
+      const statusMap = {
+        '退款成功': 'success',
+        '退款失败': 'danger',
+        '申请退款中': 'warning'
       }
       return statusMap[status]
     },
