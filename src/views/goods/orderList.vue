@@ -50,17 +50,17 @@
           </el-form>
         </template>
       </el-table-column>
-      <el-table-column label="订单号" prop="nick_name" sortable="custom" align="center">
+      <el-table-column label="订单号" prop="nick_name" sortable="custom" align="center" width="162">
         <template slot-scope="{row}">
           <span>{{ row.order_no }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" align="center" prop="create_time" sortable="custom">
+      <el-table-column label="创建时间" align="center" prop="create_time" sortable="custom" width="150">
         <template slot-scope="{row}">
           <span>{{ row.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="购买用户" align="center">
+      <el-table-column label="购买用户" align="center" width="150">
         <template slot-scope="{row}">
           <span>{{ row.nick_name }}</span>
         </template>
@@ -75,19 +75,24 @@
           <span>{{ row.pay_price }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="支付时间" align="center" prop="create_time" sortable="custom" width="150">
+        <template slot-scope="{row}">
+          <span>{{ row.pay_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="运费" align="center" width="100">
         <template slot-scope="{row}">
           <span>{{ row.postage }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="交易类型" class-name="status-col" prop="is_delete" width="100">
+      <el-table-column label="交易类型" class-name="status-col" prop="is_delete" width="110">
         <template slot-scope="{row}">
           <el-tag :type="row.is_cod_str | statusBuyFilter">
             {{ row.is_cod_str }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="类型" class-name="status-col" prop="is_delete" width="100">
+      <el-table-column label="类型" class-name="status-col" prop="is_delete" width="110">
         <template slot-scope="{row}">
           <el-tag :type="row.order_type_str | statusTypeFilter">
             {{ row.order_type_str }}
@@ -101,19 +106,19 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="售后" class-name="status-col" prop="is_delete" width="100">
+      <el-table-column label="售后" class-name="status-col" prop="is_delete" width="150">
         <template slot-scope="{row}">
           <el-tag :type="row.order_status_sub_str | statusAfterSaleFilter">
             {{ row.order_status_sub_str }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="查看商品" align="center" prop="create_time" sortable="custom">
+      <el-table-column label="查看商品" align="center" prop="create_time" sortable="custom" width="100">
         <template slot-scope="{row}">
           <span @click="showshopinfo(row.order_id)">查看商品</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center">
+      <el-table-column label="操作" align="center" min-width="200">
         <template slot-scope="{row}" style="width:200px;">
           <el-dropdown v-if="row.order_status !== 1" split-button type="primary">
             订单操作
