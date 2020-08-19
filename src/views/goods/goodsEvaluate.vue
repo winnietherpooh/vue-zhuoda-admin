@@ -63,17 +63,17 @@
           <span>{{ row.special_name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="购买时间" align="center" prop="create_time" sortable="custom" width="150">
+      <el-table-column label="购买时间" align="center" prop="create_time" sortable="custom" min-width="150">
         <template slot-scope="{row}">
           <span>{{ row.pay_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="评论分数" align="center" prop="create_time" sortable="custom" width="165">
+      <el-table-column label="评论分数" align="center" prop="create_time" sortable="custom" min-width="165">
         <template slot-scope="{row}">
           <el-rate v-model="row.score" disabled show-score text-color="#ff9900" />
         </template>
       </el-table-column>
-      <el-table-column label="评论时间" align="center" prop="create_time" sortable="custom" width="150">
+      <el-table-column label="评论时间" align="center" prop="create_time" sortable="custom" min-width="150">
         <template slot-scope="{row}">
           <span>{{ row.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>

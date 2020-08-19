@@ -67,7 +67,7 @@
           <span>{{ row.login_nums }}</span>
         </template>
       </el-table-column> -->
-      <el-table-column label="状态" class-name="status-col" prop="is_delete" width="100">
+      <el-table-column label="状态" class-name="status-col" prop="is_delete" min-width="100">
         <template slot-scope="{row}">
           <el-tag :type="row.is_offline_str | statusFilter">
             {{ row.is_offline_str }}

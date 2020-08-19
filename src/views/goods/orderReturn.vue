@@ -35,79 +35,79 @@
       @sort-change="sortChange"
     >
       <el-table-column type="selection" width="55" />
-      <el-table-column label="退款编号" prop="goods_name" align="center" width="140">
+      <el-table-column label="退款编号" prop="goods_name" align="center" min-width="140">
         <template slot-scope="{row}">
           <span>{{ row.return_no }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="所属订单" prop="goods_name" align="center" width="165">
+      <el-table-column label="所属订单" prop="goods_name" align="center" min-width="165">
         <template slot-scope="{row}">
           <router-link :to="'/goods/orderList/'+row.order_id">
             <span>{{ row.order_no }}</span>
           </router-link>
         </template>
       </el-table-column>
-      <el-table-column label="发起时间" align="center" prop="create_time" width="150">
+      <el-table-column label="发起时间" align="center" prop="create_time" min-width="150">
         <template slot-scope="{row}">
           <span>{{ row.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="退款金额" align="center" prop="create_time" width="100">
+      <el-table-column label="退款金额" align="center" prop="create_time" min-width="100">
         <template slot-scope="{row}">
           <span>{{ row.return_money }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="货物状态" align="center" prop="create_time" width="200">
+      <el-table-column label="货物状态" align="center" prop="create_time" min-width="200">
         <template slot-scope="{row}">
           <span>{{ row.goods_status_str }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="退款理由" align="center" prop="create_time" width="200">
+      <el-table-column label="退款理由" align="center" prop="create_time" min-width="200">
         <template slot-scope="{row}">
           <span>{{ row.return_type_str }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="退款凭证" align="center" width="100">
+      <el-table-column label="退款凭证" align="center" min-width="100">
         <template slot-scope="{row}">
           <el-image v-if="row.image_list.length > 0" src="https://rescdn.zhuodamilk.com/admin-use/admin-image-big-view-3.png" fit="fill" :preview-src-list="row.image_list" />
           <span v-if="row.image_list.length < 1">无图片评论</span>
         </template>
       </el-table-column>
-      <el-table-column label="状态" class-name="status-col" prop="is_delete" width="110">
+      <el-table-column label="状态" class-name="status-col" prop="is_delete" min-width="110">
         <template slot-scope="{row}">
           <el-tag :type="row.return_result_str | statusFilter">
             {{ row.return_result_str }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="驳回理由" align="center" prop="create_time" width="200">
+      <el-table-column label="驳回理由" align="center" prop="create_time" min-width="200">
         <template slot-scope="{row}">
           <span>{{ row.fail_reslut }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="微信退款状态" class-name="status-col" prop="is_delete" width="130">
+      <el-table-column label="微信退款状态" class-name="status-col" prop="is_delete" min-width="130">
         <template slot-scope="{row}">
           <el-tag :type="row.wechat_result_str | statusWechatFilter">
             {{ row.wechat_result_str }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="到账金额" align="center" prop="create_time" width="100">
+      <el-table-column label="到账金额" align="center" prop="create_time" min-width="100">
         <template slot-scope="{row}">
           <span>￥{{ row.wechat_money }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="退款到账时间" align="center" prop="create_time" width="150">
+      <el-table-column label="退款到账时间" align="center" prop="create_time" min-width="150">
         <template slot-scope="{row}">
           <span>{{ row.wechat_time }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="微信退款说明" align="center" prop="create_time" width="150">
+      <el-table-column label="微信退款说明" align="center" prop="create_time" min-width="150">
         <template slot-scope="{row}">
           <span>{{ row.wechat_explain }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="200">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" min-width="200">
         <template slot-scope="{row,$index}">
           <el-button v-if="row.return_result == 1" type="success" size="mini" @click="confirmReturn(row,$index)">
             同意退款
