@@ -1,14 +1,38 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <div class="box-card" style="background-color:#EFF2F4;padding:15px;height:72px;">
+      <div class="box-card" style="background-color:#EFF2F4;padding:15px;">
         <el-form :inline="true" class="demo-form-inline">
-          <el-form-item label="用户昵称" class="labelFontColor">
-            <el-input v-model="listQuery.title" placeholder="请输入账号" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+          <el-form-item label="买家昵称" class="labelFontColor">
+            <el-input v-model="listQuery.nickName" placeholder="请输入账号" style="width: 150px;" class="filter-item" @keyup.enter.native="handleFilter" />
+          </el-form-item>
+          <el-form-item label="订单编号" class="labelFontColor">
+            <el-input v-model="listQuery.orderNo" placeholder="请输入账号" style="width: 150px;" class="filter-item" @keyup.enter.native="handleFilter" />
+          </el-form-item>
+          <el-form-item label="微信交易单号" class="labelFontColor">
+            <el-input v-model="listQuery.wecharNo" placeholder="请输入账号" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+          </el-form-item>
+          <el-form-item label="收货人手机号" class="labelFontColor">
+            <el-input v-model="listQuery.mobile" placeholder="请输入账号" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+          </el-form-item>
+          <el-form-item label="交易类型" class="labelFontColor">
+            <el-select v-model="listQuery.importanceOptions1" style="width: 140px" class="filter-item" @change="handleFilter">
+              <el-option v-for="item in importanceOptions1" :key="item.key" :label="item.label" :value="item.key" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="类型" class="labelFontColor">
+            <el-select v-model="listQuery.importanceOptions2" style="width: 140px" class="filter-item" @change="handleFilter">
+              <el-option v-for="item in importanceOptions2" :key="item.key" :label="item.label" :value="item.key" />
+            </el-select>
           </el-form-item>
           <el-form-item label="状态" class="labelFontColor">
-            <el-select v-model="listQuery.importanceOptions" style="width: 140px" class="filter-item" @change="handleFilter">
-              <el-option v-for="item in importanceOptions" :key="item.key" :label="item.label" :value="item.key" />
+            <el-select v-model="listQuery.importanceOptions3" style="width: 140px" class="filter-item" @change="handleFilter">
+              <el-option v-for="item in importanceOptions3" :key="item.key" :label="item.label" :value="item.key" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="售后" class="labelFontColor">
+            <el-select v-model="listQuery.importanceOptions4" style="width: 140px" class="filter-item" @change="handleFilter">
+              <el-option v-for="item in importanceOptions4" :key="item.key" :label="item.label" :value="item.key" />
             </el-select>
           </el-form-item>
           <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
@@ -78,6 +102,11 @@
       <el-table-column label="支付时间" align="center" prop="create_time" sortable="custom" min-width="150">
         <template slot-scope="{row}">
           <span>{{ row.pay_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="微信单号" align="center" min-width="260">
+        <template slot-scope="{row}">
+          <span>{{ row.transaction_no }}</span>
         </template>
       </el-table-column>
       <el-table-column label="运费" align="center" min-width="100">
@@ -302,13 +331,20 @@ export default {
       listQuery: {
         page: 1,
         limit: 10,
+        nickName: '',
+        mobile: '',
+        wecharNo: '',
+        orderNo: '',
         order_id: 0,
         importance: undefined,
         title: undefined,
         type: undefined,
         sort: '+admin_account'
       },
-      importanceOptions: [{ label: '所有', key: '0' }, { label: '正常', key: '2' }, { label: '锁定', key: '1' }],
+      importanceOptions1: [{ label: '所有', key: '0' }, { label: '货到付款', key: '1' }, { label: '立即支付', key: '2' }],
+      importanceOptions2: [{ label: '所有', key: '0' }, { label: '交易成功', key: '1' }, { label: '交易失败', key: '2' }, { label: '等待交易', key: '3' }],
+      importanceOptions3: [{ label: '所有', key: '0' }, { label: '待支付', key: '1' }, { label: '待发货', key: '2' }, { label: '待收货', key: '3' }, { label: '待评价', key: '4' }, { label: '售后中', key: '5' }],
+      importanceOptions4: [{ label: '所有', key: '0' }, { label: '申请成功', key: '1' }, { label: '申请失败', key: '2' }, { label: '申请中', key: '3' }],
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: ['published', 'draft', 'deleted'],
       powerList: [],
