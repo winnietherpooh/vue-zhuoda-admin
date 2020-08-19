@@ -80,6 +80,11 @@
           </el-tag>
         </template>
       </el-table-column>
+      <el-table-column label="驳回理由" align="center" prop="create_time" width="200">
+        <template slot-scope="{row}">
+          <span>{{ row.fail_reslut }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="微信退款状态" class-name="status-col" prop="is_delete" width="130">
         <template slot-scope="{row}">
           <el-tag :type="row.wechat_result_str | statusWechatFilter">
@@ -104,13 +109,13 @@
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="200">
         <template slot-scope="{row,$index}">
-          <el-button type="success" size="mini" @click="confirmReturn(row,$index)">
+          <el-button v-if="row.return_result == 1" type="success" size="mini" @click="confirmReturn(row,$index)">
             同意退款
           </el-button>
           <!-- <el-button size="mini" type="warning" style="margin-left:10px" @click="addSpecial(row)">
             添加规格
           </el-button> -->
-          <el-button v-if="row.status!='deleted'" size="mini" type="danger" style="margin-left:10px" @click="failReasonDialog(row,$index)">
+          <el-button v-if="row.return_result == 1" size="mini" type="danger" style="margin-left:10px" @click="failReasonDialog(row,$index)">
             申请驳回
           </el-button>
         </template>
@@ -172,8 +177,8 @@ export default {
     statusFilter(status) {
       const statusMap = {
         '退款成功': 'success',
-        '退款中': 'danger',
-        '退款失败': 'info'
+        '退款中': 'warning',
+        '退款失败': 'danger'
       }
       return statusMap[status]
     },
@@ -482,6 +487,8 @@ export default {
     replyContentTxt() {
       const index = this.list.findIndex(v => v.return_id === this.temp.return_id)
       disReturn(this.temp).then(() => {
+        this.temp.return_result_str = '退款失败'
+        this.temp.return_result = 3
         this.list.splice(index, 1, this.temp)
         this.$notify({
           title: '驳回退款申请',
