@@ -124,6 +124,9 @@
             订单操作
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item v-if="row.order_status === 2" @click.native="sendGoodsBackage(row,1)">设置发货</el-dropdown-item>
+              <router-link v-if="row.order_status === 5" :to="'/goods/orderReturn/'+row.order_id">
+                <el-dropdown-item>退款详情</el-dropdown-item>
+              </router-link>
             </el-dropdown-menu>
           </el-dropdown>
         </template>
@@ -264,8 +267,8 @@ export default {
     },
     statusBuyFilter(status) {
       const statusMap = {
-        '货到付款': 'success',
-        '先付后货': 'danger'
+        '货到付款': 'warning',
+        '先付后货': 'success'
       }
       return statusMap[status]
     },
@@ -299,6 +302,7 @@ export default {
       listQuery: {
         page: 1,
         limit: 10,
+        order_id: 0,
         importance: undefined,
         title: undefined,
         type: undefined,
@@ -379,7 +383,8 @@ export default {
     }
   },
   created() {
-    this.getList()
+    const id = this.$route.params && this.$route.params.orderId
+    this.getList(id)
   },
   methods: {
     tableHeaderColor({ row, column, rowIndex, columnIndex }) {
@@ -387,8 +392,9 @@ export default {
         return 'background-color: #EFF2F4;color: #343434;padding: 8px;'
       }
     },
-    getList() {
+    getList(id) {
       this.listLoading = true
+      this.listQuery.order_id = id
       fetchList(this.listQuery).then(response => {
         this.list = response.data.data
         this.total = response.data.total
@@ -551,6 +557,9 @@ export default {
           message: '已取消'
         })
       })
+    },
+    getReturnInfo(row) {
+
     }
   }
 }

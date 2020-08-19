@@ -42,7 +42,9 @@
       </el-table-column>
       <el-table-column label="所属订单" prop="goods_name" align="center" width="165">
         <template slot-scope="{row}">
-          <span>{{ row.order_no }}</span>
+          <router-link :to="'/goods/orderList/'+row.order_id">
+            <span>{{ row.order_no }}</span>
+          </router-link>
         </template>
       </el-table-column>
       <el-table-column label="发起时间" align="center" prop="create_time" width="150">
@@ -108,7 +110,7 @@
           <!-- <el-button size="mini" type="warning" style="margin-left:10px" @click="addSpecial(row)">
             添加规格
           </el-button> -->
-          <el-button v-if="row.status!='deleted'" size="mini" type="danger" style="margin-left:10px" @click="handleDelete(row,$index)">
+          <el-button v-if="row.status!='deleted'" size="mini" type="danger" style="margin-left:10px" @click="failReasonDialog(row,$index)">
             申请驳回
           </el-button>
         </template>
@@ -137,41 +139,27 @@
       </el-form>
     </el-dialog>
 
-    <!-- <el-dialog :visible.sync="addSpecialDialog">
-      <el-form ref="dataForm" :rules="rules" :model="specialTemp" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="商品名称">
-          <el-input v-model="specialTemp.goods_name" style="width:300px;" readonly />
+    <el-dialog :visible.sync="dialogForm2Visible" width="400px">
+      <el-form :model="temp">
+        <el-form-item>
+          <el-col>驳回理由:</el-col>
+          <el-col><el-input v-model="temp.fail_reslut" type="textarea" rows="5" /></el-col>
         </el-form-item>
-        <el-form-item label="规格名称">
-          <el-input v-model="specialTemp.special_name" style="width:300px;" readonly />
-        </el-form-item>
-        <el-form-item label="商品单价">
-          <el-input v-model="specialTemp.goods_price" style="width:300px;" readonly />
-        </el-form-item>
-        <el-form-item label="最大购买数量">
-          <el-input v-model="specialTemp.max_buy" style="width:300px;" readonly />
-        </el-form-item>
-        <el-form-item label="商品状态">
-          <el-radio-group v-model="specialTemp.is_offLine">
-            <el-radio :label="1" border>正常</el-radio>
-            <el-radio :label="2" border>下架</el-radio>
-          </el-radio-group>
+        <el-form-item align="center">
+          <el-button @click="closeView2Dialog">
+            关闭
+          </el-button>
+          <el-button type="primary" @click="replyContentTxt()">
+            保存
+          </el-button>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          取消
-        </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          确认
-        </el-button>
-      </div>
-    </el-dialog> -->
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getReturnList, cReturn, updateMn, deleteMn, deleteMnAll } from '@/api/goods'
+import { getReturnList, cReturn, updateMn, deleteMn, deleteMnAll, disReturn } from '@/api/goods'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -211,6 +199,7 @@ export default {
       listQuery: {
         page: 1,
         limit: 10,
+        orderId: 0,
         importance: undefined,
         title: undefined,
         type: undefined,
@@ -221,10 +210,14 @@ export default {
       statusOptions: ['published', 'draft', 'deleted'],
       powerList: [],
       showReviewer: false,
+      dialogForm2Visible: false,
+      failReason: '',
       temp: {
         nick_name: '',
         is_delete: 0,
-        IdArray: []
+        IdArray: [],
+        return_id: 0,
+        fail_reslut: ''
       },
       specialTemp: {
         goods_name: '',
@@ -240,6 +233,7 @@ export default {
         create: '创建用户'
       },
       pvData: [],
+      orderId: 0,
       rules: {
         type: [{ required: true, message: 'type is required', trigger: 'change' }],
         timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
@@ -251,7 +245,8 @@ export default {
     }
   },
   created() {
-    this.getList()
+    const id = this.$route.params && this.$route.params.orderId
+    this.getList(id)
   },
   methods: {
     tableHeaderColor({ row, column, rowIndex, columnIndex }) {
@@ -259,8 +254,11 @@ export default {
         return 'background-color: #EFF2F4;color: #343434;padding: 8px;'
       }
     },
-    getList() {
+    getList(id) {
       this.listLoading = true
+      this.listQuery.orderId = id
+      console.log(this.orderId)
+      console.log(this.listQuery.orderId)
       getReturnList(this.listQuery).then(response => {
         this.list = response.data.data
         this.total = response.data.total
@@ -455,8 +453,10 @@ export default {
         cancelButtonText: '取消',
         type: 'error'
       }).then(() => {
+        this.temp.wechat_result_str = '发起退款'
         this.temp.return_id = row.return_id
         cReturn(this.temp).then(() => {
+          this.list.splice(index, 1, this.temp)
           this.$notify({
             title: '退款到用户',
             message: '操作成功',
@@ -471,6 +471,26 @@ export default {
           message: '已取消删除'
         })
       })
+    },
+    failReasonDialog(row, index) {
+      this.temp = Object.assign({}, row) // copy obj
+      this.dialogForm2Visible = true
+    },
+    closeView2Dialog() {
+      this.dialogForm2Visible = false
+    },
+    replyContentTxt() {
+      const index = this.list.findIndex(v => v.return_id === this.temp.return_id)
+      disReturn(this.temp).then(() => {
+        this.list.splice(index, 1, this.temp)
+        this.$notify({
+          title: '驳回退款申请',
+          message: '操作成功',
+          type: 'success',
+          duration: 2000
+        })
+      })
+      this.dialogForm2Visible = false
     }
     // addSpecial(row) {
     //   // specialTemp

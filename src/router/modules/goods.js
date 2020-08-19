@@ -40,7 +40,7 @@ const goodsRouter = {
       meta: { title: 'editGoods', noCache: true, activeMenu: '/goods/goodsList' }
     },
     {
-      path: 'orderList',
+      path: 'orderList/:orderId?',
       component: () => import('@/views/goods/orderList'),
       name: 'orderList',
       meta: { title: 'orderList', noCache: true }
@@ -64,7 +64,7 @@ const goodsRouter = {
       meta: { title: 'goodsEvaluate', noCache: true }
     },
     {
-      path: 'orderReturn',
+      path: 'orderReturn/:orderId?',
       component: () => import('@/views/goods/orderReturn'),
       name: 'orderReturn',
       meta: { title: 'orderReturn', noCache: true }

@@ -144,3 +144,11 @@ export function cReturn(data) {
   })
 }
 
+export function disReturn(data) {
+  return request({
+    url: 'MnDisallowanceReturn',
+    method: 'post',
+    data
+  })
+}
+
