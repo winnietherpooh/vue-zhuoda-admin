@@ -3,12 +3,23 @@
     <div class="filter-container">
       <div class="box-card" style="background-color:#EFF2F4;padding:15px;height:72px;">
         <el-form :inline="true" class="demo-form-inline">
-          <el-form-item label="商品名称" class="labelFontColor">
-            <el-input v-model="listQuery.title" placeholder="请输入商品名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+          <el-form-item label="订单编号" class="labelFontColor">
+            <el-input v-model="listQuery.orderNo" placeholder="请输入订单编号" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
           </el-form-item>
-          <el-form-item label="状态" class="labelFontColor">
+          <el-form-item label="退款编号" class="labelFontColor">
+            <el-input v-model="listQuery.returnNo" placeholder="请输入退款编号" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+          </el-form-item>
+          <el-form-item label="微信交易单号" class="labelFontColor">
+            <el-input v-model="listQuery.wechatNo" placeholder="请输入微信交易单号" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+          </el-form-item>
+          <el-form-item label="退款状态" class="labelFontColor">
             <el-select v-model="listQuery.importanceOptions" style="width: 140px" class="filter-item" @change="handleFilter">
               <el-option v-for="item in importanceOptions" :key="item.key" :label="item.label" :value="item.key" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="微信状态" class="labelFontColor">
+            <el-select v-model="listQuery.wechatOptions" style="width: 140px" class="filter-item" @change="handleFilter">
+              <el-option v-for="item in wechatOptions" :key="item.key" :label="item.label" :value="item.key" />
             </el-select>
           </el-form-item>
           <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
@@ -206,11 +217,13 @@ export default {
         limit: 10,
         orderId: 0,
         importance: undefined,
-        title: undefined,
-        type: undefined,
+        wechatNo: undefined,
+        returnNo: undefined,
+        order_no: undefined,
         sort: '+admin_account'
       },
-      importanceOptions: [{ label: '所有', key: '0' }, { label: '正常', key: '1' }, { label: '下架', key: '2' }],
+      importanceOptions: [{ label: '所有', key: '0' }, { label: '退款中', key: '1' }, { label: '退款成功', key: '2' }, { label: '退款失败', key: '3' }, { label: '发起退款', key: '4' }],
+      wechatOptions: [{ label: '所有', key: '0' }, { label: '成功', key: '1' }, { label: '异常', key: '2' }, { label: '关闭', key: '3' }],
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: ['published', 'draft', 'deleted'],
       powerList: [],
