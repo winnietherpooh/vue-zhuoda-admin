@@ -127,3 +127,20 @@ export function replayE(data) {
     data
   })
 }
+
+export function getReturnList(query) {
+  return request({
+    url: 'MnGetReturnList',
+    method: 'get',
+    params: query
+  })
+}
+
+export function cReturn(data) {
+  return request({
+    url: 'MnConfirmReturn',
+    method: 'post',
+    data
+  })
+}
+

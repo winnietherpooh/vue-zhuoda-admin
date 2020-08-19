@@ -62,6 +62,12 @@ const goodsRouter = {
       component: () => import('@/views/goods/goodsEvaluate'),
       name: 'goodsEvaluate',
       meta: { title: 'goodsEvaluate', noCache: true }
+    },
+    {
+      path: 'orderReturn',
+      component: () => import('@/views/goods/orderReturn'),
+      name: 'orderReturn',
+      meta: { title: 'orderReturn', noCache: true }
     }
   ]
 }
