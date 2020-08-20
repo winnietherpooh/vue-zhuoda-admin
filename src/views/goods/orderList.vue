@@ -26,9 +26,11 @@
             </el-select>
           </el-form-item>
           <el-form-item label="状态" class="labelFontColor">
-            <el-select v-model="listQuery.importanceOptions3" style="width: 140px" class="filter-item" @change="handleFilter">
-              <el-option v-for="item in importanceOptions3" :key="item.key" :label="item.label" :value="item.key" />
-            </el-select>
+            <el-tooltip class="item" effect="dark" content="选择待发货,即可批量发货哦" placement="top-start">
+              <el-select v-model="listQuery.importanceOptions3" style="width: 140px" class="filter-item" @change="handleFilter">
+                <el-option v-for="item in importanceOptions3" :key="item.key" :label="item.label" :value="item.key" />
+              </el-select>
+            </el-tooltip>
           </el-form-item>
           <el-form-item label="售后" class="labelFontColor">
             <el-select v-model="listQuery.importanceOptions4" style="width: 140px" class="filter-item" @change="handleFilter">
@@ -41,6 +43,7 @@
           <!-- <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
             新增
           </el-button> -->
+          <el-alert title="选择 状态为 待发货,即可批量发货" type="success" />
         </el-form>
       </div>
     </div>
@@ -164,6 +167,7 @@
     </el-table>
     <div style="margin-top: 20px">
       <el-button @click="deleteAll()">删除</el-button>
+      <el-button v-if="listQuery.importanceOptions3 == 2" @click="allSendAll()">批量发货</el-button>
       <el-button @click="toggleSelection()">取消</el-button>
     </div>
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
@@ -267,7 +271,7 @@
 </template>
 
 <script>
-import { fetchList, getOrderInfo, repeatBuyerContent, setOrderStatus, deleteMn, deleteMnAll } from '@/api/order'
+import { fetchList, getOrderInfo, repeatBuyerContent, setOrderStatus, deleteMn, deleteMnAll, setMn } from '@/api/order'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -441,6 +445,7 @@ export default {
     },
     handleFilter() {
       this.listQuery.page = 1
+      console.log(this.listQuery.importanceOptions1)
       this.getList()
     },
     handleModifyStatus(row, status) {
@@ -630,6 +635,32 @@ export default {
         deleteMnAll(this.temp).then(() => {
           this.$notify({
             title: '删除订单',
+            message: '操作成功',
+            type: 'success',
+            duration: 2000
+          })
+          this.multipleSelection = []
+          this.getList()
+          this.listLoading = false
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消'
+        })
+      })
+    },
+    allSendAll() {
+      this.$confirm('确定要批量发货吗', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.listLoading = true
+        this.temp.IdArray = this.multipleSelection
+        setMn(this.temp).then(() => {
+          this.$notify({
+            title: '批量发货',
             message: '操作成功',
             type: 'success',
             duration: 2000
