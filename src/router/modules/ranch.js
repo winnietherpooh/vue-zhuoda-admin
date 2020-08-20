@@ -37,6 +37,12 @@ const ranchRouter = {
       name: 'editRanch',
       hidden: true,
       meta: { title: 'editRanch', noCache: true, activeMenu: '/ranch/ranchlist' }
+    },
+    {
+      path: 'factorylist',
+      component: () => import('@/views/ranch/factorylist'),
+      name: 'factorylist',
+      meta: { title: 'factorylist', noCache: true }
     }
   ]
 }

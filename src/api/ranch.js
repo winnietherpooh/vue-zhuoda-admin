@@ -55,3 +55,28 @@ export function deleteRanchAll(data) {
     data
   })
 }
+
+export function factoryList(query) {
+  return request({
+    url: 'MnGetFactoryList',
+    method: 'get',
+    params: query
+  })
+}
+
+export function createFactory(data) {
+  return request({
+    url: 'MnCreateFactory',
+    method: 'post',
+    data
+  })
+}
+
+export function updateFactory(data) {
+  return request({
+    url: 'MnEditFactory',
+    method: 'post',
+    data
+  })
+}
+

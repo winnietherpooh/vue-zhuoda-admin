@@ -12,6 +12,7 @@ export default {
     goodsEvaluate: '商品评论',
     goodsFreight: '邮费管理',
     addGoods: '新增商品',
+    factorylist: '生产地',
     editGoods: '编辑商品',
     orderReturn: '退款售后',
     orderList: '订单列表',
