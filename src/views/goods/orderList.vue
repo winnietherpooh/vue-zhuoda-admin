@@ -148,11 +148,12 @@
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" min-width="200">
-        <template slot-scope="{row}" style="width:200px;">
-          <el-dropdown v-if="row.order_status !== 1" split-button type="primary">
+        <template slot-scope="{row,$index}" style="width:200px;">
+          <el-dropdown split-button type="primary">
             订单操作
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item v-if="row.order_status === 2" @click.native="sendGoodsBackage(row,1)">设置发货</el-dropdown-item>
+              <el-dropdown-item @click.native="deleteOrder(row,$index)">删除</el-dropdown-item>
               <router-link v-if="row.order_status === 5" :to="'/goods/orderReturn/'+row.order_id">
                 <el-dropdown-item>退款详情</el-dropdown-item>
               </router-link>
@@ -266,7 +267,7 @@
 </template>
 
 <script>
-import { fetchList, getOrderInfo, repeatBuyerContent, setOrderStatus } from '@/api/order'
+import { fetchList, getOrderInfo, repeatBuyerContent, setOrderStatus, deleteMn, deleteMnAll } from '@/api/order'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -281,7 +282,7 @@ export default {
         '待支付': '',
         '代发货': 'info',
         '待收货': 'danger',
-        '已收货': 'warning',
+        '待评价': 'warning',
         '已完成': 'success'
       }
       return statusMap[status]
@@ -526,15 +527,13 @@ export default {
       return sort === `+${key}` ? 'ascending' : 'descending'
     },
     toggleSelection(rows) {
-      console.log(this.multipleSelection)
       this.multipleSelection = []
       this.$refs.listTable.clearSelection()
     },
     selectAll(selection, row) {
       this.multipleSelection = []
       selection.map((item) => {
-        console.log(item)
-        this.multipleSelection.push(item.member_id)
+        this.multipleSelection.push(item.order_id)
       })
     },
     showshopinfo(info) {
@@ -596,6 +595,55 @@ export default {
     },
     getReturnInfo(row) {
 
+    },
+    deleteOrder(row, index) {
+      this.temp = row
+      this.$confirm('确定要删除此订单吗,删除后无法恢复', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteMn(this.temp).then(() => {
+          this.list.splice(index, 1)
+          this.$notify({
+            title: '删除订单',
+            message: '操作成功',
+            type: 'success',
+            duration: 2000
+          })
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消'
+        })
+      })
+    },
+    deleteAll() {
+      this.$confirm('确定要批量删除订单吗,删除后无法恢复', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.listLoading = true
+        this.temp.IdArray = this.multipleSelection
+        deleteMnAll(this.temp).then(() => {
+          this.$notify({
+            title: '删除订单',
+            message: '操作成功',
+            type: 'success',
+            duration: 2000
+          })
+          this.multipleSelection = []
+          this.getList()
+          this.listLoading = false
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消'
+        })
+      })
     }
   }
 }

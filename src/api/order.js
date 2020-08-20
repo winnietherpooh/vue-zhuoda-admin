@@ -34,7 +34,7 @@ export function setOrderStatus(data) {
 
 export function deleteMn(data) {
   return request({
-    url: 'MnDelMember',
+    url: 'MnDeleteOrder',
     method: 'post',
     data
   })
@@ -42,7 +42,7 @@ export function deleteMn(data) {
 
 export function deleteMnAll(data) {
   return request({
-    url: 'MnDelAllMember',
+    url: 'MnDeleteAllOrder',
     method: 'post',
     data
   })
