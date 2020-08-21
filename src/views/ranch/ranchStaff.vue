@@ -117,10 +117,10 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
-          Cancel
+          关闭
         </el-button>
         <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          Confirm
+          确定
         </el-button>
       </div>
     </el-dialog>
@@ -132,6 +132,7 @@
         <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="queryMemberName">
           搜索
         </el-button>
+        <el-alert title="添加员工后,员工为离职状态,必须设置真实姓名后才可更改状态" type="success" style="margin-bottom: 10px;" />
       </el-form>
       <el-table
         :key="tableKey"
