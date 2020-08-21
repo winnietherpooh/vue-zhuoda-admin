@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <div class="box-card" style="background-color:#EFF2F4;padding:15px;height:72px;">
+      <div class="box-card" style="background-color:#EFF2F4;padding:15px;">
         <el-form :inline="true" class="demo-form-inline">
           <el-form-item label="订单编号" class="labelFontColor">
             <el-input v-model="listQuery.orderNo" placeholder="请输入订单编号" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
@@ -11,6 +11,9 @@
           </el-form-item>
           <el-form-item label="微信交易单号" class="labelFontColor">
             <el-input v-model="listQuery.wechatNo" placeholder="请输入微信交易单号" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+          </el-form-item>
+          <el-form-item label="用户昵称" class="labelFontColor">
+            <el-input v-model="listQuery.nickName" placeholder="请输入用户昵称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
           </el-form-item>
           <el-form-item label="退款状态" class="labelFontColor">
             <el-select v-model="listQuery.importanceOptions" style="width: 140px" class="filter-item" @change="handleFilter">
@@ -56,6 +59,11 @@
           <router-link :to="'/goods/orderList/'+row.order_id">
             <span>{{ row.order_no }}</span>
           </router-link>
+        </template>
+      </el-table-column>
+      <el-table-column label="用户昵称" prop="goods_name" align="center" min-width="165">
+        <template slot-scope="{row}">
+          <span>{{ row.nick_name }}</span>
         </template>
       </el-table-column>
       <el-table-column label="发起时间" align="center" prop="create_time" min-width="150">
@@ -216,6 +224,7 @@ export default {
         page: 1,
         limit: 10,
         orderId: 0,
+        nickName: undefined,
         importance: undefined,
         wechatNo: undefined,
         returnNo: undefined,
