@@ -9,8 +9,13 @@
               <el-option v-for="item in ranchSelectList" :key="item.ranch_id" :label="item.ranch_name" :value="{value:item.ranch_id,label:item.ranch_name}" />
             </el-select>
           </el-form-item>
-          <el-form-item label="用户昵称" class="labelFontColor">
-            <el-input v-model="listQuery.title" placeholder="请输入账号" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+          <el-form-item label="真实姓名" class="labelFontColor">
+            <el-input v-model="listQuery.title" placeholder="请输入真实姓名" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+          </el-form-item>
+          <el-form-item label="职工类型" class="labelFontColor">
+            <el-select v-model="listQuery.importanceOptions1" style="width: 140px" class="filter-item" @change="handleFilter">
+              <el-option v-for="item in importanceOptions1" :key="item.key" :label="item.label" :value="item.key" />
+            </el-select>
           </el-form-item>
           <el-form-item label="状态" class="labelFontColor">
             <el-select v-model="listQuery.importanceOptions" style="width: 140px" class="filter-item" @change="handleFilter">
@@ -285,6 +290,7 @@ export default {
         sort: '+admin_account'
       },
       importanceOptions: [{ label: '所有', key: '0' }, { label: '正常', key: '1' }, { label: '请假', key: '2' }, { label: '离职', key: '3' }],
+      importanceOptions1: [{ label: '所有', key: '0' }, { label: '挤奶员', key: '1' }, { label: '生产员', key: '2' }, { label: '配送员', key: '3' }, { label: '录入员', key: '4' }],
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: ['published', 'draft', 'deleted'],
       powerList: [],
