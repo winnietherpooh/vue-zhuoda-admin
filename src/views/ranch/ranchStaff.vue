@@ -44,7 +44,7 @@
       @sort-change="sortChange"
     >
       <el-table-column type="selection" width="55" />
-      <el-table-column label="牧场名称" prop="ranch_name" sortable="custom" align="center">
+      <el-table-column label="牧场名称" prop="ranch_name" align="center">
         <template slot-scope="{row}">
           <span>{{ row.ranch_name }}</span>
         </template>
@@ -56,19 +56,24 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="用户昵称" prop="nick_name" sortable="custom" align="center">
+      <el-table-column label="用户昵称" prop="nick_name" align="center">
         <template slot-scope="{row}">
           <span>{{ row.nick_name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="真实姓名" prop="real_name" sortable="custom" align="center">
+      <el-table-column label="真实姓名" prop="real_name" align="center">
         <template slot-scope="{row}">
           <span>{{ row.real_name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="添加时间" align="center" prop="create_time" sortable="custom">
+      <el-table-column label="添加时间" align="center" prop="create_time">
         <template slot-scope="{row}">
           <span>{{ row.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="获赞数量" prop="real_name" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.like_num }}</span>
         </template>
       </el-table-column>
       <el-table-column label="职工状态" class-name="status-col" prop="is_delete" width="100">
