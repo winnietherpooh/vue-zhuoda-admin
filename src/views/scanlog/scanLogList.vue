@@ -3,20 +3,15 @@
     <div class="filter-container">
       <div class="box-card" style="background-color:#EFF2F4;padding:15px;height:72px;">
         <el-form :inline="true" class="demo-form-inline">
-          <el-form-item label="管理员账号" class="labelFontColor">
-            <el-input v-model="listQuery.title" placeholder="请输入账号" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-          </el-form-item>
-          <el-form-item label="状态" class="labelFontColor">
-            <el-select v-model="listQuery.importanceOptions" style="width: 140px" class="filter-item" @change="handleFilter">
-              <el-option v-for="item in importanceOptions" :key="item.key" :label="item.label" :value="item.key" />
-            </el-select>
+          <el-form-item label="扫码用户" class="labelFontColor">
+            <el-input v-model="listQuery.title" placeholder="请输入用户你猜" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
           </el-form-item>
           <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
             搜索
           </el-button>
-          <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
+          <!-- <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
             新增
-          </el-button>
+          </el-button> -->
         </el-form>
       </div>
     </div>
@@ -35,29 +30,19 @@
       @sort-change="sortChange"
     >
       <el-table-column type="selection" width="55" />
-      <el-table-column label="录入员工" prop="admin_account" align="center" min-width="70">
+      <el-table-column label="扫码用户" prop="admin_account" align="center" min-width="70">
         <template slot-scope="{row}">
-          <span>{{ row.inputer_name }}</span>
+          <span>{{ row.nick_name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="录入时间" align="center" prop="register_time" min-width="90">
+      <el-table-column label="扫码时间" align="center" prop="register_time" min-width="90">
         <template slot-scope="{row}">
           <span>{{ row.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="商品名称" align="center" min-width="150">
         <template slot-scope="{row}">
-          <span>{{ row.goods_name + "  -  " + row.spcial_name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="所在牧场" align="center" min-width="120">
-        <template slot-scope="{row}">
-          <span>{{ row.ranch_name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="所在生产地" align="center" min-width="120">
-        <template slot-scope="{row}">
-          <span>{{ row.factory_name }}</span>
+          <span>{{ row.goods_name + "  -  " + row.special_name }}</span>
         </template>
       </el-table-column>
       <el-table-column label="生产时间" align="center" prop="register_time" min-width="100">
@@ -65,32 +50,33 @@
           <span>{{ row.factory_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="有效期" align="center" min-width="80">
+      <el-table-column label="点赞挤奶员" align="center" min-width="80">
         <template slot-scope="{row}">
-          <span>{{ row.valid_period }}</span>
+          <el-tag :type="row.milking_like_str | statusFilter">
+            {{ row.milking_like_str }}
+          </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="挤奶员" align="center" min-width="80">
+      <el-table-column label="点赞生产员" align="center" min-width="80">
         <template slot-scope="{row}">
-          <span>{{ row.milking_name }}</span>
+          <el-tag :type="row.create_like_str | statusFilter">
+            {{ row.create_like_str }}
+          </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="生产员" align="center" min-width="80">
+      <el-table-column label="点赞配送员" align="center" min-width="80">
         <template slot-scope="{row}">
-          <span>{{ row.create_name }}</span>
+          <el-tag :type="row.delivery_like_str | statusFilter">
+            {{ row.delivery_like_str }}
+          </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="配送员" align="center" min-width="80">
-        <template slot-scope="{row}">
-          <span>{{ row.delivery_name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="扫码数量" align="center" min-width="80">
+      <el-table-column label="当前记录扫码次数" align="center" min-width="80">
         <template slot-scope="{row}">
           <span>{{ row.scan_num }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" min-width="120">
+      <!-- <el-table-column label="操作" align="center" class-name="small-padding fixed-width" min-width="120">
         <template slot-scope="{row,$index}">
           <el-button type="success" size="mini" @click="handleUpdate(row)">
             编辑
@@ -99,12 +85,12 @@
             删除
           </el-button>
         </template>
-      </el-table-column>
+      </el-table-column> -->
     </el-table>
-    <div style="margin-top: 20px">
+    <!-- <div style="margin-top: 20px">
       <el-button @click="deleteAll()">删除</el-button>
       <el-button @click="toggleSelection()">取消</el-button>
-    </div>
+    </div> -->
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
@@ -143,7 +129,7 @@
 </template>
 
 <script>
-import { fetchList, createMaster, updateMaster, deleteMaster, deleteMasterAll } from '@/api/scan'
+import { createMaster, updateMaster, getScanLogList, deleteMaster, deleteMasterAll } from '@/api/scan'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -155,8 +141,8 @@ export default {
   filters: {
     statusFilter(status) {
       const statusMap = {
-        '正常': 'success',
-        '禁用': 'danger'
+        '是': 'success',
+        '否': 'info'
       }
       return statusMap[status]
     }
@@ -216,7 +202,7 @@ export default {
     },
     getList() {
       this.listLoading = true
-      fetchList(this.listQuery).then(response => {
+      getScanLogList(this.listQuery).then(response => {
         this.list = response.data.data
         this.total = response.data.total
         this.listLoading = false

@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2020-08-21 19:06:00
+ * @LastEditTime: 2020-08-23 17:56:15
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \admin\src\api\scan.js
+ */
 import request from '@/utils/request'
 
 export function fetchList(query) {
@@ -24,10 +32,11 @@ export function updateMaster(data) {
   })
 }
 
-export function getPowerList() {
+export function getScanLogList(query) {
   return request({
-    url: 'MnPowerListApi',
-    method: 'post'
+    url: 'MnGetScanLogList',
+    method: 'post',
+    params: query
   })
 }
 
