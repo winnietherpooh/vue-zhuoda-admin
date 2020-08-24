@@ -42,7 +42,7 @@ export function deleteMnAll(data) {
 
 export function setMn(data) {
   return request({
-    url: 'MnSetMilker',
+    url: 'MnSetSubMessageMember',
     method: 'post',
     data
   })

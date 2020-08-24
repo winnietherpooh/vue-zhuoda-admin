@@ -11,6 +11,11 @@
               <el-option v-for="item in importanceOptions" :key="item.key" :label="item.label" :value="item.key" />
             </el-select>
           </el-form-item>
+          <el-form-item label="全局订阅" class="labelFontColor">
+            <el-select v-model="listQuery.importanceOptions1" style="width: 140px" class="filter-item" @change="handleFilter">
+              <el-option v-for="item in importanceOptions1" :key="item.key" :label="item.label" :value="item.key" />
+            </el-select>
+          </el-form-item>
           <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
             搜索
           </el-button>
@@ -69,14 +74,24 @@
           </el-tag>
         </template>
       </el-table-column>
+      <el-table-column label="全局通知订阅" class-name="status-col" prop="is_delete" width="100">
+        <template slot-scope="{row}">
+          <el-tag :type="row.sub_message_str | statusSubFilter">
+            {{ row.sub_message_str }}
+          </el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
-          <el-button type="success" size="mini" @click="handleUpdate(row)">
-            编辑
-          </el-button>
-          <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
-            删除
-          </el-button>
+          <el-dropdown split-button type="primary">
+            订单操作
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item v-if="row.sub_message == 2" @click.native="subMess(row)">订阅推送</el-dropdown-item>
+              <el-dropdown-item v-if="row.sub_message == 1" @click.native="subMess(row)">取消订阅</el-dropdown-item>
+              <el-dropdown-item @click.native="handleDelete(row,$index)">删除</el-dropdown-item>
+              <el-dropdown-item @click.native="handleUpdate(row,$index)">编辑</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </template>
       </el-table-column>
     </el-table>
@@ -111,7 +126,7 @@
 </template>
 
 <script>
-import { fetchList, createMn, updateMn, deleteMn, deleteMnAll } from '@/api/member'
+import { fetchList, createMn, updateMn, deleteMn, deleteMnAll, setMn } from '@/api/member'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -125,6 +140,13 @@ export default {
       const statusMap = {
         '正常': 'success',
         '锁定': 'danger'
+      }
+      return statusMap[status]
+    },
+    statusSubFilter(status) {
+      const statusMap = {
+        '是': 'success',
+        '否': 'info'
       }
       return statusMap[status]
     }
@@ -146,6 +168,7 @@ export default {
         sort: '+admin_account'
       },
       importanceOptions: [{ label: '所有', key: '0' }, { label: '正常', key: '2' }, { label: '锁定', key: '1' }],
+      importanceOptions1: [{ label: '所有', key: '0' }, { label: '未订阅', key: '2' }, { label: '已订阅', key: '1' }],
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: ['published', 'draft', 'deleted'],
       powerList: [],
@@ -355,6 +378,35 @@ export default {
     },
     errorHandler() {
       return true
+    },
+    subMess(row, index) {
+      this.temp.member_id = row.member_id
+      this.$confirm('设置后,用户可以收到平台所有下单通知, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.temp.member_id = row.member_id
+        if (this.temp.sub_message === 1) {
+          this.temp.sub_message = 2
+        } else {
+          this.temp.sub_message = 1
+        }
+        setMn(this.temp).then(() => {
+          this.$notify({
+            title: '用户订阅',
+            message: '操作成功',
+            type: 'success',
+            duration: 2000
+          })
+        })
+        this.list.splice(index, 1)
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     }
   }
 }
