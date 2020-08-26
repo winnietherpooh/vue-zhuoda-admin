@@ -74,13 +74,6 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="全局通知订阅" class-name="status-col" prop="is_delete" width="100">
-        <template slot-scope="{row}">
-          <el-tag :type="row.sub_message_str | statusSubFilter">
-            {{ row.sub_message_str }}
-          </el-tag>
-        </template>
-      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-dropdown split-button type="primary">
