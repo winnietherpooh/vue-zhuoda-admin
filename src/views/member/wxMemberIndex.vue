@@ -6,11 +6,6 @@
           <el-form-item label="用户昵称" class="labelFontColor">
             <el-input v-model="listQuery.title" placeholder="请输入账号" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
           </el-form-item>
-          <el-form-item label="状态" class="labelFontColor">
-            <el-select v-model="listQuery.importanceOptions" style="width: 140px" class="filter-item" @change="handleFilter">
-              <el-option v-for="item in importanceOptions" :key="item.key" :label="item.label" :value="item.key" />
-            </el-select>
-          </el-form-item>
           <el-form-item label="全局订阅" class="labelFontColor">
             <el-select v-model="listQuery.importanceOptions1" style="width: 140px" class="filter-item" @change="handleFilter">
               <el-option v-for="item in importanceOptions1" :key="item.key" :label="item.label" :value="item.key" />
@@ -49,29 +44,7 @@
       </el-table-column>
       <el-table-column label="用户昵称" prop="nick_name" sortable="custom" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.nick_name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="注册时间" align="center" prop="create_time" sortable="custom">
-        <template slot-scope="{row}">
-          <span>{{ row.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="最后登录时间" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.login_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="登录次数" align="center" width="100">
-        <template slot-scope="{row}">
-          <span>{{ row.login_nums }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="状态" class-name="status-col" prop="is_delete" width="100">
-        <template slot-scope="{row}">
-          <el-tag :type="row.is_delete_str | statusFilter">
-            {{ row.is_delete_str }}
-          </el-tag>
+          <span>{{ row.nickname }}</span>
         </template>
       </el-table-column>
       <el-table-column label="全局通知订阅" class-name="status-col" prop="is_delete" width="100">
@@ -84,10 +57,10 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-dropdown split-button type="primary">
-            操作
+            订阅操作
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item @click.native="handleDelete(row,$index)">删除</el-dropdown-item>
-              <el-dropdown-item @click.native="handleUpdate(row,$index)">编辑</el-dropdown-item>
+              <el-dropdown-item v-if="row.sub_message == 2" @click.native="subMess(row,$index)">订阅推送</el-dropdown-item>
+              <el-dropdown-item v-if="row.sub_message == 1" @click.native="subMess(row,$index)">取消订阅</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </template>
@@ -124,7 +97,7 @@
 </template>
 
 <script>
-import { fetchList, createMn, updateMn, deleteMn, deleteMnAll, setMn } from '@/api/member'
+import { getWxMember, createMn, updateMn, deleteMn, deleteMnAll, setMn } from '@/api/member'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -172,9 +145,9 @@ export default {
       powerList: [],
       showReviewer: false,
       temp: {
-        nick_name: '',
-        is_delete: 0,
-        IdArray: []
+        nickname: '',
+        avatar: 0,
+        wxmember_id: 0
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -203,7 +176,7 @@ export default {
     },
     getList() {
       this.listLoading = true
-      fetchList(this.listQuery).then(response => {
+      getWxMember(this.listQuery).then(response => {
         this.list = response.data.data
         this.total = response.data.total
         console.log(response.data)
@@ -378,17 +351,19 @@ export default {
       return true
     },
     subMess(row, index) {
-      this.temp.member_id = row.member_id
+      this.temp = row
       this.$confirm('设置后,用户可以收到平台所有下单通知, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.temp.member_id = row.member_id
+        this.temp.wxmember_id = row.wxmember_id
         if (this.temp.sub_message === 1) {
           this.temp.sub_message = 2
+          this.temp.sub_message_str = '否'
         } else {
           this.temp.sub_message = 1
+          this.temp.sub_message_str = '是'
         }
         setMn(this.temp).then(() => {
           this.$notify({
@@ -398,7 +373,8 @@ export default {
             duration: 2000
           })
         })
-        this.list.splice(index, 1)
+        // this.list.splice(index, 1)
+        this.list.splice(index, 1, this.temp)
       }).catch(() => {
         this.$message({
           type: 'info',

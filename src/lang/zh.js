@@ -15,6 +15,7 @@ export default {
     factorylist: '生产地',
     scan: '扫码管理',
     scanLogList: '用户扫码记录',
+    wxMemberIndex: '公众号用户',
     scanList: '录入记录',
     editGoods: '编辑商品',
     orderReturn: '退款售后',
