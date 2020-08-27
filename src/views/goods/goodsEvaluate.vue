@@ -637,10 +637,14 @@ export default {
             this.temp.is_show_str = '是'
           } else {
             this.temp.is_show_str = '否'
+            this.temp.is_show_goods = 2
+            this.temp.is_show_goods_str = '否'
           }
         } else {
           if (this.temp.is_show_goods === 1) {
             this.temp.is_show_goods_str = '是'
+            this.temp.is_show_str = '是'
+            this.temp.is_show = 1
           } else {
             this.temp.is_show_goods_str = '否'
           }
