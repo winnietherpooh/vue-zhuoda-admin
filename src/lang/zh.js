@@ -19,6 +19,8 @@ export default {
     scanList: '录入记录',
     editGoods: '编辑商品',
     orderReturn: '退款售后',
+    addRanch: '添加牧场',
+    editRanch: '编辑牧场',
     indexVideoBarrage: '弹幕列表',
     orderList: '订单列表',
     goodsList: '商品列表',

@@ -39,7 +39,7 @@
           <Tinymce ref="editor" v-model="postForm.ranch_introduction" :height="400" required />
         </el-form-item>
         <el-form-item prop="content" style="margin-bottom: 30px;">
-          <el-button type="success" @click="submitForm">发布商品</el-button>
+          <el-button type="success" @click="submitForm">确定</el-button>
         </el-form-item>
       </div>
     </el-form>

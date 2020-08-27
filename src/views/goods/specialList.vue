@@ -44,7 +44,7 @@
       <el-table-column label="商品名称" prop="goods_name" align="center">
         <template slot-scope="{row}">
           <el-tooltip class="item" effect="dark" content="点击可复制轮播图跳转商品+规格地址" placement="top-start">
-            <span v-clipboard:copy="row.goods_name" v-clipboard:success="clipboardSuccess">{{ row.goods_name }}</span>
+            <span v-clipboard:copy="row.special_id" v-clipboard:success="clipboardSuccess">{{ row.goods_name }}</span>
           </el-tooltip>
         </template>
       </el-table-column>

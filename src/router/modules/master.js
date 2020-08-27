@@ -17,13 +17,13 @@ const masterRouter = {
       component: () => import('@/views/master/masterlist'),
       name: 'masterlist',
       meta: { title: 'masterlist', noCache: true }
-    },
-    {
-      path: 'powerteam',
-      component: () => import('@/views/master/powerteam'),
-      name: 'powerteam',
-      meta: { title: 'powerteam', noCache: true }
     }
+    // {
+    //   path: 'powerteam',
+    //   component: () => import('@/views/master/powerteam'),
+    //   name: 'powerteam',
+    //   meta: { title: 'powerteam', noCache: true }
+    // }
   ]
 }
 
