@@ -19,6 +19,7 @@ export default {
     scanList: '录入记录',
     editGoods: '编辑商品',
     orderReturn: '退款售后',
+    indexVideoBarrage: '弹幕列表',
     orderList: '订单列表',
     goodsList: '商品列表',
     systemSetting: '系统管理',

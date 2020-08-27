@@ -3,24 +3,16 @@
     <div class="filter-container">
       <div class="box-card" style="background-color:#EFF2F4;padding:15px;height:72px;">
         <el-form :inline="true" class="demo-form-inline">
-          <el-form-item label="标题" class="labelFontColor">
-            <el-input v-model="listQuery.title" placeholder="请输入标题" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+          <el-form-item label="用户昵称" class="labelFontColor">
+            <el-input v-model="listQuery.title" placeholder="请输入用户昵称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
           </el-form-item>
           <el-form-item label="状态" class="labelFontColor">
             <el-select v-model="listQuery.importanceOptions" style="width: 140px" class="filter-item" @change="handleFilter">
               <el-option v-for="item in importanceOptions" :key="item.key" :label="item.label" :value="item.key" />
             </el-select>
           </el-form-item>
-          <el-form-item label="类型" class="labelFontColor">
-            <el-select v-model="listQuery.importanceOptionsType" style="width: 140px" class="filter-item" @change="handleFilter">
-              <el-option v-for="item in importanceOptionsType" :key="item.key" :label="item.label" :value="item.key" />
-            </el-select>
-          </el-form-item>
           <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
             搜索
-          </el-button>
-          <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
-            新增
           </el-button>
         </el-form>
       </div>
@@ -39,54 +31,31 @@
       @sort-change="sortChange"
     >
       <el-table-column type="selection" width="55" />
-      <el-table-column label="视频名称" align="center" width="300">
+      <el-table-column label="用户昵称" align="center" width="300">
         <template slot-scope="{row}">
-          <el-popover trigger="hover" placement="top">
-            <div>
-              <span>点我复制视频预览地址</span>
-            </div>
-            <div slot="reference" class="name-wrapper">
-              <el-tag v-clipboard:copy="IMGCND.IMGCND + row.video_url" v-clipboard:success="clipboardSuccess" size="medium">{{ row.video_name }}</el-tag>
-            </div>
-          </el-popover>
+          <span>{{ row.nick_name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="视频预览" align="center" width="200px">
+      <el-table-column label="视频时间点" align="center" width="200px">
         <template slot-scope="{row}">
-          <el-image :src="IMGCND.IMGCND + row.video_url + '?vframe/jpg/offset/1'" fit="fill">
-            <div slot="placeholder" class="image-slot">
-              加载中<span class="dot">...</span>
-            </div>
-          </el-image>
+          <span>{{ row.time }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" align="center">
+      <el-table-column label="弹幕内容" align="center" width="200px">
+        <template slot-scope="{row}">
+          <span>{{ row.text }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="发布时间" align="center">
         <template slot-scope="{row}">
           <span>{{ row.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="是否展示首页" class-name="status-col" prop="is_delete" width="100">
         <template slot-scope="{row}">
-          <el-tag :type="row.is_top_str | goTypeFilter">
-            {{ row.is_top_str }}
+          <el-tag :type="row.is_show_str | goTypeFilter">
+            {{ row.is_show_str }}
           </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="虚拟点赞数量" class-name="status-col" prop="is_delete" width="100">
-        <template slot-scope="{row}">
-          <span>{{ row.set_like_num }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="实际点赞数量" class-name="status-col" prop="is_delete" width="100">
-        <template slot-scope="{row}">
-          <span>{{ row.real_like_num }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="弹幕" class-name="status-col" prop="is_delete" width="100">
-        <template slot-scope="{row}">
-          <router-link :to="'/systemSetting/indexVideoBarrage/'+row.video_id">
-            <span>查看弹幕</span>
-          </router-link>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -108,25 +77,8 @@
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="视频标题">
-          <el-input v-model="temp.video_name" placeholder="请填写视频标题" />
-        </el-form-item>
-        <el-form-item label="视频地址">
-          <el-upload
-            class="center-uploader"
-            :data="dataObj"
-            :multiple="false"
-            :on-exceed="tooManyFilesError"
-            :show-file-list="true"
-            :on-error="errorFun"
-            :on-success="successFun"
-            :before-upload="beforeUpload"
-            action="https://up-z2.qiniup.com"
-            drag
-          >
-            <img v-if="imageUrl" :src="IMGCND.IMGCND + imageUrl + '?vframe/jpg/offset/1'" style="max-width:360px;">
-            <i v-else class="el-icon-plus avatar-uploader-icon" />
-          </el-upload>
+        <el-form-item label="弹幕内容">
+          <el-input v-model="temp.text" />
         </el-form-item>
         <el-form-item label="状态" prop="is_show">
           <el-popover
@@ -135,14 +87,11 @@
             trigger="hover"
             content="选择【显示】,则会显示在首页视频位置,选择【隐藏】,则不会显示 。"
           >
-            <el-radio-group slot="reference" v-model="temp.is_top">
+            <el-radio-group slot="reference" v-model="temp.is_show">
               <el-radio :label="1">显示</el-radio>
               <el-radio :label="2">隐藏</el-radio>
             </el-radio-group>
           </el-popover>
-        </el-form-item>
-        <el-form-item label="虚拟点赞数量">
-          <el-input v-model="temp.set_like_num" placeholder="请填写点赞数量" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -158,7 +107,7 @@
 </template>
 
 <script>
-import { fetchList, createMn, updateMn, deleteMn, deleteMnAll } from '@/api/indexVideo'
+import { getIndexBanList, createMn, updateB, deleteB, deleteMnAll } from '@/api/indexVideo'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import { getToken } from '@/api/qiniu'
@@ -207,13 +156,13 @@ export default {
       listQuery: {
         page: 1,
         limit: 10,
+        video_id: 0,
         importance: undefined,
         title: undefined,
         type: undefined,
         sort: '+admin_account'
       },
       importanceOptions: [{ label: '所有', key: '0' }, { label: '显示', key: '1' }, { label: '隐藏', key: '2' }],
-      importanceOptionsType: [{ label: '所有', key: '0' }, { label: '首页轮播图', key: '1' }, { label: '奶站轮播图', key: '2' }],
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: ['published', 'draft', 'deleted'],
       powerList: [],
@@ -249,7 +198,8 @@ export default {
     }
   },
   created() {
-    this.getList()
+    const id = this.$route.params && this.$route.params.videoId
+    this.getList(id)
   },
   methods: {
     tableHeaderColor({ row, column, rowIndex, columnIndex }) {
@@ -257,9 +207,10 @@ export default {
         return 'background-color: #EFF2F4;color: #343434;padding: 8px;'
       }
     },
-    getList() {
+    getList(id) {
       this.listLoading = true
-      fetchList(this.listQuery).then(response => {
+      this.listQuery.video_id = id
+      getIndexBanList(this.listQuery).then(response => {
         this.list = response.data.data
         this.total = response.data.total
         console.log(response.data)
@@ -268,7 +219,8 @@ export default {
     },
     handleFilter() {
       this.listQuery.page = 1
-      this.getList()
+      const id = this.$route.params && this.$route.params.videoId
+      this.getList(id)
     },
     handleModifyStatus(row, status) {
       this.$message({
@@ -350,14 +302,14 @@ export default {
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          if (this.temp.is_top === 1) {
-            this.temp.is_top_str = '显示'
+          if (this.temp.is_show === 1) {
+            this.temp.is_show_str = '显示'
           } else {
-            this.temp.is_top_str = '隐藏'
+            this.temp.is_show_str = '隐藏'
           }
           const tempData = Object.assign({}, this.temp)
-          updateMn(tempData).then(() => {
-            const index = this.list.findIndex(v => v.video_id === this.temp.video_id)
+          updateB(tempData).then(() => {
+            const index = this.list.findIndex(v => v.barrage_id === this.temp.barrage_id)
             this.list.splice(index, 1, this.temp)
             this.dialogFormVisible = false
             this.$notify({
@@ -366,22 +318,22 @@ export default {
               type: 'success',
               duration: 2000
             })
-            this.getList()
+            this.getList(this.temp.video_id)
           })
         }
       })
     },
     handleDelete(row, index) {
-      this.temp.banner_id = row.banner_id
+      this.temp.barrage_id = row.barrage_id
       this.$confirm('此操作将永久删除, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.temp.banner_id = row.banner_id
-        deleteMn(this.temp).then(() => {
+        this.temp.barrage_id = row.barrage_id
+        deleteB(this.temp).then(() => {
           this.$notify({
-            title: '删除图片',
+            title: '删除弹幕',
             message: '操作成功',
             type: 'success',
             duration: 2000

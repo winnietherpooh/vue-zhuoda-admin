@@ -40,3 +40,26 @@ export function deleteMnAll(data) {
   })
 }
 
+export function getIndexBanList(query) {
+  return request({
+    url: 'MnGetVideoBarrageList',
+    method: 'get',
+    params: query
+  })
+}
+
+export function deleteB(data) {
+  return request({
+    url: 'MnDeleteBarrage',
+    method: 'post',
+    data
+  })
+}
+
+export function updateB(data) {
+  return request({
+    url: 'MnEditBarrage',
+    method: 'post',
+    data
+  })
+}

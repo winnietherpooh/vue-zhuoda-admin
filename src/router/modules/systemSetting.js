@@ -25,6 +25,13 @@ const systemSettingRouter = {
       meta: { title: 'indexVideo', noCache: true }
     },
     {
+      path: 'indexVideoBarrage/:videoId(\\d+)',
+      component: () => import('@/views/systemSetting/indexVideoBarrage'),
+      name: 'indexVideoBarrage',
+      hidden: true,
+      meta: { title: 'indexVideoBarrage', noCache: true, activeMenu: '/systemSetting/indexVideo' }
+    },
+    {
       path: 'setting',
       component: () => import('@/views/systemSetting/setting'),
       name: 'setting',
