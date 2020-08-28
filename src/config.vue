@@ -9,8 +9,8 @@
 <script>
 const IMGCND = 'https://rescdn.zhuodamilk.com/'
 // const APICDN = 'http://www.zdapi.com'
-// const APICDN = 'https://api.zhuodamilk.com/'
-const APICDN = 'https://zhuoda-admin.2blb.com:8767/'
+const APICDN = 'https://api.zhuodamilk.com/'
+// const APICDN = 'https://zhuoda-admin.2blb.com:8767/'
 export default
 {
   IMGCND,
