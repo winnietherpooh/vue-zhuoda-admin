@@ -13,6 +13,7 @@ import resourceRouter from './modules/resource'
 import memberRouter from './modules/member'
 import goodsRouter from './modules/goods'
 import scanRouter from './modules/scan'
+import chartsRouter from './modules/charts'
 import systemSettingRouter from './modules/systemSetting'
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -156,6 +157,7 @@ export const asyncRoutes = [
   memberRouter,
   goodsRouter,
   scanRouter,
+  chartsRouter,
   systemSettingRouter,
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }

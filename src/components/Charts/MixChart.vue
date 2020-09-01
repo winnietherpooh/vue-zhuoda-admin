@@ -1,5 +1,19 @@
 <template>
-  <div :id="id" :class="className" :style="{height:height,width:width}" />
+  <div class="chart-container">
+    <div class="filter-container">
+      <div class="box-card" style="background-color:#EFF2F4;padding:15px;height:72px;">
+        <el-form :inline="true" class="demo-form-inline">
+          <el-form-item label="资源名称" class="labelFontColor">
+            <el-input placeholder="请输入资源名称" style="width: 200px;" class="filter-item" />
+          </el-form-item>
+          <el-button v-waves class="filter-item" type="primary" icon="el-icon-search">
+            搜索
+          </el-button>
+        </el-form>
+      </div>
+    </div>
+    <div :id="id" :class="className" :style="{height:height,width:width}" />
+  </div>
 </template>
 
 <script>
@@ -47,7 +61,7 @@ export default {
       const xData = (function() {
         const data = []
         for (let i = 1; i < 13; i++) {
-          data.push(i + 'month')
+          data.push(i + '月')
         }
         return data
       }())
