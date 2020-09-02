@@ -3,15 +3,15 @@
     <div class="filter-container">
       <div class="box-card" style="background-color:#EFF2F4;padding:15px;height:72px;">
         <el-form :inline="true" class="demo-form-inline">
-          <el-form-item label="资源名称" class="labelFontColor">
-            <el-select v-model="listQuery.importanceOptions" style="width: 140px" class="filter-item" @change="handleFilter">
+          <el-form-item label="统计条件" class="labelFontColor">
+            <el-select v-model="listQuery.importanceOptions" style="width: 140px" class="filter-item" @change="changeSearchData">
               <el-option v-for="item in importanceOptions" :key="item.key" :label="item.label" :value="item.key" />
             </el-select>
           </el-form-item>
           <el-form-item v-if="dataType == 1" label="日期范围" class="labelFontColor">
             <div class="block">
               <el-date-picker
-                v-model="monthLength"
+                v-model="monthRange"
                 type="monthrange"
                 align="right"
                 unlink-panels
@@ -19,6 +19,8 @@
                 start-placeholder="开始月份"
                 end-placeholder="结束月份"
                 :picker-options="pickerOptions"
+                value-format="yyyy-MM"
+                @change="getMonthData"
               />
             </div>
           </el-form-item>
@@ -26,6 +28,7 @@
             <el-date-picker
               v-model="startYear"
               type="year"
+              value-format="yyyy"
               placeholder="选择年"
             />
           </el-form-item>
@@ -34,9 +37,11 @@
               v-model="endYear"
               type="year"
               placeholder="选择年"
+              value-format="yyyy"
+              @change="selectDate"
             />
           </el-form-item>
-          <el-button v-waves class="filter-item" type="primary" icon="el-icon-search">
+          <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
             搜索
           </el-button>
         </el-form>
@@ -47,6 +52,7 @@
 </template>
 
 <script>
+import { getData } from '@/api/charts'
 import echarts from 'echarts'
 import waves from '@/directive/waves' // waves directive
 import resize from './mixins/resize'
@@ -100,22 +106,23 @@ export default {
           }
         }]
       },
-      monthLength: '',
+      monthRange: '',
       startYear: '',
       endYear: '',
       dataType: 1,
       importanceOptions: [{ label: '按月统计', key: '1' }, { label: '按年统计', key: '2' }],
       listQuery: {
         dataType: undefined,
-        startTime: undefined,
-        endTime: undefined,
+        monthRange: undefined,
+        startYear: undefined,
+        endYear: undefined,
         importanceOptions: '1'
       }
     }
   },
   mounted() {
-    this.listQuery.key = 1
     this.initChart()
+    this.getStaicData()
   },
   beforeDestroy() {
     if (!this.chart) {
@@ -125,6 +132,15 @@ export default {
     this.chart = null
   },
   methods: {
+    getStaicData() {
+      this.listLoading = true
+      getData(this.listQuery).then(response => {
+        console.log(response.data)
+        // this.list = response.data.data
+        // this.total = response.data.total
+        this.listLoading = false
+      })
+    },
     initChart() {
       this.chart = echarts.init(document.getElementById(this.id))
       const xData = (function() {
@@ -268,8 +284,31 @@ export default {
         ]
       })
     },
-    handleFilter() {
+    changeSearchData() {
       this.dataType = this.listQuery.importanceOptions
+      // if (this.dataType === 1) {
+      //   this.startYear = ''
+      //   this.endYear = ''
+      // } else {
+      //   this.monthRange = []
+      // }
+    },
+    handleFilter() {
+      this.getStaicData()
+    },
+    selectDate(v) {
+      if (this.endYear < this.startYear) {
+        this.$message({
+          type: 'info',
+          message: '结束日期必须大于等于开始日期'
+        })
+        this.endYear = this.startYear
+      }
+      this.listQuery.startYear = this.startYear
+      this.listQuery.endYear = this.endYear
+    },
+    getMonthData() {
+      this.listQuery.monthRange = this.monthRange
     }
   }
 }
