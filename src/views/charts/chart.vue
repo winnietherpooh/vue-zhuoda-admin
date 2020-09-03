@@ -8,36 +8,26 @@
               <el-option v-for="item in importanceOptions" :key="item.key" :label="item.label" :value="item.key" />
             </el-select>
           </el-form-item>
-          <el-form-item v-if="dataType == 1" label="日期范围" class="labelFontColor">
-            <div class="block">
-              <el-date-picker
-                v-model="monthRange"
-                type="monthrange"
-                align="right"
-                unlink-panels
-                range-separator="至"
-                start-placeholder="开始月份"
-                end-placeholder="结束月份"
-                :picker-options="pickerOptions"
-                value-format="yyyy-MM"
-                @change="getMonthData"
-              />
-            </div>
+          <el-form-item label="线条样式" class="labelFontColor">
+            <el-select v-model="echartsOption.lineStyleCicleData" style="width: 140px" class="filter-item" @change="changLineStyle">
+              <el-option v-for="item in lineStyleCicle" :key="item.key" :label="item.label" :value="item.key" />
+            </el-select>
           </el-form-item>
-          <el-form-item v-if="dataType == 2" label="开始年份" class="labelFontColor">
+          <el-form-item v-if="dataType == 2" label="请选择年份" class="labelFontColor">
             <el-date-picker
-              v-model="startYear"
+              v-model="yearData"
               type="year"
-              value-format="yyyy"
-              placeholder="选择年"
+              value-format="yyyy年"
+              placeholder="请选择年份"
+              @change="selectDate"
             />
           </el-form-item>
-          <el-form-item v-if="dataType == 2" label="结束年份" class="labelFontColor">
+          <el-form-item v-if="dataType == 1" label="请选择月份" class="labelFontColor">
             <el-date-picker
-              v-model="endYear"
-              type="year"
-              placeholder="选择年"
-              value-format="yyyy"
+              v-model="monthData"
+              type="month"
+              placeholder="请选择月份"
+              value-format="yyyy-MM"
               @change="selectDate"
             />
           </el-form-item>
@@ -83,45 +73,24 @@ export default {
       chart: null,
       timeArr: [],
       dataArr: [],
-      pickerOptions: {
-        shortcuts: [{
-          text: '本月',
-          onClick(picker) {
-            picker.$emit('pick', [new Date(), new Date()])
-          }
-        }, {
-          text: '今年至今',
-          onClick(picker) {
-            const end = new Date()
-            const start = new Date(new Date().getFullYear(), 0)
-            picker.$emit('pick', [start, end])
-          }
-        }, {
-          text: '最近六个月',
-          onClick(picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setMonth(start.getMonth() - 6)
-            picker.$emit('pick', [start, end])
-          }
-        }]
+      yearData: '',
+      monthData: '',
+      echartsOption: {
+        lineStyleCicleData: false
       },
-      monthRange: '',
-      startYear: '',
-      endYear: '',
       dataType: 1,
       importanceOptions: [{ label: '按月统计', key: '1' }, { label: '按年统计', key: '2' }],
+      lineStyleCicle: [{ label: '折线', key: false }, { label: '曲线', key: true }],
       listQuery: {
         dataType: undefined,
-        monthRange: undefined,
-        startYear: undefined,
-        endYear: undefined,
+        yearData: undefined,
+        monthData: undefined,
         importanceOptions: '1'
       }
     }
   },
   mounted() {
-    this.initChart()
+    this.initChart(this.echartsOption)
     this.getStaicData()
   },
   beforeDestroy() {
@@ -135,21 +104,49 @@ export default {
     getStaicData() {
       this.listLoading = true
       getData(this.listQuery).then(response => {
-        console.log(response.data)
-        // this.list = response.data.data
-        // this.total = response.data.total
+        console.log(response.data.data)
+        this.timeArr = response.data.date
+        this.dataArr = response.data.data
+        this.chart.setOption({
+          title: {
+            text: '异步数据加载示例'
+          },
+          legend: {
+            data: ['销量']
+          },
+          xAxis: {
+            data: this.timeArr
+          },
+          yAxis: {},
+          series: [{
+            name: '销量',
+            data: this.dataArr,
+            smooth: this.echartsOption.lineStyleCicleData
+          }]
+        })
+        this.chart.hideLoading()
+        this.monthData = response.data.searchData
+        this.yearData = response.data.searchData
         this.listLoading = false
       })
     },
-    initChart() {
+    setEchartsStyle(echartsOption) {
+      this.chart.setOption({
+        series: [{
+          smooth: this.echartsOption.lineStyleCicleData
+        }]
+      })
+    },
+    initChart(echartsOption) {
       this.chart = echarts.init(document.getElementById(this.id))
       const xData = (function() {
         const data = []
-        for (let i = 1; i < 13; i++) {
-          data.push(i + '月')
-        }
+        // for (let i = 1; i < 13; i++) {
+        //   data.push(i + '月')
+        // }
         return data
       }())
+      this.chart.showLoading()
       this.chart.setOption({
         // backgroundColor: '#344b58',
         title: {
@@ -194,7 +191,10 @@ export default {
         calculable: false,
         xAxis: [{
           type: 'category',
+          name: '时间',
+          // nameRotate: 90,  名字旋转角度
           axisLine: {
+            show: true,
             lineStyle: {
               color: '#90979c'
             }
@@ -210,16 +210,18 @@ export default {
           },
           axisLabel: {
             interval: 0
-
+            // rotate: 270
           },
           data: xData
         }],
         yAxis: [{
+          name: '销量',
           type: 'value',
           splitLine: {
             show: false
           },
           axisLine: {
+            show: true,
             lineStyle: {
               color: '#90979c'
             }
@@ -266,6 +268,7 @@ export default {
             stack: 'total',
             symbolSize: 10,
             symbol: 'circle',
+            smooth: echartsOption.lineStyleCicleData,
             itemStyle: {
               normal: {
                 color: '#13C2C2',
@@ -274,12 +277,45 @@ export default {
                   show: true,
                   position: 'top',
                   formatter(p) {
-                    return p.value > 0 ? (p.value / 100) : ''
+                    return p.value > 0 ? (p.value) : ''
                   }
                 }
               }
             },
-            data: this.dataArr
+            // lineStyle: {
+            //   type: 'dotted'
+            // },
+            data: []
+            // markLine: {
+            //   symbol: ['none', 'none'],
+            //   itemStyle: {
+            //     normal: {
+            //       lineStyle: {
+            //         type: 'solid',
+            //         color: {
+            //           type: 'linear',
+            //           x: 0,
+            //           y: 0,
+            //           x2: 0,
+            //           y2: 1,
+            //           colorStops: [{
+            //             offset: 0, color: 'red '// 0% 处的颜色
+            //           }, {
+            //             offset: 1, color: 'blue' // 100% 处的颜色
+            //           }],
+            //           global: false // 缺省为 false
+            //         }
+            //       },
+            //       label: {
+            //         show: true,
+            //         position: 'middle'
+            //       }
+            //     }
+            //   },
+            //   data: [{
+            //     xAxis: 'aaa'
+            //   }]
+            // }
           }
         ]
       })
@@ -297,18 +333,11 @@ export default {
       this.getStaicData()
     },
     selectDate(v) {
-      if (this.endYear < this.startYear) {
-        this.$message({
-          type: 'info',
-          message: '结束日期必须大于等于开始日期'
-        })
-        this.endYear = this.startYear
-      }
-      this.listQuery.startYear = this.startYear
-      this.listQuery.endYear = this.endYear
+      this.listQuery.yearData = this.yearData
+      this.listQuery.monthData = this.monthData
     },
-    getMonthData() {
-      this.listQuery.monthRange = this.monthRange
+    changLineStyle() {
+      this.setEchartsStyle()
     }
   }
 }
