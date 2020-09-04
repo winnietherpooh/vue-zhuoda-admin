@@ -8,6 +8,22 @@ export function getData(query) {
   })
 }
 
+export function getGoodsData(query) {
+  return request({
+    url: 'MnGetGoodsSelectList',
+    method: 'post',
+    params: query
+  })
+}
+
+export function getGoodsSpecialData(query) {
+  return request({
+    url: 'MnGetStaticGoodsSpecialList',
+    method: 'post',
+    params: query
+  })
+}
+
 export function createResource(data) {
   return request({
     url: 'MnAddResource',

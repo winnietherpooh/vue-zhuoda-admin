@@ -8,7 +8,19 @@
               <el-option v-for="item in importanceOptions" :key="item.key" :label="item.label" :value="item.key" />
             </el-select>
           </el-form-item>
-          <el-form-item label="线条样式" class="labelFontColor">
+          <el-form-item label="商品名称" class="labelFontColor">
+            <el-select v-model="listQuery.GoodsId" style="width: 140px" class="filter-item" @change="changeGoodsData">
+              <el-option key="0" label="未选择商品" value="0" />
+              <el-option v-for="item in GoodsData" :key="item.goods_id" :label="item.goods_name" :value="item.goods_id" />
+            </el-select>
+          </el-form-item>
+          <el-form-item v-if="listQuery.GoodsId > 0 " label="规格名称" class="labelFontColor">
+            <el-select v-model="listQuery.SpecialId" style="width: 140px" class="filter-item">
+              <el-option key="0" label="未选择规格" value="0" />
+              <el-option v-for="item in SpecialData" :key="item.special_id" :label="item.special_name" :value="item.special_id" />
+            </el-select>
+          </el-form-item>
+          <el-form-item v-if="chartType === 'line'" label="线条样式" class="labelFontColor">
             <el-select v-model="echartsOption.lineStyleCicleData" style="width: 140px" class="filter-item" @change="changLineStyle">
               <el-option v-for="item in lineStyleCicle" :key="item.key" :label="item.label" :value="item.key" />
             </el-select>
@@ -42,7 +54,7 @@
 </template>
 
 <script>
-import { getData } from '@/api/charts'
+import { getData, getGoodsData, getGoodsSpecialData } from '@/api/charts'
 import echarts from 'echarts'
 import waves from '@/directive/waves' // waves directive
 import resize from './mixins/resize'
@@ -73,6 +85,11 @@ export default {
       chart: null,
       timeArr: [],
       dataArr: [],
+      GoodsData: [],
+      SpecialData: [],
+      chartType: 'line',
+      GoodsId: '',
+      SpecialId: '',
       yearData: '',
       monthData: '',
       echartsOption: {
@@ -85,6 +102,8 @@ export default {
         dataType: undefined,
         yearData: undefined,
         monthData: undefined,
+        GoodsId: undefined,
+        SpecialId: undefined,
         importanceOptions: '1'
       }
     }
@@ -92,6 +111,7 @@ export default {
   mounted() {
     this.initChart(this.echartsOption)
     this.getStaicData()
+    this.getGoodsList()
   },
   beforeDestroy() {
     if (!this.chart) {
@@ -104,12 +124,11 @@ export default {
     getStaicData() {
       this.listLoading = true
       getData(this.listQuery).then(response => {
-        console.log(response.data.data)
         this.timeArr = response.data.date
         this.dataArr = response.data.data
         this.chart.setOption({
           title: {
-            text: '异步数据加载示例'
+            text: '销售统计'
           },
           legend: {
             data: ['销量']
@@ -121,13 +140,46 @@ export default {
           series: [{
             name: '销量',
             data: this.dataArr,
-            smooth: this.echartsOption.lineStyleCicleData
+            stack: 'total',
+            symbolSize: 10,
+            symbol: 'circle',
+            smooth: this.echartsOption.lineStyleCicleData,
+            type: this.chartType,
+            lineStyle: {
+              width: 2
+            },
+            animation: true,
+            animationDuration: 1000,
+            animationEasing: 'linear',
+            animationDurationUpdate: function(idx) {
+              return idx * 10
+            },
+            itemStyle: {
+              normal: {
+                color: '#13C2C2',
+                barBorderRadius: 0,
+                label: {
+                  show: true,
+                  position: 'top',
+                  formatter(p) {
+                    return p.value > 0 ? (p.value) : ''
+                  }
+                }
+              }
+            }
           }]
         })
         this.chart.hideLoading()
         this.monthData = response.data.searchData
         this.yearData = response.data.searchData
         this.listLoading = false
+      })
+    },
+    getGoodsList() {
+      this.listLoading = true
+      getGoodsData(this.listQuery).then(response => {
+        console.log(response.data)
+        this.GoodsData = response.data
       })
     },
     setEchartsStyle(echartsOption) {
@@ -261,64 +313,7 @@ export default {
           height: 15,
           start: 1,
           end: 35
-        }],
-        series: [
-          {
-            name: '销量',
-            type: 'line',
-            stack: 'total',
-            symbolSize: 10,
-            symbol: 'circle',
-            smooth: echartsOption.lineStyleCicleData,
-            itemStyle: {
-              normal: {
-                color: '#13C2C2',
-                barBorderRadius: 0,
-                label: {
-                  show: true,
-                  position: 'top',
-                  formatter(p) {
-                    return p.value > 0 ? (p.value) : ''
-                  }
-                }
-              }
-            },
-            // lineStyle: {
-            //   type: 'dotted'
-            // },
-            data: []
-            // markLine: {
-            //   symbol: ['none', 'none'],
-            //   itemStyle: {
-            //     normal: {
-            //       lineStyle: {
-            //         type: 'solid',
-            //         color: {
-            //           type: 'linear',
-            //           x: 0,
-            //           y: 0,
-            //           x2: 0,
-            //           y2: 1,
-            //           colorStops: [{
-            //             offset: 0, color: 'red '// 0% 处的颜色
-            //           }, {
-            //             offset: 1, color: 'blue' // 100% 处的颜色
-            //           }],
-            //           global: false // 缺省为 false
-            //         }
-            //       },
-            //       label: {
-            //         show: true,
-            //         position: 'middle'
-            //       }
-            //     }
-            //   },
-            //   data: [{
-            //     xAxis: 'aaa'
-            //   }]
-            // }
-          }
-        ]
+        }]
       })
     },
     changeSearchData() {
@@ -339,6 +334,17 @@ export default {
     },
     changLineStyle() {
       this.setEchartsStyle()
+    },
+    changeGoodsData() {
+      this.listLoading = true
+      console.log(this.listQuery.GoodsId)
+      if (this.listQuery.GoodsId > 0) {
+        this.chartType = 'bar'
+        getGoodsSpecialData(this.listQuery).then(response => {
+          console.log(response.data)
+          this.SpecialData = response.data
+        })
+      }
     }
   }
 }
