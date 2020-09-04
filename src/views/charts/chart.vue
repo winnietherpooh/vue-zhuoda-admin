@@ -51,6 +51,9 @@
           <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
             搜索
           </el-button>
+          <el-button v-waves class="filter-item" type="success" icon="el-icon-search" @click="handleDownload">
+            导出
+          </el-button>
         </el-form>
       </div>
     </div>
@@ -91,7 +94,11 @@ export default {
       timeArr: [],
       dataArr: [],
       GoodsData: [],
+      responseData: [],
       SpecialData: [],
+      filename: '数据导出',
+      autoWidth: true,
+      bookType: 'xlsx',
       GoodsId: '',
       SpecialId: '',
       yearData: '',
@@ -130,6 +137,7 @@ export default {
     getStaicData() {
       this.listLoading = true
       getData(this.listQuery).then(response => {
+        this.responseData = response.data.excelData
         this.timeArr = response.data.date
         this.dataArr = response.data.data
         this.chart.setOption({
@@ -364,6 +372,28 @@ export default {
           this.SpecialData = response.data
         })
       }
+    },
+    handleDownload() {
+      this.downloadLoading = true
+      import('@/vendor/Export2Excel').then(excel => {
+        const tHeader = ['日期', '金额']
+        const filterVal = ['date', 'data']
+        const list = this.responseData
+        const data = this.formatJson(filterVal, list)
+        excel.export_json_to_excel({
+          header: tHeader,
+          data,
+          filename: this.filename,
+          autoWidth: this.autoWidth,
+          bookType: this.bookType
+        })
+        this.downloadLoading = false
+      })
+    },
+    formatJson(filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => {
+        return v[j]
+      }))
     }
   }
 }
