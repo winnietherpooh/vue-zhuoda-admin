@@ -9,7 +9,7 @@ const chartsRouter = {
   name: 'resource',
   meta: {
     title: '销售统计',
-    icon: 'el-icon-video-camera-solid'
+    icon: 'el-icon-data-line'
   },
   children: [
     {
