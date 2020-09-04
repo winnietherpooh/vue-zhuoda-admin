@@ -8,6 +8,11 @@
               <el-option v-for="item in importanceOptions" :key="item.key" :label="item.label" :value="item.key" />
             </el-select>
           </el-form-item>
+          <!-- <el-form-item label="图表样式" class="labelFontColor">
+            <el-select v-model="echartsOption.chartType" style="width: 140px" class="filter-item" @change="changLineStyle">
+              <el-option v-for="item in lineTypeOption" :key="item.key" :label="item.label" :value="item.key" />
+            </el-select>
+          </el-form-item> -->
           <el-form-item label="商品名称" class="labelFontColor">
             <el-select v-model="listQuery.GoodsId" style="width: 140px" class="filter-item" @change="changeGoodsData">
               <el-option key="0" label="未选择商品" value="0" />
@@ -20,11 +25,11 @@
               <el-option v-for="item in SpecialData" :key="item.special_id" :label="item.special_name" :value="item.special_id" />
             </el-select>
           </el-form-item>
-          <el-form-item v-if="chartType === 'line'" label="线条样式" class="labelFontColor">
+          <!-- <el-form-item label="线条样式" class="labelFontColor">
             <el-select v-model="echartsOption.lineStyleCicleData" style="width: 140px" class="filter-item" @change="changLineStyle">
               <el-option v-for="item in lineStyleCicle" :key="item.key" :label="item.label" :value="item.key" />
             </el-select>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item v-if="dataType == 2" label="请选择年份" class="labelFontColor">
             <el-date-picker
               v-model="yearData"
@@ -87,17 +92,18 @@ export default {
       dataArr: [],
       GoodsData: [],
       SpecialData: [],
-      chartType: 'line',
       GoodsId: '',
       SpecialId: '',
       yearData: '',
       monthData: '',
       echartsOption: {
-        lineStyleCicleData: false
+        lineStyleCicleData: false,
+        chartType: 'line'
       },
       dataType: 1,
       importanceOptions: [{ label: '按月统计', key: '1' }, { label: '按年统计', key: '2' }],
       lineStyleCicle: [{ label: '折线', key: false }, { label: '曲线', key: true }],
+      lineTypeOption: [{ label: '折线', key: 'line' }, { label: '柱状图', key: 'bar' }],
       listQuery: {
         dataType: undefined,
         yearData: undefined,
@@ -143,8 +149,8 @@ export default {
             stack: 'total',
             symbolSize: 10,
             symbol: 'circle',
-            smooth: this.echartsOption.lineStyleCicleData,
-            type: this.chartType,
+            smooth: true,
+            type: this.echartsOption.chartType,
             lineStyle: {
               width: 2
             },
@@ -185,7 +191,8 @@ export default {
     setEchartsStyle(echartsOption) {
       this.chart.setOption({
         series: [{
-          smooth: this.echartsOption.lineStyleCicleData
+          smooth: this.echartsOption.lineStyleCicleData,
+          type: this.echartsOption.chartType
         }]
       })
     },
@@ -212,6 +219,19 @@ export default {
           subtextStyle: {
             color: '#90979c',
             fontSize: '16'
+          }
+        },
+        toolbox: {
+          show: true,
+          feature: {
+            dataView: {
+              readOnly: false
+            },
+            magicType: {
+              type: ['line', 'bar']
+            },
+            restore: {},
+            saveAsImage: {}
           }
         },
         tooltip: {
@@ -339,7 +359,6 @@ export default {
       this.listLoading = true
       console.log(this.listQuery.GoodsId)
       if (this.listQuery.GoodsId > 0) {
-        this.chartType = 'bar'
         getGoodsSpecialData(this.listQuery).then(response => {
           console.log(response.data)
           this.SpecialData = response.data

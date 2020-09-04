@@ -17,13 +17,13 @@ const chartsRouter = {
       component: () => import('@/views/charts/chart'),
       name: 'chart',
       meta: { title: '销售统计', noCache: true }
-    },
-    {
-      path: 'test',
-      component: () => import('@/views/charts/line'),
-      name: 'test',
-      meta: { title: '销售统计', noCache: true }
     }
+    // {
+    //   path: 'test',
+    //   component: () => import('@/views/charts/line'),
+    //   name: 'test',
+    //   meta: { title: '销售统计', noCache: true }
+    // }
   ]
 }
 
