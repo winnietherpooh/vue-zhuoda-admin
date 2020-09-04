@@ -39,8 +39,8 @@ export default {
   mounted() {
     this.$nextTick(() => {
       this.initChart()
+      this.getList()
     })
-    this.getList()
   },
   beforeDestroy() {
     if (!this.chart) {
@@ -58,13 +58,44 @@ export default {
       getEchartsData().then(response => {
         this.echartData.data = response.data.echarts.data
         this.echartData.date = response.data.echarts.date
-        this.setOptions(this.echartData)
+        // this.chart.setOption({
+        //   xAxis: {
+        //     type: 'category',
+        //     data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        //   },
+        //   yAxis: {},
+        //   series: [{
+        //     data: [820, 932, 901, 934, 1290, 1330, 1320],
+        //     type: 'line'
+        //   }]
+        // })
+        this.chart.setOption({
+          xAxis: {
+            data: this.echartData.date
+          },
+          yAxis: {
+            data: this.echartData.data
+          },
+          series: [{
+            name: '七日销售量',
+            smooth: true,
+            type: 'line',
+            lineStyle: {
+              width: 2
+            },
+            animation: true,
+            data: this.echartData.data,
+            animationDuration: 1000,
+            animationEasing: 'linear'
+          }]
+        })
       })
     },
     setOptions(echartData) {
       this.chart.setOption({
         xAxis: {
-          data: echartData.date,
+          // type: 'category',
+          data: [],
           boundaryGap: false,
           axisTick: {
             show: false
@@ -91,23 +122,7 @@ export default {
         },
         legend: {
           data: ['七日销售量']
-        },
-        series: [{
-          name: '七日销售量', itemStyle: {
-            normal: {
-              color: '#FF005A',
-              lineStyle: {
-                color: '#FF005A',
-                width: 2
-              }
-            }
-          },
-          smooth: true,
-          type: 'line',
-          data: echartData.data,
-          animationDuration: 2800,
-          animationEasing: 'cubicInOut'
-        }]
+        }
       })
     }
   }
