@@ -57,6 +57,7 @@
         </el-form>
       </div>
     </div>
+    <el-alert :title="postage" type="success" />
     <div :id="id" :class="className" :style="{height:height,width:width}" />
   </div>
 </template>
@@ -101,6 +102,7 @@ export default {
       bookType: 'xlsx',
       GoodsId: '',
       SpecialId: '',
+      postage: '',
       yearData: '',
       monthData: '',
       echartsOption: {
@@ -140,6 +142,7 @@ export default {
         this.responseData = response.data.excelData
         this.timeArr = response.data.date
         this.dataArr = response.data.data
+        this.postage = '运费共计: ' + response.data.postage + '元'
         this.chart.setOption({
           title: {
             text: '销售统计'
