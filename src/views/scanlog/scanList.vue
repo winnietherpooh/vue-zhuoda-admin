@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <div class="filter-container">
+    <!-- <div class="filter-container">
       <div class="box-card" style="background-color:#EFF2F4;padding:15px;height:72px;">
         <el-form :inline="true" class="demo-form-inline">
           <el-form-item label="管理员账号" class="labelFontColor">
@@ -19,7 +19,7 @@
           </el-button>
         </el-form>
       </div>
-    </div>
+    </div> -->
 
     <el-table
       :key="tableKey"
