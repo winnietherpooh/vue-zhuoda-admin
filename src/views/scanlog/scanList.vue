@@ -91,14 +91,14 @@
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" min-width="120">
-        <template slot-scope="{row,$index}">
+        <!-- <template slot-scope="{row,$index}">
           <el-button type="success" size="mini" @click="handleUpdate(row)">
             编辑
           </el-button>
           <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
             删除
           </el-button>
-        </template>
+        </template> -->
       </el-table-column>
     </el-table>
     <div style="margin-top: 20px">
