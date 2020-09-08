@@ -371,6 +371,7 @@ export default {
       })
     },
     updateData() {
+      console.log(this.temp)
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           if (this.temp.is_show === 1) {
@@ -379,14 +380,14 @@ export default {
             this.temp.is_show_str = '隐藏'
           }
           if (this.temp.go_type === 1) {
-            this.temp.go_type_str = '跳转地址'
+            this.temp.go_type_str = '规格ID'
           } else {
             this.temp.go_type_str = '跳转地址'
           }
           if (this.temp.banner_type === 1) {
             this.temp.banner_type_str = '首页轮播图'
           } else {
-            this.temp.banner_type_str = '商品轮播图'
+            this.temp.banner_type_str = '奶站轮播图'
           }
           const tempData = Object.assign({}, this.temp)
           updateMn(tempData).then(() => {
