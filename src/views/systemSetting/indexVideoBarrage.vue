@@ -73,7 +73,7 @@
       <el-button @click="deleteAll()">删除</el-button>
       <el-button @click="toggleSelection()">取消</el-button>
     </div>
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
+    <pagination v-show="total>0" :total="total" :video_id.sync="listQuery.video_id" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
@@ -199,7 +199,8 @@ export default {
   },
   created() {
     const id = this.$route.params && this.$route.params.videoId
-    this.getList(id)
+    this.listQuery.video_id = id
+    this.getList()
   },
   methods: {
     tableHeaderColor({ row, column, rowIndex, columnIndex }) {
@@ -207,9 +208,9 @@ export default {
         return 'background-color: #EFF2F4;color: #343434;padding: 8px;'
       }
     },
-    getList(id) {
+    getList() {
       this.listLoading = true
-      this.listQuery.video_id = id
+      console.log(this.listQuery)
       getIndexBanList(this.listQuery).then(response => {
         this.list = response.data.data
         this.total = response.data.total
