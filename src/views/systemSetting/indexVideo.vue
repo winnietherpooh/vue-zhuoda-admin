@@ -32,6 +32,7 @@
       v-loading="listLoading"
       :data="list"
       border
+      stripe
       :header-cell-style="tableHeaderColor"
       :cell-style="{padding:'8px'}"
       @select="selectAll"

@@ -10,7 +10,7 @@ import Layout from '@/layout'
 import ranchRouter from './modules/ranch'
 import ordersRouter from './modules/orders'
 // import masterRouter from './modules/master'
-import resourceRouter from './modules/resource'
+// import resourceRouter from './modules/resource'
 import memberRouter from './modules/member'
 import goodsRouter from './modules/goods'
 import scanRouter from './modules/scan'
@@ -156,7 +156,7 @@ export const asyncRoutes = [
   goodsRouter,
   ordersRouter,
   // masterRouter,
-  resourceRouter,
+  // resourceRouter,
   memberRouter,
   scanRouter,
   chartsRouter,

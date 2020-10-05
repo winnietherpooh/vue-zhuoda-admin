@@ -25,6 +25,7 @@
       ref="listTable"
       v-loading="listLoading"
       :data="list"
+      stripe
       border
       fit
       :header-cell-style="tableHeaderColor"

@@ -30,6 +30,7 @@
       :data="list"
       border
       fit
+      stripe
       :header-cell-style="tableHeaderColor"
       :cell-style="{padding:'8px'}"
       @select="selectAll"

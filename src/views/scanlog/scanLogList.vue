@@ -22,6 +22,7 @@
       v-loading="listLoading"
       :data="list"
       border
+      stripe
       fit
       :header-cell-style="tableHeaderColor"
       :cell-style="{padding:'8px'}"
