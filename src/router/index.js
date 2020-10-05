@@ -8,7 +8,8 @@ import Layout from '@/layout'
 
 /* Router Modules */
 import ranchRouter from './modules/ranch'
-import masterRouter from './modules/master'
+import ordersRouter from './modules/orders'
+// import masterRouter from './modules/master'
 import resourceRouter from './modules/resource'
 import memberRouter from './modules/member'
 import goodsRouter from './modules/goods'
@@ -152,10 +153,11 @@ export const asyncRoutes = [
   /** when your routing map is too long, you can split it into small modules **/
 
   ranchRouter,
-  masterRouter,
+  goodsRouter,
+  ordersRouter,
+  // masterRouter,
   resourceRouter,
   memberRouter,
-  goodsRouter,
   scanRouter,
   chartsRouter,
   systemSettingRouter,

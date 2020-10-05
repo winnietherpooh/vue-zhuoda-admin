@@ -13,23 +13,10 @@ const systemSettingRouter = {
   },
   children: [
     {
-      path: 'bannerList',
-      component: () => import('@/views/systemSetting/bannerList'),
-      name: 'bannerList',
-      meta: { title: 'bannerList', noCache: true }
-    },
-    {
-      path: 'indexVideo',
-      component: () => import('@/views/systemSetting/indexVideo'),
-      name: 'indexVideo',
-      meta: { title: 'indexVideo', noCache: true }
-    },
-    {
-      path: 'indexVideoBarrage/:videoId(\\d+)',
-      component: () => import('@/views/systemSetting/indexVideoBarrage'),
-      name: 'indexVideoBarrage',
-      hidden: true,
-      meta: { title: 'indexVideoBarrage', noCache: true, activeMenu: '/systemSetting/indexVideo' }
+      path: 'masterlist',
+      component: () => import('@/views/master/masterlist'),
+      name: 'masterlist',
+      meta: { title: 'masterlist', noCache: true }
     },
     {
       path: 'setting',

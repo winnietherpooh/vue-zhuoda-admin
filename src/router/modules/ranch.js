@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2020-08-20 19:55:49
+ * @LastEditTime: 2020-10-05 08:20:11
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \admin\src\router\modules\ranch.js
+ */
 /** When your routing table is too long, you can split it into small modules**/
 
 import Layout from '@/layout'
@@ -19,6 +27,12 @@ const ranchRouter = {
       meta: { title: 'ranchlist', noCache: true }
     },
     {
+      path: 'factorylist',
+      component: () => import('@/views/ranch/factorylist'),
+      name: 'factorylist',
+      meta: { title: 'factorylist', noCache: true }
+    },
+    {
       path: 'ranchStaff',
       component: () => import('@/views/ranch/ranchStaff'),
       name: 'ranchStaff',
@@ -37,12 +51,6 @@ const ranchRouter = {
       name: 'editRanch',
       hidden: true,
       meta: { title: 'editRanch', noCache: true, activeMenu: '/ranch/ranchlist' }
-    },
-    {
-      path: 'factorylist',
-      component: () => import('@/views/ranch/factorylist'),
-      name: 'factorylist',
-      meta: { title: 'factorylist', noCache: true }
     }
   ]
 }

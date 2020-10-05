@@ -14,6 +14,7 @@ export default {
     addGoods: '新增商品',
     factorylist: '生产地',
     scan: '扫码管理',
+    orders: '订单管理',
     scanLogList: '用户扫码记录',
     wxMemberIndex: '公众号用户',
     scanList: '录入记录',

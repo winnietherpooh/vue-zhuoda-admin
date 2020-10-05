@@ -14,9 +14,11 @@
           <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
             搜索
           </el-button>
-          <!-- <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
-            新增
-          </el-button> -->
+          <router-link :to="'/goods/addGoods'">
+            <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit">
+              新增
+            </el-button>
+          </router-link>
         </el-form>
       </div>
     </div>

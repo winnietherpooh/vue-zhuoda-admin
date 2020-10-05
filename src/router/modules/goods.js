@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-08-14 15:12:13
- * @LastEditTime: 2020-08-16 11:39:14
+ * @LastEditTime: 2020-10-05 08:35:08
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \admin\src\router\modules\goods.js
@@ -21,6 +21,24 @@ const goodsRouter = {
   },
   children: [
     {
+      path: 'index',
+      component: () => import('@/views/resource/index'),
+      name: 'index',
+      meta: { title: '资源列表', noCache: true }
+    },
+    {
+      path: 'bannerList',
+      component: () => import('@/views/systemSetting/bannerList'),
+      name: 'bannerList',
+      meta: { title: 'bannerList', noCache: true }
+    },
+    {
+      path: 'indexVideo',
+      component: () => import('@/views/systemSetting/indexVideo'),
+      name: 'indexVideo',
+      meta: { title: 'indexVideo', noCache: true }
+    },
+    {
       path: 'goodsList',
       component: () => import('@/views/goods/goodsList'),
       name: 'goodsList',
@@ -30,7 +48,8 @@ const goodsRouter = {
       path: 'addGoods',
       component: () => import('@/views/goods/addGoods'),
       name: 'addGoods',
-      meta: { title: 'addGoods', noCache: true }
+      hidden: true,
+      meta: { title: 'addGoods', noCache: true, activeMenu: '/goods/goodsList' }
     },
     {
       path: 'editGoods/:goodsId(\\d+)',
@@ -38,12 +57,6 @@ const goodsRouter = {
       name: 'editGoods',
       hidden: true,
       meta: { title: 'editGoods', noCache: true, activeMenu: '/goods/goodsList' }
-    },
-    {
-      path: 'orderList/:orderId?',
-      component: () => import('@/views/goods/orderList'),
-      name: 'orderList',
-      meta: { title: 'orderList', noCache: true }
     },
     {
       path: 'specialList',
@@ -58,16 +71,11 @@ const goodsRouter = {
       meta: { title: 'goodsFreight', noCache: true }
     },
     {
-      path: 'goodsEvaluate',
-      component: () => import('@/views/goods/goodsEvaluate'),
-      name: 'goodsEvaluate',
-      meta: { title: 'goodsEvaluate', noCache: true }
-    },
-    {
-      path: 'orderReturn/:orderId?',
-      component: () => import('@/views/goods/orderReturn'),
-      name: 'orderReturn',
-      meta: { title: 'orderReturn', noCache: true }
+      path: 'indexVideoBarrage/:videoId(\\d+)',
+      component: () => import('@/views/systemSetting/indexVideoBarrage'),
+      name: 'indexVideoBarrage',
+      hidden: true,
+      meta: { title: 'indexVideoBarrage', noCache: true, activeMenu: '/goods/indexVideo' }
     }
   ]
 }
