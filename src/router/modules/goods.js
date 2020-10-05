@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-08-14 15:12:13
- * @LastEditTime: 2020-10-05 08:35:08
+ * @LastEditTime: 2020-10-05 08:52:01
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \admin\src\router\modules\goods.js
@@ -25,6 +25,13 @@ const goodsRouter = {
       component: () => import('@/views/resource/index'),
       name: 'index',
       meta: { title: '资源列表', noCache: true }
+    },
+    {
+      path: 'addresource',
+      component: () => import('@/views/resource/addresource'),
+      name: 'addresource',
+      hidden: true,
+      meta: { title: '上传资源', noCache: true, activeMenu: '/goods/index' }
     },
     {
       path: 'bannerList',
