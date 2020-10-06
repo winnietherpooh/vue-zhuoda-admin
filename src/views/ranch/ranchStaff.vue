@@ -135,7 +135,7 @@
         </el-button>
       </div>
     </el-dialog>
-    <el-dialog :title="ranchSelectedName" :visible.sync="showMemberSelected" width="1000px">
+    <el-dialog :title="ranchSelectedName" :visible.sync="showMemberSelected" width="1300px">
       <el-form :inline="true" class="demo-form-inline">
         <el-form-item label="用户昵称" class="labelFontColor">
           <el-input v-model="listMemberQuery.title" placeholder="请输入账号" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
@@ -161,39 +161,94 @@
             <span>{{ row.nick_name }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="挤奶员" class-name="status-col" prop="is_delete" width="100">
-          <template slot-scope="{row}">
+        <el-table-column label="挤奶员" class-name="status-col" prop="is_delete" width="150">
+          <!-- <template slot-scope="{row}">
             <el-tag :type="row.is_milker_str | memberFilter">
               {{ row.is_milker_str }}
             </el-tag>
+          </template> -->
+          <template slot-scope="{row,$index}">
+            <el-switch
+              v-model="row.is_milker_str"
+              active-value="是"
+              inactive-value="否"
+              style="display: block"
+              active-text="是"
+              inactive-text="否"
+              @change="canSelect1($event,row,$index)"
+            />
           </template>
         </el-table-column>
-        <el-table-column label="生产员" class-name="status-col" prop="is_delete" width="100">
-          <template slot-scope="{row}">
+        <el-table-column label="生产员" class-name="status-col" prop="is_delete" width="150">
+          <!-- <template slot-scope="{row}">
             <el-tag :type="row.is_creater_str | memberFilter">
               {{ row.is_creater_str }}
             </el-tag>
+          </template> -->
+          <template slot-scope="{row,$index}">
+            <el-switch
+              v-model="row.is_creater_str"
+              active-value="是"
+              inactive-value="否"
+              style="display: block"
+              active-text="是"
+              inactive-text="否"
+              @change="canSelect2($event,row,$index)"
+            />
           </template>
         </el-table-column>
-        <el-table-column label="配送员" class-name="status-col" prop="is_delete" width="100">
-          <template slot-scope="{row}">
+        <el-table-column label="配送员" class-name="status-col" prop="is_delete" width="150">
+          <!-- <template slot-scope="{row}">
             <el-tag :type="row.is_dispatching_str | memberFilter">
               {{ row.is_dispatching_str }}
             </el-tag>
+          </template> -->
+          <template slot-scope="{row,$index}">
+            <el-switch
+              v-model="row.is_dispatching_str"
+              active-value="是"
+              inactive-value="否"
+              style="display: block"
+              active-text="是"
+              inactive-text="否"
+              @change="canSelect3($event,row,$index)"
+            />
           </template>
         </el-table-column>
-        <el-table-column label="录入员" class-name="status-col" prop="is_delete" width="100">
-          <template slot-scope="{row}">
+        <el-table-column label="录入员" class-name="status-col" prop="is_delete" width="150">
+          <!-- <template slot-scope="{row}">
             <el-tag :type="row.is_inputer_str | memberFilter">
               {{ row.is_inputer_str }}
             </el-tag>
+          </template> -->
+          <template slot-scope="{row,$index}">
+            <el-switch
+              v-model="row.is_inputer_str"
+              active-value="是"
+              inactive-value="否"
+              style="display: block"
+              active-text="是"
+              inactive-text="否"
+              @change="canSelect4($event,row,$index)"
+            />
           </template>
         </el-table-column>
-        <el-table-column label="用户状态" class-name="status-col" prop="is_delete" width="100">
-          <template slot-scope="{row}">
+        <el-table-column label="用户状态" class-name="status-col" prop="is_delete" width="150">
+          <!-- <template slot-scope="{row}">
             <el-tag :type="row.is_delete_str | statusFilter">
               {{ row.is_delete_str }}
             </el-tag>
+          </template> -->
+          <template slot-scope="{row,$index}">
+            <el-switch
+              v-model="row.is_delete_str"
+              active-value="是"
+              inactive-value="否"
+              style="display: block"
+              active-text="是"
+              inactive-text="否"
+              @change="canSelect5($event,row,$index)"
+            />
           </template>
         </el-table-column>
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -483,55 +538,66 @@ export default {
       })
     },
     setMilkerCreate(row, index, type, value) {
-      this.temp = row
-      this.temp.ranch_id = this.ranchSelected
-      this.temp.member_id = row.member_id
-      this.temp.type = type
-      switch (type) {
-        case 1:
-          if (value === 1) {
-            this.temp.is_milker = 1
-            this.temp.is_milker_str = '是'
-          } else {
-            this.temp.is_milker = 0
-            this.temp.is_milker_str = '否'
-          }
-          break
-        case 2:
-          if (value === 1) {
-            this.temp.is_creater = 1
-            this.temp.is_creater_str = '是'
-          } else {
-            this.temp.is_creater = 0
-            this.temp.is_creater_str = '否'
-          }
-          break
-        case 3:
-          if (value === 1) {
-            this.temp.is_dispatching = 1
-            this.temp.is_dispatching_str = '是'
-          } else {
-            this.temp.is_dispatching = 0
-            this.temp.is_dispatching_str = '否'
-          }
-          break
-        case 4:
-          if (value === 1) {
-            this.temp.is_inputer = 1
-            this.temp.is_inputer_str = '是'
-          } else {
-            this.temp.is_inputer = 0
-            this.temp.is_inputer_str = '否'
-          }
-          break
-      }
-      setMn(this.temp).then(() => {
-        this.memberList.splice(index, 1, this.temp)
-        this.$notify({
-          title: '设置员工',
-          message: '操作成功',
-          type: 'success',
-          duration: 2000
+      this.$confirm('确定执行此操作吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.temp = row
+        this.temp.ranch_id = this.ranchSelected
+        this.temp.member_id = row.member_id
+        this.temp.type = type
+        switch (type) {
+          case 1:
+            if (value === 1) {
+              this.temp.is_milker = 1
+              this.temp.is_milker_str = '是'
+            } else {
+              this.temp.is_milker = 0
+              this.temp.is_milker_str = '否'
+            }
+            break
+          case 2:
+            if (value === 1) {
+              this.temp.is_creater = 1
+              this.temp.is_creater_str = '是'
+            } else {
+              this.temp.is_creater = 0
+              this.temp.is_creater_str = '否'
+            }
+            break
+          case 3:
+            if (value === 1) {
+              this.temp.is_dispatching = 1
+              this.temp.is_dispatching_str = '是'
+            } else {
+              this.temp.is_dispatching = 0
+              this.temp.is_dispatching_str = '否'
+            }
+            break
+          case 4:
+            if (value === 1) {
+              this.temp.is_inputer = 1
+              this.temp.is_inputer_str = '是'
+            } else {
+              this.temp.is_inputer = 0
+              this.temp.is_inputer_str = '否'
+            }
+            break
+        }
+        setMn(this.temp).then(() => {
+          this.memberList.splice(index, 1, this.temp)
+          this.$notify({
+            title: '设置员工',
+            message: '操作成功',
+            type: 'success',
+            duration: 2000
+          })
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
         })
       })
     },
@@ -611,6 +677,56 @@ export default {
           })
         }
       })
+    },
+    canSelect1(v, row, index) {
+      if (v === '是') {
+        v = '否'
+      } else {
+        v = '是'
+      }
+      this.temp = row
+      this.temp.is_milker_str = v
+      this.list.splice(index, 1, this.temp)
+    },
+    canSelect2(v, row, index) {
+      if (v === '是') {
+        v = '否'
+      } else {
+        v = '是'
+      }
+      this.temp = row
+      this.temp.is_creater_str = v
+      this.list.splice(index, 1, this.temp)
+    },
+    canSelect3(v, row, index) {
+      if (v === '是') {
+        v = '否'
+      } else {
+        v = '是'
+      }
+      this.temp = row
+      this.temp.is_dispatching_str = v
+      this.list.splice(index, 1, this.temp)
+    },
+    canSelect4(v, row, index) {
+      if (v === '是') {
+        v = '否'
+      } else {
+        v = '是'
+      }
+      this.temp = row
+      this.temp.is_inputer_str = v
+      this.list.splice(index, 1, this.temp)
+    },
+    canSelect5(v, row, index) {
+      if (v === '是') {
+        v = '否'
+      } else {
+        v = '是'
+      }
+      this.temp = row
+      this.temp.is_delete_str = v
+      this.list.splice(index, 1, this.temp)
     }
   }
 }
