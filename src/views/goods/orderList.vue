@@ -40,9 +40,9 @@
           <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
             搜索
           </el-button>
-          <!-- <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
-            新增
-          </el-button> -->
+          <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleFilter2">
+            导出
+          </el-button>
           <el-alert title="选择 状态为 待发货,即可批量发货" type="success" />
         </el-form>
       </div>
@@ -66,6 +66,9 @@
       <el-table-column type="expand" label="收货人详情" width="150">
         <template slot-scope="props">
           <el-form label-position="left" class="demo-table-expand">
+            <el-form-item label="买家备注">
+              <span>{{ props.row.remark }}</span>
+            </el-form-item>
             <el-form-item label="收货人">
               <span>{{ props.row.member_name }}</span>
             </el-form-item>
@@ -272,7 +275,7 @@
 </template>
 
 <script>
-import { fetchList, getOrderInfo, repeatBuyerContent, setOrderStatus, deleteMn, deleteMnAll, setMn } from '@/api/order'
+import { fetchList, getOrderInfo, repeatBuyerContent, setOrderStatus, deleteMn, deleteMnAll, setMn, exploreList } from '@/api/order'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -444,10 +447,21 @@ export default {
         this.listLoading = false
       })
     },
+    getList2(id) {
+      this.listQuery.order_id = id
+      exploreList(this.listQuery).then(response => {
+        this.handleDownloads(response.data)
+      })
+    },
     handleFilter() {
       this.listQuery.page = 1
       console.log(this.listQuery.importanceOptions1)
       this.getList()
+    },
+    handleFilter2() {
+      this.listQuery.page = 1
+      console.log(this.listQuery.importanceOptions1)
+      this.getList2()
     },
     handleModifyStatus(row, status) {
       this.$message({
@@ -519,13 +533,15 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    formatJson(filterVal) {
-      return this.list.map(v => filterVal.map(j => {
-        if (j === 'timestamp') {
+    formatJson(filterVal, x) {
+      return x.map(v => filterVal.map(j => {
+        if (j === 'create_time') {
           return parseTime(v[j])
-        } else {
-          return v[j]
         }
+        if (j === 'pay_time') {
+          return parseTime(v[j])
+        }
+        return v[j]
       }))
     },
     getSortClass: function(key) {
@@ -676,6 +692,45 @@ export default {
           message: '已取消'
         })
       })
+    },
+    handleDownloads(x) {
+      console.log(x)
+      this.downloadLoading = true
+      import('@/vendor/Export2Excel').then(excel => {
+        const tHeader = ['订单号', '创建时间', '购买用户', '订单金额', '支付金额', '支付时间', '微信单号', '运费', '交易类型', '类型', '状态', '售后', '商品名称', '规格名称', '数量', '单价', '收货人', '收货人手机号', '收货地址', '备注']
+        const filterVal = ['order_no', 'create_time', 'nick_name', 'order_price', 'pay_price', 'pay_time', 'transaction_no', 'postage', 'is_cod_str', 'order_type_str', 'order_status_str', 'order_status_sub_str', 'goods_name', 'goodSpecial_name', 'goods_num', 'goods_price', 'member_name', 'member_mobile', 'member_address', 'remark']
+        const data = this.formatJson(filterVal, x)
+        excel.export_json_to_excel({
+          header: tHeader,
+          data,
+          filename: this.filename,
+          autoWidth: this.autoWidth,
+          bookType: this.bookType
+        })
+        this.downloadLoading = false
+      })
+    },
+    exploteAll() {
+      var selectIds = this.multipleSelection
+      var DataEx = []
+      if (selectIds.length < 1) {
+        if (this.list.length > 0) {
+          this.handleDownloads(this.list)
+        }
+      } else {
+        console.log(this.list)
+        this.list.forEach(item => {
+          for (var i = 0; i < selectIds.length; i++) {
+            if (item['order_id'] === selectIds[i]) {
+              DataEx.push(item)
+            }
+          }
+        })
+        console.log(DataEx)
+        if (DataEx.length > 0) {
+          this.handleDownloads(DataEx)
+        }
+      }
     }
   }
 }

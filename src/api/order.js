@@ -1,8 +1,24 @@
+/*
+ * @Author: your name
+ * @Date: 2020-08-20 19:55:49
+ * @LastEditTime: 2020-10-06 17:42:01
+ * @LastEditors: your name
+ * @Description: In User Settings Edit
+ * @FilePath: \admin\src\api\order.js
+ */
 import request from '@/utils/request'
 
 export function fetchList(query) {
   return request({
     url: 'MnGetOrderList',
+    method: 'get',
+    params: query
+  })
+}
+
+export function exploreList(query) {
+  return request({
+    url: 'MnGetExploreOrderList',
     method: 'get',
     params: query
   })
