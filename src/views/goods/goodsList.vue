@@ -50,12 +50,12 @@
           <span>{{ row.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="虚拟出售数量" align="center" prop="create_time" sortable="custom">
+      <el-table-column label="虚拟出售数量" align="center" prop="customNum" sortable="custom">
         <template slot-scope="{row}">
           <span>{{ row.set_seal_nums + row.real_seal_nums }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="实际出售数量" align="center" prop="create_time" sortable="custom">
+      <el-table-column label="实际出售数量" align="center" prop="sealNum" sortable="custom">
         <template slot-scope="{row}">
           <span>{{ row.real_seal_nums }}</span>
         </template>
@@ -70,7 +70,7 @@
           <span>{{ row.login_nums }}</span>
         </template>
       </el-table-column> -->
-      <el-table-column label="状态" class-name="status-col" prop="is_delete" min-width="100">
+      <el-table-column label="状态" class-name="status-col" prop="isDelete" sortable="custom" min-width="100">
 
         <template slot-scope="{row,$index}">
           <el-switch
@@ -257,26 +257,59 @@ export default {
     },
     sortChange(data) {
       const { prop, order } = data
-      if (prop === 'admin_account') {
-        this.sortByID(order)
+      if (prop === 'goods_name') {
+        this.sortByGoodsName(order)
       }
-      if (prop === 'register_time') {
+      if (prop === 'create_time') {
         this.sortByRegisterTime(order)
       }
+      if (prop === 'customNum') {
+        this.sortByCusNumTime(order)
+      }
+      if (prop === 'sealNum') {
+        this.sortBySealNumTime(order)
+      }
+      if (prop === 'isDelete') {
+        this.sortByDeleteTime(order)
+      }
     },
-    sortByID(order) {
+    sortByGoodsName(order) {
       if (order === 'ascending') {
-        this.listQuery.sort = '+admin_account'
+        this.listQuery.sort = '+goods_name'
       } else {
-        this.listQuery.sort = '-admin_account'
+        this.listQuery.sort = '-goods_name'
       }
       this.handleFilter()
     },
     sortByRegisterTime(order) {
       if (order === 'ascending') {
-        this.listQuery.sort = '+register_time'
+        this.listQuery.sort = '+create_time'
       } else {
-        this.listQuery.sort = '-register_time'
+        this.listQuery.sort = '-create_time'
+      }
+      this.handleFilter()
+    },
+    sortByCusNumTime(order) {
+      if (order === 'ascending') {
+        this.listQuery.sort = '+customNum'
+      } else {
+        this.listQuery.sort = '-customNum'
+      }
+      this.handleFilter()
+    },
+    sortBySealNumTime(order) {
+      if (order === 'ascending') {
+        this.listQuery.sort = '+sealNum'
+      } else {
+        this.listQuery.sort = '-sealNum'
+      }
+      this.handleFilter()
+    },
+    sortByDeleteTime(order) {
+      if (order === 'ascending') {
+        this.listQuery.sort = '+isDelete'
+      } else {
+        this.listQuery.sort = '-isDelete'
       }
       this.handleFilter()
     },
