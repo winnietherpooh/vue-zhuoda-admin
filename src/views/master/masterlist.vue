@@ -57,10 +57,21 @@
         </template>
       </el-table-column>
       <el-table-column label="状态" class-name="status-col" prop="is_lock">
-        <template slot-scope="{row}">
+        <!-- <template slot-scope="{row}">
           <el-tag :type="row.is_lock_str | statusFilter">
             {{ row.is_lock_str }}
           </el-tag>
+        </template> -->
+        <template slot-scope="{row,$index}">
+          <el-switch
+            v-model="row.is_lock_str"
+            active-value="正常"
+            inactive-value="锁定"
+            style="display: block"
+            active-text="正常"
+            inactive-text="锁定"
+            @change="canSelect($event,row,$index)"
+          />
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -352,6 +363,16 @@ export default {
       selection.map((item) => {
         this.multipleSelection.push(item.admin_id)
       })
+    },
+    canSelect(v, row, index) {
+      if (v === '正常') {
+        v = '锁定'
+      } else {
+        v = '正常'
+      }
+      this.temp = row
+      this.temp.is_lock_str = v
+      this.list.splice(index, 1, this.temp)
     }
   }
 }

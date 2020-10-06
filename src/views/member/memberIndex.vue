@@ -68,11 +68,22 @@
           <span>{{ row.login_nums }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="状态" class-name="status-col" prop="is_delete" width="100">
-        <template slot-scope="{row}">
+      <el-table-column label="状态" class-name="status-col" prop="is_delete">
+        <!-- <template slot-scope="{row}">
           <el-tag :type="row.is_delete_str | statusFilter">
             {{ row.is_delete_str }}
           </el-tag>
+        </template> -->
+        <template slot-scope="{row,$index}">
+          <el-switch
+            v-model="row.is_delete_str"
+            active-value="正常"
+            inactive-value="锁定"
+            style="display: block"
+            active-text="正常"
+            inactive-text="锁定"
+            @change="canSelect($event,row,$index)"
+          />
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -399,6 +410,16 @@ export default {
           message: '已取消删除'
         })
       })
+    },
+    canSelect(v, row, index) {
+      if (v === '正常') {
+        v = '锁定'
+      } else {
+        v = '正常'
+      }
+      this.temp = row
+      this.temp.is_delete_str = v
+      this.list.splice(index, 1, this.temp)
     }
   }
 }

@@ -89,11 +89,17 @@
           <span>常温下 {{ row.max_time }} 天</span>
         </template>
       </el-table-column>
-      <el-table-column label="规格状态" class-name="status-col" prop="is_delete" width="100">
-        <template slot-scope="{row}">
-          <el-tag :type="row.is_offline_str | specialFilter">
-            {{ row.is_offline_str }}
-          </el-tag>
+      <el-table-column label="规格状态" class-name="status-col" prop="is_delete">
+        <template slot-scope="{row,$index}">
+          <el-switch
+            v-model="row.is_offline_str"
+            active-value="正常"
+            inactive-value="下架"
+            style="display: block"
+            active-text="正常"
+            inactive-text="下架"
+            @change="canSelect($event,row,$index)"
+          />
         </template>
       </el-table-column>
       <el-table-column label="查看评论" align="center">
@@ -619,6 +625,16 @@ export default {
         type: 'success',
         duration: 1500
       })
+    },
+    canSelect(v, row, index) {
+      if (v === '正常') {
+        v = '下架'
+      } else {
+        v = '正常'
+      }
+      this.temp = row
+      this.temp.is_offline_str = v
+      this.list.splice(index, 1, this.temp)
     }
   }
 }

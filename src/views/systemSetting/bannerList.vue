@@ -78,11 +78,17 @@
           <span>{{ row.go_url }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="状态" class-name="status-col" prop="is_delete" width="100">
-        <template slot-scope="{row}">
-          <el-tag :type="row.is_show_str | statusFilter">
-            {{ row.is_show_str }}
-          </el-tag>
+      <el-table-column label="状态" class-name="status-col" prop="is_delete">
+        <template slot-scope="{row,$index}">
+          <el-switch
+            v-model="row.is_show_str"
+            active-value="显示"
+            inactive-value="隐藏"
+            style="display: block"
+            active-text="显示"
+            inactive-text="隐藏"
+            @change="canSelect($event,row,$index)"
+          />
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -566,6 +572,16 @@ export default {
       // if (value === 1) {
       // } else {
       // }
+    },
+    canSelect(v, row, index) {
+      if (v === '显示') {
+        v = '隐藏'
+      } else {
+        v = '显示'
+      }
+      this.temp = row
+      this.temp.is_show_str = v
+      this.list.splice(index, 1, this.temp)
     }
   }
 }

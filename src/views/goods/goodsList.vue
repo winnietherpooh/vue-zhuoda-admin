@@ -71,10 +71,17 @@
         </template>
       </el-table-column> -->
       <el-table-column label="状态" class-name="status-col" prop="is_delete" min-width="100">
-        <template slot-scope="{row}">
-          <el-tag :type="row.is_offline_str | statusFilter">
-            {{ row.is_offline_str }}
-          </el-tag>
+
+        <template slot-scope="{row,$index}">
+          <el-switch
+            v-model="row.is_offline_str"
+            active-value="正常"
+            inactive-value="下架"
+            style="display: block"
+            active-text="正常"
+            inactive-text="下架"
+            @change="canSelect($event,row,$index)"
+          />
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -416,6 +423,16 @@ export default {
         type: 'success',
         duration: 1500
       })
+    },
+    canSelect(v, row, index) {
+      if (v === '正常') {
+        v = '下架'
+      } else {
+        v = '正常'
+      }
+      this.temp = row
+      this.temp.is_offline_str = v
+      this.list.splice(index, 1, this.temp)
     }
     // addSpecial(row) {
     //   // specialTemp

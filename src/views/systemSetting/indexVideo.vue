@@ -66,11 +66,17 @@
           <span>{{ row.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="是否展示首页" class-name="status-col" prop="is_delete" width="100">
-        <template slot-scope="{row}">
-          <el-tag :type="row.is_top_str | goTypeFilter">
-            {{ row.is_top_str }}
-          </el-tag>
+      <el-table-column label="是否展示首页" class-name="status-col" prop="is_delete">
+        <template slot-scope="{row,$index}">
+          <el-switch
+            v-model="row.is_top_str"
+            active-value="显示"
+            inactive-value="隐藏"
+            style="display: block"
+            active-text="显示"
+            inactive-text="隐藏"
+            @change="canSelect($event,row,$index)"
+          />
         </template>
       </el-table-column>
       <el-table-column label="虚拟点赞数量" class-name="status-col" prop="is_delete" width="100">
@@ -540,6 +546,16 @@ export default {
         type: 'success',
         duration: 1500
       })
+    },
+    canSelect(v, row, index) {
+      if (v === '显示') {
+        v = '隐藏'
+      } else {
+        v = '显示'
+      }
+      this.temp = row
+      this.temp.is_top_str = v
+      this.list.splice(index, 1, this.temp)
     }
   }
 }

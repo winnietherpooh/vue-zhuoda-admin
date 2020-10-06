@@ -72,11 +72,17 @@
           </el-popover>
         </template>
       </el-table-column>
-      <el-table-column label="状态" class-name="status-col" prop="is_delete" width="100px">
-        <template slot-scope="{row}">
-          <el-tag :type="row.is_delete_str | statusFilter">
-            {{ row.is_delete_str }}
-          </el-tag>
+      <el-table-column label="状态" class-name="status-col" prop="is_delete">
+        <template slot-scope="{row,$index}">
+          <el-switch
+            v-model="row.is_delete_str"
+            active-value="正常"
+            inactive-value="下线"
+            style="display: block"
+            active-text="正常"
+            inactive-text="下线"
+            @change="canSelect($event,row,$index)"
+          />
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -437,6 +443,16 @@ export default {
         type: 'success',
         duration: 1500
       })
+    },
+    canSelect(v, row, index) {
+      if (v === '正常') {
+        v = '下线'
+      } else {
+        v = '正常'
+      }
+      this.temp = row
+      this.temp.is_delete_str = v
+      this.list.splice(index, 1, this.temp)
     }
   }
 }

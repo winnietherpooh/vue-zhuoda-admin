@@ -66,7 +66,7 @@
       </el-table-column> -->
       <el-table-column label="状态" class-name="status-col" prop="is_lock">
         <template slot-scope="{row}">
-          <el-tag :type="row.is_open_str | statusFilter">
+          <el-tag :type="row.is_open_str | statusFilter" style="">
             {{ row.is_open_str }}
           </el-tag>
         </template>

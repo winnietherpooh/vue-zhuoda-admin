@@ -80,10 +80,21 @@
         </template>
       </el-table-column>
       <el-table-column label="包含视频/图片" class-name="status-col" prop="is_delete">
-        <template slot-scope="{row}">
+        <!-- <template slot-scope="{row}">
           <el-tag :type="row.had_video_str | videoStatusFilter">
             {{ row.had_video_str }}
           </el-tag>
+        </template> -->
+        <template slot-scope="{row,$index}">
+          <el-switch
+            v-model="row.had_video_str"
+            active-value="是"
+            inactive-value="否"
+            style="display: block"
+            active-text="是"
+            inactive-text="否"
+            @change="canSelect3($event,row,$index)"
+          />
         </template>
       </el-table-column>
       <el-table-column label="查看图片" align="center">
@@ -116,17 +127,39 @@
         </template>
       </el-table-column> -->
       <el-table-column label="展示" class-name="status-col" prop="is_delete">
-        <template slot-scope="{row}">
+        <!-- <template slot-scope="{row}">
           <el-tag :type="row.is_show_str | isShowStatusFilter">
             {{ row.is_show_str }}
           </el-tag>
+        </template> -->
+        <template slot-scope="{row,$index}">
+          <el-switch
+            v-model="row.is_show_str"
+            active-value="是"
+            inactive-value="否"
+            style="display: block"
+            active-text="是"
+            inactive-text="否"
+            @change="canSelect2($event,row,$index)"
+          />
         </template>
       </el-table-column>
       <el-table-column label="推荐" class-name="status-col" prop="is_delete">
-        <template slot-scope="{row}">
+        <!-- <template slot-scope="{row}">
           <el-tag :type="row.is_show_goods_str | isShowIndexStatusFilter">
             {{ row.is_show_goods_str }}
           </el-tag>
+        </template> -->
+        <template slot-scope="{row,$index}">
+          <el-switch
+            v-model="row.is_show_goods_str"
+            active-value="是"
+            inactive-value="否"
+            style="display: block"
+            active-text="是"
+            inactive-text="否"
+            @change="canSelect1($event,row,$index)"
+          />
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="200">
@@ -666,6 +699,36 @@ export default {
         })
       })
       this.dialogForm2Visible = false
+    },
+    canSelect1(v, row, index) {
+      if (v === '是') {
+        v = '否'
+      } else {
+        v = '是'
+      }
+      this.temp = row
+      this.temp.is_show_goods_str = v
+      this.list.splice(index, 1, this.temp)
+    },
+    canSelect2(v, row, index) {
+      if (v === '是') {
+        v = '否'
+      } else {
+        v = '是'
+      }
+      this.temp = row
+      this.temp.is_show_str = v
+      this.list.splice(index, 1, this.temp)
+    },
+    canSelect3(v, row, index) {
+      if (v === '是') {
+        v = '否'
+      } else {
+        v = '是'
+      }
+      this.temp = row
+      this.temp.had_video_str = v
+      this.list.splice(index, 1, this.temp)
     }
     // addSpecial(row) {
     //   // specialTemp
